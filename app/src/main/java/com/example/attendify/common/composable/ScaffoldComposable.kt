@@ -1,15 +1,16 @@
 package com.example.attendify.common.composable
 
-import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.attendify.common.ext.customIconButton
@@ -32,7 +33,14 @@ fun AppScaffold(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(title) },
+                title = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(title)
+                    }
+                },
                 navigationIcon = {
                     when {
                         showBackButton -> {
@@ -46,7 +54,7 @@ fun AppScaffold(
                         showLogo -> {
                             CustomIconButton(
                                 modifier = Modifier.customIconButton(),
-                                painter = painterResource(R.drawable.logo),
+                                painter = painterResource(R.drawable.college_logo),
                                 contentDescription = contentDescriptionLogo.toString(),
                                 onClick = {},
                                 size = 36.dp
