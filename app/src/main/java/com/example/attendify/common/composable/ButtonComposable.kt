@@ -1,11 +1,14 @@
 package com.example.attendify.common.composable
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +22,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.attendify.common.ext.customButton
 
 @Composable
 fun CustomButton(
@@ -27,7 +31,11 @@ fun CustomButton(
     action: () -> Unit,
     isLoadingIcon: Boolean = false
 ) {
-    Button(onClick = action, modifier = modifier) {
+    Button(
+        onClick = action,
+        modifier = modifier.customButton(),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEC8484), contentColor = Color.Black),
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = text)
             Spacer(Modifier.width(4.dp))
@@ -41,7 +49,7 @@ fun CustomButton(
 }
 
 @Composable
-fun CustomTextButton(text: String, modifier: Modifier, action: () -> Unit) {
+fun CustomTextButton(text: String, modifier: Modifier = Modifier, action: () -> Unit) {
     TextButton(
         onClick = action
     ) {
