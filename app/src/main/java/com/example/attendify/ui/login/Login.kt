@@ -134,7 +134,7 @@ fun Login(navController: NavController) {
 }
 
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
 fun DisplayLogin() {
     AttendifyTheme {
