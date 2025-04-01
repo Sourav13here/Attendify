@@ -34,7 +34,7 @@ fun CustomButton(
     Button(
         onClick = action,
         modifier = modifier.customButton(),
-        colors= ButtonDefaults.buttonColors(containerColor = Color(0xFFEC8484), contentColor = Color.Black),
+        colors= ButtonDefaults.buttonColors(containerColor = Color(0xFFF38C8F), contentColor = Color.Black),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text = text)

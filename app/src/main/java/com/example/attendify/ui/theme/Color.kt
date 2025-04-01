@@ -45,3 +45,9 @@ val TealGreen = Color(0xFF00897B)      // Rich teal green
 val Gold = Color(0xFFFFD700)           // Luxurious gold
 val Bronze = Color(0xFFCD7F32)         // Elegant bronze
 val PearlWhite = Color(0xFFFFF8E1)     // Soft pearl white
+
+// Attendify colours
+val ButtonColor = Color(0xFFF38C8F)
+val BoardColor = Color(0xFFceb2e1)
+val CardColour = Color(0xFFd9d9d9)
+val BottomBar = Color(0xFFF3D1B5)
