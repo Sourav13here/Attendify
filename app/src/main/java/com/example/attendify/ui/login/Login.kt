@@ -3,8 +3,11 @@ package com.example.attendify.ui.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,7 +43,8 @@ fun Login(navController: NavController) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -49,7 +53,7 @@ fun Login(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .fillMaxHeight(0.45f)
                         .background(Color(0xFF817777)),
                     contentAlignment = Alignment.TopCenter
                 ) {
@@ -89,7 +93,7 @@ fun Login(navController: NavController) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .padding(top = 200.dp, start = 40.dp)
+                    .offset(y = (-50).dp)
                     .clip(RoundedCornerShape(16.dp))
                     .border(1.dp,Color.Black, RoundedCornerShape(16.dp)),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
