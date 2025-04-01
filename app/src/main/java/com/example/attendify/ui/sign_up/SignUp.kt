@@ -4,9 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +38,8 @@ import com.example.attendify.common.composable.CustomExposedDropdown
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.composable.CustomTextButton
 import com.example.attendify.ui.theme.AttendifyTheme
+import com.example.attendify.ui.theme.GrayLight
+import com.example.attendify.ui.theme.PurpleLight
 
 @Composable
 fun SignUp(navController: NavController) {
@@ -56,6 +57,8 @@ fun SignUp(navController: NavController) {
             fontWeight = FontWeight.Bold
         )
     ) { padding ->
+
+        // Wrap the entire layout in a Column with fillMaxSize() to allow flexibility
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -74,15 +77,17 @@ fun SignUp(navController: NavController) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    .background(color = PurpleLight, shape = RoundedCornerShape(8.dp))
                     .padding(16.dp)
             ) {
-                Column(modifier = Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     CustomOutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
                         label = "Full Name",
-
                         modifier = Modifier.fillMaxWidth()
                     )
                     CustomOutlinedTextField(
@@ -99,41 +104,105 @@ fun SignUp(navController: NavController) {
                         modifier = Modifier.fillMaxWidth()
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Select Account Type")
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = true, onClick = {})
-                        Text("Student")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        RadioButton(selected = false, onClick = {})
-                        Text("Teacher")
+                    Text("Select Account Type", color = Color.Black)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                RadioButton(selected = true, onClick = {})
+                                Text("Student", color = Color.Black)
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .width(1.dp)
+                                    .fillMaxHeight()
+                                    .background(Color.Black)
+                            )
+
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                RadioButton(selected = false, onClick = {})
+                                Text("Teacher", color = Color.Black)
+                            }
+                        }
                     }
 
-                    Row {
-                        CustomExposedDropdown(
-                            label = "Branch",
-                            options = listOf("CSE", "ETE", "ME","CE"),
-                            selectedOption = "CSE",
-                            onOptionSelected = {}
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        CustomExposedDropdown(
-                            label = "Semester",
-                            options = listOf("1", "2", "3"),
-                            selectedOption = "1",
-                            onOptionSelected = {}
-                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(PurpleLight, shape = RoundedCornerShape(8.dp))
+                            .padding(16.dp)
+                    ) {
+                        Column {
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                CustomExposedDropdown(
+                                    label = "Branch",
+                                    options = listOf("CSE", "ETE", "ME", "CE"),
+                                    selectedOption = "CSE",
+                                    onOptionSelected = {},
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                CustomExposedDropdown(
+                                    label = "Semester",
+                                    options = listOf("1", "2", "3"),
+                                    selectedOption = "1",
+                                    onOptionSelected = {},
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(8.dp))
+                            CustomOutlinedTextField(
+                                value = "",
+                                onValueChange = {},
+                                label = "Enter your ROLL NO.",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
-                    CustomOutlinedTextField(value = "", onValueChange = {}, label = "Enter your ROLL NO.")
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CustomButton(text = "Register", action = {})
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            CustomButton(text = "Register", action = {}, modifier = Modifier.fillMaxWidth())
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Row {
-                Text("Already have an account?")
+            // Spacer to push the last Row down to the bottom
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Row at the bottom of the screen
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFE6B89C))
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Already have an account?", fontSize = 14.sp)
                 Spacer(modifier = Modifier.width(4.dp))
-                CustomTextButton(text = "Login", modifier = Modifier, action = {})
+                CustomButton(
+                    text = "Login",
+                    action = {},
+                    isLoadingIcon = false
+                )
             }
         }
     }
