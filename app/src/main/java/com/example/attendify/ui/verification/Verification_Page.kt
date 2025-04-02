@@ -44,8 +44,12 @@ fun Verification_Page(navController: NavController) {
                 .background(Color.White)
                 .fillMaxSize()
         ) {
-            // Students/Teachers Tab - Made smaller
             var selectedTab by remember { mutableStateOf(0) }
+            var selectedBranch by remember { mutableStateOf("Select Branch") }
+            var selectedSemester by remember { mutableStateOf("Select Semester") }
+
+            val branches = listOf("CSE", "ETE", "ME", "CE")
+            val semesters = listOf("1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th")
 
             Box(
                 modifier = Modifier
@@ -53,53 +57,21 @@ fun Verification_Page(navController: NavController) {
                     .width(250.dp)
                     .align(Alignment.CenterHorizontally)
             ) {
-                // Tab background with rounded corners
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFFEC8484))
-                )
-
-                // Red circles at corners
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .offset(x = 4.dp, y = 4.dp)
-                        .background(Color.Red, CircleShape)
-                )
-
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .align(Alignment.TopEnd)
-                        .offset(x = (-4).dp, y = 4.dp)
-                        .background(Color.Red, CircleShape)
-                )
-
-                // Tab content with divider
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(36.dp)
+                        .background(Color(0xFFEC8484), RoundedCornerShape(20.dp))
                 ) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxHeight()
                             .clickable { selectedTab = 0 },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            "Students",
-                            color = Color.Black,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 14.sp
-                        )
+                        Text("Students", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 14.sp)
                     }
 
-                    // Vertical Divider between tabs
                     Box(
                         modifier = Modifier
                             .width(1.dp)
@@ -111,21 +83,14 @@ fun Verification_Page(navController: NavController) {
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .fillMaxHeight()
                             .clickable { selectedTab = 1 },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            "Teachers",
-                            color = Color.Black,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 14.sp
-                        )
+                        Text("Teachers", color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 14.sp)
                     }
                 }
             }
 
-            // Black border container that wraps everything except the Done button
             Box(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -135,7 +100,6 @@ fun Verification_Page(navController: NavController) {
                     .padding(8.dp)
             ) {
                 Column {
-                    // Unverified Status
                     Box(
                         modifier = Modifier
                             .padding(top = 4.dp, bottom = 12.dp)
@@ -148,60 +112,21 @@ fun Verification_Page(navController: NavController) {
                     }
 
                     // Select Branch Dropdown
-                    Box(
-                        modifier = Modifier
-                            .padding(vertical = 6.dp)
-                            .fillMaxWidth()
-                            .height(42.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFEC8484))
-                            .clickable { },
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Select Branch", color = Color.Black, fontSize = 14.sp)
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Dropdown",
-                                tint = Color.Black
-                            )
-                        }
+                    DropdownSelector(
+                        label = selectedBranch,
+                        items = branches,
+                        onItemSelected = { selectedBranch = it }
+                    )
+
+                    // Select Semester Dropdown (Only for Students)
+                    if (selectedTab == 0) {
+                        DropdownSelector(
+                            label = selectedSemester,
+                            items = semesters,
+                            onItemSelected = { selectedSemester = it }
+                        )
                     }
 
-                    // Select Semester Dropdown
-                    Box(
-                        modifier = Modifier
-                            .padding(vertical = 6.dp)
-                            .fillMaxWidth()
-                            .height(42.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFEC8484))
-                            .clickable { },
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Select Semester", color = Color.Black, fontSize = 14.sp)
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = "Dropdown",
-                                tint = Color.Black
-                            )
-                        }
-                    }
-
-                    // Student List
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)
@@ -213,15 +138,13 @@ fun Verification_Page(navController: NavController) {
                                     name = "Faruk Khan",
                                     rollNo = "23232323323",
                                     email = "abc@gmail.com"
-                                ),
-                                isApproved = index == 0
+                                )
                             )
                         }
                     }
                 }
             }
 
-            // Done Button - outside the black border
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -239,17 +162,49 @@ fun Verification_Page(navController: NavController) {
 }
 
 @Composable
-fun StudentVerificationItem(
-    student: Student,
-    isApproved: Boolean = false
-) {
+fun DropdownSelector(label: String, items: List<String>, onItemSelected: (String) -> Unit) {
+    var isDropdownExpanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .padding(vertical = 6.dp)
+            .fillMaxWidth()
+            .height(42.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFFEC8484))
+            .clickable { isDropdownExpanded = true },
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(label, color = Color.Black, fontSize = 14.sp)
+            Icon(imageVector = Icons.Default.ArrowDropDown, contentDescription = "Dropdown", tint = Color.Black)
+        }
+    }
+
+    DropdownMenu(expanded = isDropdownExpanded, onDismissRequest = { isDropdownExpanded = false }) {
+        items.forEach { item ->
+            DropdownMenuItem(text = { Text(item) }, onClick = {
+                onItemSelected(item)
+                isDropdownExpanded = false
+            })
+        }
+    }
+}
+
+@Composable
+fun StudentVerificationItem(student: Student) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(4.dp))
             .padding(3.dp)
-
             .background(Color(0xFFD9D9D9))
     ) {
         Row(
@@ -257,7 +212,7 @@ fun StudentVerificationItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Student info section
+            // Student Info Section
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = student.name,
@@ -278,11 +233,12 @@ fun StudentVerificationItem(
                 )
             }
 
-            // Approve/Reject buttons section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Approve/Reject Buttons Section
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Approve button
+                // Approve Button
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -301,33 +257,31 @@ fun StudentVerificationItem(
                         modifier = Modifier.padding(top = 2.dp)
                     )
                 }
-            }
 
-            // Space between buttons
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Reject button
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .background(
-                            Color(0xFFEC8484), // Light red/pink color for reject
-                            CircleShape
-                        )
-                        .clickable { /* Handle rejection */ }
-                )
-                Text(
-                    text = "Reject",
-                    fontSize = 12.sp,
-                    modifier = Modifier.padding(top = 2.dp)
-                )
+                // Reject Button
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .background(
+                                Color(0xFFEC8484), // Light red/pink color for reject
+                                CircleShape
+                            )
+                            .clickable { /* Handle rejection */ }
+                    )
+                    Text(
+                        text = "Reject",
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
             }
         }
     }
 }
+
 
 data class Student(
     val name: String,
