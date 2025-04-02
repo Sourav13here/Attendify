@@ -76,7 +76,7 @@ fun Login(navController: NavController) {
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Sign up section
+                // Sign up sectionn
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
