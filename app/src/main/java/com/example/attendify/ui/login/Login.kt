@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,9 @@ fun Login(navController: NavController) {
     AppScaffold(
         title = "Login",
         navController = navController,
+        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight.Bold
+        )
     ) { padding ->
         Box(
             modifier = Modifier
