@@ -210,7 +210,7 @@ fun SignUp(navController: NavController) {
 
 @Preview(showSystemUi = true)
 @Composable
-fun show_3() {
+fun Show_3() {
     AttendifyTheme {
         SignUp(rememberNavController())
     }
