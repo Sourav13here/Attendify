@@ -2,11 +2,11 @@ package com.example.attendify.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.attendify.ui.login.Login
+import com.example.attendify.ui.sign_up.SignUp
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -17,6 +17,9 @@ fun NavGraph(navController: NavHostController) {
     ) {
         composable(NavRoutes.LoginPage.route) {
             Login(navController)
+        }
+        composable(NavRoutes.SignUpPage.route) {
+            SignUp(navController)
         }
     }
 }
