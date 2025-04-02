@@ -61,7 +61,8 @@ fun Verification_Page(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(36.dp)
-                        .background(Color(0xFFEC8484), RoundedCornerShape(20.dp))
+                        .background(Color(0xFFEC8484), RoundedCornerShape(20.dp)),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(
                         modifier = Modifier
