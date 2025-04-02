@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,16 +30,22 @@ import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.composable.CustomTextButton
+import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.login.components.ForgetPasswordDialog
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
 fun Login(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showForgotPasswordDialog by remember { mutableStateOf(false) }
 
     AppScaffold(
         title = "Login",
         navController = navController,
+        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight.Bold
+        ),
     ) { padding ->
         Box(
             modifier = Modifier
@@ -85,7 +92,11 @@ fun Login(navController: NavController) {
                     Spacer(modifier = Modifier.width(4.dp))
                     CustomButton(
                         text = "Sign Up",
-                        action = {},
+                        action = {
+                            navController.navigate(NavRoutes.SignUpPage.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         isLoadingIcon = false
                     )
                 }
@@ -95,7 +106,7 @@ fun Login(navController: NavController) {
                     .fillMaxWidth(0.9f)
                     .offset(y = (-50).dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .border(1.dp,Color.Black, RoundedCornerShape(16.dp)),
+                    .border(1.dp, Color.Black, RoundedCornerShape(16.dp)),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
             ) {
                 Column(
@@ -123,7 +134,15 @@ fun Login(navController: NavController) {
                     )
 
                     Spacer(modifier = Modifier.height(10.dp))
-                    CustomTextButton(text = "Forgot Password?", action = {})
+                    CustomTextButton(
+                        text = "Forgot Password?",
+                        action = {
+                            showForgotPasswordDialog = true
+                        }
+                    )
+                    if (showForgotPasswordDialog) {
+                        ForgetPasswordDialog { showForgotPasswordDialog = false }
+                    }
 
                     Spacer(modifier = Modifier.height(10.dp))
                     CustomButton(text = "Login", action = {})
