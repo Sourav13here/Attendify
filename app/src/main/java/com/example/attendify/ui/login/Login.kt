@@ -3,8 +3,11 @@ package com.example.attendify.ui.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,21 +30,25 @@ import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.composable.CustomTextButton
+import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.login.components.ForgetPasswordDialog
+import com.example.attendify.ui.login.components.UserLoginInfoCard
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
 fun Login(navController: NavController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-
     AppScaffold(
         title = "Login",
         navController = navController,
+        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight.Bold
+        ),
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(padding),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -49,7 +57,7 @@ fun Login(navController: NavController) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .fillMaxHeight(0.45f)
                         .background(Color(0xFF817777)),
                     contentAlignment = Alignment.TopCenter
                 ) {
@@ -68,7 +76,7 @@ fun Login(navController: NavController) {
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Sign up section
+                // Sign up sectionn
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -81,56 +89,22 @@ fun Login(navController: NavController) {
                     Spacer(modifier = Modifier.width(4.dp))
                     CustomButton(
                         text = "Sign Up",
-                        action = {},
+                        action = {
+                            navController.navigate(NavRoutes.SignUpPage.route) {
+                                launchSingleTop = true
+                            }
+                        },
                         isLoadingIcon = false
                     )
                 }
             }
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .padding(top = 200.dp, start = 40.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .border(1.dp,Color.Black, RoundedCornerShape(16.dp)),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Email Input Field
-
-                    CustomOutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = "Email",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    // Password Input Field
-                    CustomOutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = "Password",
-                        isPasswordField = true,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    CustomTextButton(text = "Forgot Password?", action = {})
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    CustomButton(text = "Login", action = {})
-                }
-            }
+            UserLoginInfoCard()
         }
     }
 }
 
 
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
 fun DisplayLogin() {
     AttendifyTheme {

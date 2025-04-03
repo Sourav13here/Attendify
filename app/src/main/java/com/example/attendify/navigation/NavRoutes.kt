@@ -1,5 +1,6 @@
 package com.example.attendify.navigation
 
+
 interface Destinations {
     val route: String
 }

@@ -33,11 +33,15 @@ val SunsetOrange = Color(0xFFFF7043)    // Vibrant sunset orange
 val RoyalPurple = Color(0xFF6A1B9A)   // Deep royal purple
 val LavenderPurple = Color(0xFFD1C4E9) // Soft lavender purple
 val RosePink = Color(0xFFF06292)      // Delicate rose pink
+val PurpleLight = Color(0xFFCEB2E1)
+
 
 // ⚫ Neutral & Gray Shades
 val MidnightBlack = Color(0xFF212121)  // Almost black
 val GraphiteGray = Color(0xFF616161)   // Medium gray
 val SilverGray = Color(0xFFBDBDBD)     // Light silver gray
+val GrayLight = Color(0xFFD9D9D9)
+
 
 // 🌊 Special Shades
 val Turquoise = Color(0xFF00ACC1)      // Bright turquoise blue
