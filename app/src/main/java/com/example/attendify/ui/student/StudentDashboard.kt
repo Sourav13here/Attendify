@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
@@ -30,8 +31,8 @@ fun StudentDashboard(navController: NavController) {
         actions = {
             CustomIconButton(
                 modifier = Modifier
-                    .padding(4.dp)
-                    .size(40.dp)
+                    .padding(2.dp)
+                    .clip(CircleShape)
                     .background(Color(0xFFE57373), shape = CircleShape),
                 imageVector = Icons.AutoMirrored.Filled.Logout,
                 onClick = {}
@@ -46,18 +47,23 @@ fun StudentDashboard(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(16.dp))
+
             Text("John Smith", fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Text("CSE - 6th sem", fontSize = 16.sp)
+
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn(
                 modifier = Modifier
-                    .background(Color(0xFFD1C4E9), RoundedCornerShape(12.dp))
+                    .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
                     .fillMaxWidth(0.9f)
                     .padding(16.dp)
             ) {
-                repeat(7) { index ->
-                    AttendanceCard(subject = "CS1809213", title = "Computer Networks", percentage = listOf(100, 75, 40, 20, 0, 100, 100)[index])
+                item{
+                    repeat(7) {
+                            index ->
+                        AttendanceCard(subject = "CS1809213", title = "Computer Networks", percentage = listOf(100, 75, 40, 20, 0, 100, 100)[index])
+                    }
                 }
             }
         }
@@ -76,7 +82,8 @@ fun AttendanceCard(subject: String, title: String, percentage: Int) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+            .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
+            .background(color = Color.White, RoundedCornerShape(16.dp))
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
