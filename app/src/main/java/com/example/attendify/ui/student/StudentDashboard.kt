@@ -53,22 +53,23 @@ fun StudentDashboard(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyColumn(
-                modifier = Modifier
-                    .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
-                    .fillMaxWidth(0.9f)
-                    .padding(16.dp)
-            ) {
-                item{
-                    repeat(7) {
-                            index ->
-                        AttendanceCard(subject = "CS1809213", title = "Computer Networks", percentage = listOf(100, 75, 40, 20, 0, 100, 100)[index])
+                LazyColumn(
+                    modifier = Modifier
+                        .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
+                        .fillMaxWidth(0.95f)
+                        .fillMaxHeight(0.9f)
+                        .padding(16.dp)
+                ) {
+                    item{
+                        repeat(7) {
+                                index ->
+                            AttendanceCard(subject = "CS1809213", title = "Computer Networks", percentage = listOf(100, 75, 40, 20, 0, 100, 100)[index])
+                        }
                     }
                 }
             }
         }
     }
-}
 
 @Composable
 fun AttendanceCard(subject: String, title: String, percentage: Int) {
