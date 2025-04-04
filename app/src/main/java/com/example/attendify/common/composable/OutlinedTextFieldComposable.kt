@@ -1,6 +1,7 @@
 package com.example.attendify.common.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,57 +36,63 @@ fun CustomOutlinedTextField(
     placeholder: String? = null,
     enabled: Boolean = true,
     isPasswordField: Boolean = false,
+    error: String? = null,
     onNext: (() -> Unit)? = null,
     onDone: (() -> Unit)? = null
 ) {
     var showPassword by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-//            .background(GrayLight, shape = RoundedCornerShape(8.dp)),  // Background color
-
-        label = { Text(label,color = Color.Black) },
-        placeholder = { Text(placeholder?:"",color = Color.Black) },
-        singleLine = true,
-        enabled = enabled,
-        visualTransformation = if (isPasswordField && !showPassword)
-            PasswordVisualTransformation()
-        else VisualTransformation.None,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = if (isPasswordField) KeyboardType.Password else KeyboardType.Text,
-            imeAction = when {
-                onNext != null -> ImeAction.Next
-                onDone != null -> ImeAction.Done
-                else -> ImeAction.Default
-            }
-        ),
-        keyboardActions = KeyboardActions(
-            onNext = { onNext?.invoke() },
-            onDone = { onDone?.invoke() }
-        ),
-        trailingIcon = {
-            if (isPasswordField) {
-                val image =
-                    if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                IconButton(onClick = { showPassword = !showPassword }) {
-                    Icon(
-                        imageVector = image,
-                        contentDescription = if (showPassword) "Hide password" else "show password",
-                        tint = Color.Black
-                    )
+    Column(modifier = modifier) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text(label, color = Color.Black) },
+            placeholder = { Text(placeholder ?: "", color = Color.Black) },
+            singleLine = true,
+            enabled = enabled,
+            visualTransformation = if (isPasswordField && !showPassword)
+                PasswordVisualTransformation()
+            else VisualTransformation.None,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = if (isPasswordField) KeyboardType.Password else KeyboardType.Text,
+                imeAction = when {
+                    onNext != null -> ImeAction.Next
+                    onDone != null -> ImeAction.Done
+                    else -> ImeAction.Default
                 }
-            }
-        },
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color.Black,  // Black border
-            unfocusedBorderColor = Color.Black,
-            cursorColor = Color.Black,
-            focusedContainerColor = GrayLight,  // Gray inside the border
-            unfocusedContainerColor = GrayLight,
-            disabledContainerColor = GrayLight
-        ),
-        shape = RoundedCornerShape(8.dp)
-    )
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { onNext?.invoke() },
+                onDone = { onDone?.invoke() }
+            ),
+            trailingIcon = {
+                if (isPasswordField) {
+                    val image =
+                        if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                    IconButton(onClick = { showPassword = !showPassword }) {
+                        Icon(
+                            imageVector = image,
+                            contentDescription = if (showPassword) "Hide password" else "Show password",
+                            tint = Color.Black
+                        )
+                    }
+                }
+            },
+            isError = error != null,  // <-- Shows error state if error is present
+            supportingText = {
+                if (error != null) {
+                    Text(error, color = Color.Red)
+                }
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = if (error != null) Color.Red else Color.Black,
+                unfocusedBorderColor = if (error != null) Color.Red else Color.Black,
+                cursorColor = Color.Black,
+                focusedContainerColor = GrayLight,
+                unfocusedContainerColor = GrayLight,
+                disabledContainerColor = GrayLight
+            ),
+            shape = RoundedCornerShape(8.dp)
+        )
+    }
 }

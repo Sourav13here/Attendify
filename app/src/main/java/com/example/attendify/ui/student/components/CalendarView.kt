@@ -12,11 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.automirrored.filled.ArrowLeft
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -28,15 +25,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
-import com.example.attendify.ui.student.AttendanceStudent
 import com.example.attendify.ui.theme.AttendifyTheme
 import java.time.LocalDate
-
+import com.example.attendify.R
 @Composable
 fun CalendarView() {
     var currentDate by remember { mutableStateOf(LocalDate.now()) }
@@ -105,7 +101,7 @@ fun CalendarView() {
                             .size(32.dp)
                             .background(
                                 if (day in present) Color.Green
-                                else if (day in absent) Color.Red
+                                else if (day in absent) colorResource(R.color.lightRed)
                                 else Color.Transparent,
                                 shape = RoundedCornerShape(4.dp)
                             ),

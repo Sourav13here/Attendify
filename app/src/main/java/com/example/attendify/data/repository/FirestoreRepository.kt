@@ -7,8 +7,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
-class FirestoreRepository {
+class FirestoreRepository @Inject constructor(
+    private val db: FirebaseFirestore
+) {
+
+}
+
+/*
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -122,3 +129,6 @@ class FirestoreRepository {
         }
     }
 }
+
+
+ */
