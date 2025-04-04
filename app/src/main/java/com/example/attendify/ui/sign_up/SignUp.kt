@@ -8,6 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,16 +17,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.*
+import com.example.attendify.common.ext.customOutlinedTextField
+import com.example.attendify.data.model.Student
+import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.AttendifyTheme
-import com.example.attendify.ui.theme.GrayLight
 import com.example.attendify.ui.theme.PurpleLight
+import com.example.attendify.utils.Constants
 
 @Composable
-fun SignUp(navController: NavController) {
+fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var accountType by remember { mutableStateOf("Student") }
+    var branch by remember { mutableStateOf("") }
+    var semester by remember { mutableStateOf("") }
+    var rollno by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
 
     AppScaffold(
         title = "SIGN UP",
@@ -61,12 +70,28 @@ fun SignUp(navController: NavController) {
                     modifier = Modifier.align(Alignment.Center),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    CustomOutlinedTextField(value = username, onValueChange = { username = it }, label = "Full Name", modifier = Modifier.fillMaxWidth())
-                    CustomOutlinedTextField(value = email, onValueChange = { email = it }, label = "Email", modifier = Modifier.fillMaxWidth())
-                    CustomOutlinedTextField(value = password, onValueChange = { password = it }, label = "Password", isPasswordField = true, modifier = Modifier.fillMaxWidth())
+                    CustomOutlinedTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        label = "Full Name",
+                        modifier = Modifier.customOutlinedTextField()
+                    )
+                    CustomOutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = "Email",
+                        modifier = Modifier.customOutlinedTextField()
+                    )
+                    CustomOutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = "Password",
+                        isPasswordField = true,
+                        modifier = Modifier.customOutlinedTextField()
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Select Account Type", color = Color.Black)
 
+                    Text("Select Account Type", color = Color.Black)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -112,23 +137,42 @@ fun SignUp(navController: NavController) {
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Row(modifier = Modifier.fillMaxWidth()) {
-                                CustomExposedDropdown(label = "Branch", options = listOf("CSE", "ETE", "ME", "CE"), selectedOption = "CSE", onOptionSelected = {}, modifier = Modifier.weight(1f))
+                                CustomExposedDropdown(
+                                    label = "Branch",
+                                    options = Constants.BRANCHES,
+                                    selectedOption = branch,
+                                    onOptionSelected = {branch = it},
+                                    modifier = Modifier.weight(1f)
+                                )
 
                                 if (accountType == "Student") {
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    CustomExposedDropdown(label = "Semester", options = listOf("1", "2", "3"), selectedOption = "1", onOptionSelected = {}, modifier = Modifier.weight(1f))
+                                    CustomExposedDropdown(
+                                        label = "Semester",
+                                        options = Constants.SEMESTERS,
+                                        selectedOption = semester,
+                                        onOptionSelected = { semester = it},
+                                        modifier = Modifier.weight(1f)
+                                    )
                                 }
                             }
 
                             if (accountType == "Student") {
                                 Spacer(modifier = Modifier.height(8.dp))
-                                CustomOutlinedTextField(value = "", onValueChange = {}, label = "Enter your ROLL NO.", modifier = Modifier.fillMaxWidth())
+                                CustomOutlinedTextField(
+                                    value = rollno,
+                                    onValueChange = { rollno = it },
+                                    label = "Enter your ROLL NO.",
+                                    modifier = Modifier.fillMaxWidth()
+                                )
                             }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
-                    CustomButton(text = "Register", action = {})
+                    CustomButton(text = "Register", action = {
+                        viewModel.createAccount(context, username, email, password, accountType, branch, semester, rollno)
+                    })
                 }
             }
             Spacer(modifier = Modifier.height(36.dp))
@@ -144,7 +188,11 @@ fun SignUp(navController: NavController) {
                 Spacer(modifier = Modifier.width(4.dp))
                 CustomButton(
                     text = "Login",
-                    action = {},
+                    action = {
+                        navController.navigate(NavRoutes.LoginPage.route) {
+                            popUpTo(NavRoutes.LoginPage.route) {inclusive = true}
+                        }
+                    },
                     isLoadingIcon = false
                 )
             }
@@ -152,10 +200,10 @@ fun SignUp(navController: NavController) {
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun Show_3() {
-    AttendifyTheme {
-        SignUp(rememberNavController())
-    }
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun Show_3() {
+//    AttendifyTheme {
+//        SignUp(rememberNavController())
+//    }
+//}

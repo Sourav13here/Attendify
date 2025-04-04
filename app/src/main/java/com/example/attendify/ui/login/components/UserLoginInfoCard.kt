@@ -13,13 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.composable.CustomTextButton
+import com.example.attendify.common.ext.customOutlinedTextField
+import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.login.LoginViewModel
 
 @Composable
-fun UserLoginInfoCard(viewModel: LoginViewModel) {
+fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
@@ -47,7 +50,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel) {
                     emailError = null // Clear error when typing
                 },
                 label = "Email",
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.customOutlinedTextField(),
                 error = emailError
             )
 
@@ -62,7 +65,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel) {
                 },
                 label = "Password",
                 isPasswordField = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.customOutlinedTextField(),
                 error = passwordError
             )
 
@@ -85,14 +88,18 @@ fun UserLoginInfoCard(viewModel: LoginViewModel) {
             }
 
             CustomButton(text = "Login", action = {
-                viewModel.loginUser(email, password) { success, errorMessage ->
+                viewModel.login(email, password) { success, errorMessage ->
                     if (success) {
                         loginError = null
+                        navController.navigate(NavRoutes.VerificationStatus.route) {
+                            popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
+                        }
                     } else {
                         loginError = errorMessage
                     }
                 }
             })
+
         }
     }
 }

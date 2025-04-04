@@ -2,7 +2,6 @@ package com.example.attendify.data.repository
 
 import android.util.Log
 import com.example.attendify.data.model.Subject
-import com.example.attendify.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,6 +13,16 @@ class FirestoreRepository @Inject constructor(
 ) {
 
 }
+
+
+
+
+
+
+
+
+
+
 
 /*
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
