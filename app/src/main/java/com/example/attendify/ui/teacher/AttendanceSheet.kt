@@ -44,7 +44,7 @@ fun AttendanceSheet(navController: NavController) {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ✅ Subject Box
+            // Subject Box
             Box(
                 modifier = Modifier
                     .padding(4.dp)
@@ -59,7 +59,7 @@ fun AttendanceSheet(navController: NavController) {
                 }
             }
 
-            // ✅ Month Navigation
+            // Month Navigation
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -82,22 +82,24 @@ fun AttendanceSheet(navController: NavController) {
                 }
             }
 
-            // ✅ Scrollable Date Selection
+            // Scrollable Date Selection
             DateSelectionRow(selectedDate, currentMonth) { newDate ->
                 selectedDate = newDate
             }
 
-            // ✅ Attendance Table
+            // Attendance Table
             AttendanceTable()
         }
     }
 }
 
-// ✅ Scrollable Date Row with Day Names
+//Scrollable Date Row with Day Names
 @Composable
 fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected: (String) -> Unit) {
     val daysInMonth = getDaysInMonth(currentMonth)
-    val currentDate = getCurrentDate()
+
+    //Get today's full date (DD MMMM YYYY) for correct highlighting
+    val todayFullDate = getCurrentFullDate() // Example: "04 April 2025"
 
     LazyRow(
         modifier = Modifier
@@ -107,7 +109,11 @@ fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected:
         items(daysInMonth) { date ->
             val dateString = String.format("%02d", date)  // Two-digit format
             val dayOfWeek = getDayOfWeek(date, currentMonth)
-            val isCurrentDate = dateString == currentDate
+
+            // ✅ Construct the full date for each day in the row
+            val fullDate = "$dateString $currentMonth"  // Example: "04 April 2025"
+            val isToday = fullDate == todayFullDate   // ✅ Check if it matches today
+
             val isSelectedDate = dateString == selectedDate
 
             Box(
@@ -115,7 +121,7 @@ fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected:
                     .padding(4.dp)
                     .size(60.dp, 70.dp)
                     .border(
-                        BorderStroke(2.dp, if (isCurrentDate) Color.Blue else Color.Transparent),
+                        BorderStroke(2.dp, if (isToday) Color.Blue else Color.Transparent), // ✅ Only highlight real current date
                         RoundedCornerShape(8.dp)
                     )
                     .background(
@@ -133,8 +139,11 @@ fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected:
         }
     }
 }
+fun getCurrentFullDate(): String {
+    return SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
+}
 
-// ✅ Attendance Table
+
 @Composable
 fun AttendanceTable() {
     Column(
@@ -143,7 +152,7 @@ fun AttendanceTable() {
             .padding(16.dp)
             .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
     ) {
-        // ✅ Table Header
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -172,7 +181,7 @@ fun AttendanceTable() {
                 fontSize = 14.sp,
                 maxLines = 1,
                 modifier = Modifier
-                    .width(165.dp)
+                    .width(160.dp)
 
                     .padding(start = 8.dp)
             )
@@ -198,11 +207,11 @@ fun AttendanceTable() {
             )
         }
 
-        // ✅ Student List
+        //Student List
         LazyColumn {
             items(List(10) { it }) { index ->
                 val rollNo = "2220100070${index + 1}"
-                val studentName = "Student Name ${index + 1}"
+                val studentName = "Student Name${index + 1}"
 
                 AttendanceRow(rollNo, studentName)
             }
@@ -210,9 +219,12 @@ fun AttendanceTable() {
     }
 }
 
-// ✅ Attendance Row
 @Composable
 fun AttendanceRow(rollNo: String, studentName: String) {
+    var isPresent by remember { mutableStateOf(false) }
+    var isAbsent by remember { mutableStateOf(false) }
+    var showFullNameDialog by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -233,33 +245,69 @@ fun AttendanceRow(rollNo: String, studentName: String) {
                 .height(24.dp)
         )
 
+        // Clickable Student Name
         Text(
             text = studentName,
             fontSize = 14.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .width(165.dp)
+                .width(160.dp)
                 .padding(start = 8.dp)
+                .clickable { showFullNameDialog = true }
         )
 
+        //"P" Button (Toggle Selection)
         Box(
             modifier = Modifier
                 .size(30.dp)
-                .background(Color.Green)
-                .clickable { }
+                .background(if (isPresent) Color.Green else Color(0xFFC8E6C9)) // Dark green if selected, else light green
+                .clickable {
+                    if (isPresent) {
+                        isPresent = false  // Deselect if already selected
+                    } else {
+                        isPresent = true
+                        isAbsent = false  // Ensure "A" is deselected
+                    }
+                }
         )
 
+        Spacer(modifier = Modifier.width(4.dp)) // Space between P and A
+
+        //"A" Button (Toggle Selection)
         Box(
             modifier = Modifier
                 .size(30.dp)
-                .background(Color.Red)
-                .clickable { }
+                .background(if (isAbsent) Color.Red else Color(0xFFFFCDD2)) // Dark red if selected, else light red
+                .clickable {
+                    if (isAbsent) {
+                        isAbsent = false  // Deselect if already selected
+                    } else {
+                        isAbsent = true
+                        isPresent = false  // Ensure "P" is deselected
+                    }
+                }
+        )
+    }
+
+    // Show Dialog when name is clicked
+    if (showFullNameDialog) {
+        AlertDialog(
+            onDismissRequest = { showFullNameDialog = false },
+            title = { Text("Full Name:") },
+            text = { Text(studentName) },
+            confirmButton = {
+                Button(onClick = { showFullNameDialog = false }) {
+                    Text("OK")
+                }
+            }
         )
     }
 }
 
-// ✅ Date & Month Utility Functions
+
+
+// Date & Month Utility Functions
 fun getCurrentDate(): String = SimpleDateFormat("dd", Locale.getDefault()).format(Date())
 
 fun getCurrentMonthYear(): String = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date())
