@@ -36,7 +36,7 @@ import com.example.attendify.ui.login.components.UserLoginInfoCard
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
-fun Login(navController: NavController) {
+fun Login(navController: NavController, viewModel: LoginViewModel) {
     AppScaffold(
         title = "Login",
         navController = navController,
@@ -76,7 +76,7 @@ fun Login(navController: NavController) {
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Sign up sectionn
+                // Sign up section
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -98,16 +98,17 @@ fun Login(navController: NavController) {
                     )
                 }
             }
-            UserLoginInfoCard()
+
+            UserLoginInfoCard(viewModel)
         }
     }
 }
 
 
-@Preview(showSystemUi = true)
-@Composable
-fun DisplayLogin() {
-    AttendifyTheme {
-        Login(rememberNavController())
-    }
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun DisplayLogin() {
+//    AttendifyTheme {
+//        Login(rememberNavController())
+//    }
+//}

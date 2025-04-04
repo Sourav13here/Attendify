@@ -16,12 +16,16 @@ import androidx.compose.ui.unit.sp
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.composable.CustomTextButton
+import com.example.attendify.ui.login.LoginViewModel
 
 @Composable
-fun UserLoginInfoCard() {
+fun UserLoginInfoCard(viewModel: LoginViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
     var showForgotPasswordDialog by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf<String?>(null) }
 
     Card(
         modifier = Modifier
@@ -36,12 +40,15 @@ fun UserLoginInfoCard() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Email Input Field
-
             CustomOutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {
+                    email = it
+                    emailError = null // Clear error when typing
+                },
                 label = "Email",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                error = emailError
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -49,26 +56,43 @@ fun UserLoginInfoCard() {
             // Password Input Field
             CustomOutlinedTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = {
+                    password = it
+                    passwordError = null // Clear error when typing
+                },
                 label = "Password",
                 isPasswordField = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                error = passwordError
             )
 
             Spacer(modifier = Modifier.height(10.dp))
+
             CustomTextButton(
                 text = "Forgot Password?",
-                action = {
-                    showForgotPasswordDialog = true
-                }
+                action = { showForgotPasswordDialog = true }
             )
+
             if (showForgotPasswordDialog) {
                 ForgetPasswordDialog { showForgotPasswordDialog = false }
             }
 
             Spacer(modifier = Modifier.height(10.dp))
-            CustomButton(text = "Login", action = {})
+
+            if (loginError != null) {
+                Text(loginError!!, color = Color.Red, fontSize = 14.sp)
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+
+            CustomButton(text = "Login", action = {
+                viewModel.loginUser(email, password) { success, errorMessage ->
+                    if (success) {
+                        loginError = null
+                    } else {
+                        loginError = errorMessage
+                    }
+                }
+            })
         }
     }
-
 }
