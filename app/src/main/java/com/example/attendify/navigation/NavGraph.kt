@@ -8,10 +8,13 @@ import com.example.attendify.ui.login.Login
 import com.example.attendify.ui.login.LoginViewModel
 import com.example.attendify.ui.sign_up.SignUp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.attendify.ui.sign_up.SignUpViewModel
+import com.example.attendify.ui.verification.VerificationStatus
 
 @Composable
 fun NavGraph(navController: NavHostController) {
     val loginViewModel: LoginViewModel = hiltViewModel()
+    val signUpViewModel: SignUpViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -21,7 +24,10 @@ fun NavGraph(navController: NavHostController) {
             Login(navController, loginViewModel)
         }
         composable(NavRoutes.SignUpPage.route) {
-            SignUp(navController)
+            SignUp(navController, signUpViewModel)
+        }
+        composable(NavRoutes.VerificationStatus.route) {
+            VerificationStatus(navController)
         }
     }
 }

@@ -28,7 +28,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun loginUser(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
+    fun login(
+        email: String,
+        password: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
         val emailError = validateEmail(email)
         val passwordError = validatePassword(password)
 
@@ -40,10 +44,15 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val result = authRepo.logIn(email, password)
             result.fold(
-                onSuccess = { onResult(true, null) },
-                onFailure = { exception -> onResult(false, exception.message) }
+                onSuccess = {
+                    onResult(true, null)
+                },
+                onFailure = { exception ->
+                    onResult(false, exception.message)
+                }
             )
         }
     }
+
 
 }

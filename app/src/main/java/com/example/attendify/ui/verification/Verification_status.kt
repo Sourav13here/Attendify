@@ -1,6 +1,5 @@
 package com.example.attendify.ui.verification
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +22,7 @@ import com.example.attendify.common.composable.CustomIconButton
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
-fun Verification(navController: NavController) {
+fun VerificationStatus(navController: NavController) {
     val userName = "John Smith"
     val branch = "CSE"
     val semester = "6th sem"
@@ -111,6 +109,6 @@ fun Verification(navController: NavController) {
 @Composable
 fun DisplayVerification() {
     AttendifyTheme {
-        Verification(rememberNavController())
+        VerificationStatus(rememberNavController())
     }
 }
