@@ -20,7 +20,7 @@ fun Modifier.customTextField(): Modifier {
 }
 
 fun Modifier.customOutlinedTextField(): Modifier {
-    return this.fillMaxWidth()
+    return this.fillMaxWidth().padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 4.dp)
 }
 
 fun Modifier.customTextButton(): Modifier {

@@ -1,5 +1,6 @@
 package com.example.attendify.ui.login.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,7 +40,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Email Input Field
