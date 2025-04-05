@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendify.data.repository.AuthRepository
 import com.example.attendify.data.repository.FirestoreRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,8 +20,8 @@ class SignUpViewModel @Inject constructor(
     private val firestoreRepo: FirestoreRepository
 ) : ViewModel() {
 
-    private val _navigateBasedOnAccount = MutableStateFlow<Pair<Boolean, String>?>(null)
-    val navigateBasedOnAccount: StateFlow<Pair<Boolean, String>?> = _navigateBasedOnAccount.asStateFlow()
+    private val _navigateToVerification = MutableStateFlow(false)
+    val navigateToVerification: StateFlow<Boolean> = _navigateToVerification.asStateFlow()
 
     fun createAccount(
         context: Context,
@@ -42,12 +43,10 @@ class SignUpViewModel @Inject constructor(
 
         viewModelScope.launch {
             val result = authRepo.signUp(email, password)
+
             if (result.isSuccess) {
                 val uid = result.getOrNull().orEmpty()
-                Toast.makeText(context, "Account created successfully!", Toast.LENGTH_SHORT).show()
-
                 val isHod = email == "hod${branch.lowercase()}@bvec.ac.in"
-                val isVerified = isHod
 
                 firestoreRepo.storeUserData(
                     uid = uid,
@@ -58,9 +57,15 @@ class SignUpViewModel @Inject constructor(
                     semester = semester,
                     rollno = rollno,
                     isHod = isHod,
-                    isVerified = isVerified,
+                    isVerified = isHod, // still mark verified in DB for HOD
                     onSuccess = {
-                        _navigateBasedOnAccount.value = Pair(isVerified, accountType)
+                        Toast.makeText(
+                            context,
+                            "Account created successfully. Please verify your email.",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        _navigateToVerification.value = true // just trigger the navigation flag
                     },
                     onFailure = { e ->
                         Toast.makeText(context, "Failed to store user data: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -72,7 +77,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+
     fun resetNavigationState() {
-        _navigateBasedOnAccount.value = null
-    }
+        _navigateToVerification.value = false    }
 }
