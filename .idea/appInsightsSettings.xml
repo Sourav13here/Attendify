@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.attendify" />
+                  <option name="mobileSdkAppId" value="1:602318926317:android:e5dc5eac6a372b9447f7e4" />
+                  <option name="projectId" value="attendify-2c0d4" />
+                  <option name="projectNumber" value="602318926317" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

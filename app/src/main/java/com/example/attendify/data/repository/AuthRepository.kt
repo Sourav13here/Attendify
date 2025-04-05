@@ -10,7 +10,9 @@ class AuthRepository @Inject constructor(
 ) {
     suspend fun signUp(email: String, password: String): Result<String> {
         return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
+
+            val result=auth.createUserWithEmailAndPassword(email, password).await()
+            result.user?.sendEmailVerification()?.await()
             Result.success(auth.currentUser?.uid ?: "")
         } catch (e: Exception) {
             Result.failure(e)
@@ -64,6 +66,12 @@ suspend fun continueWithGoogle(credential: AuthCredential): Result<AuthResultDat
     } catch (e: Exception) {
         Result.failure(e)
     }
+
+    suspend fun isEmailVerified(): Boolean {
+        auth.currentUser?.reload()
+        return auth.currentUser?.isEmailVerified ?: false
+    }
+
 }
 
 
