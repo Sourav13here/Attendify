@@ -42,57 +42,56 @@ fun CustomOutlinedTextField(
 ) {
     var showPassword by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            label = { Text(label, color = Color.Black) },
-            placeholder = { Text(placeholder ?: "", color = Color.Black) },
-            singleLine = true,
-            enabled = enabled,
-            visualTransformation = if (isPasswordField && !showPassword)
-                PasswordVisualTransformation()
-            else VisualTransformation.None,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = if (isPasswordField) KeyboardType.Password else KeyboardType.Text,
-                imeAction = when {
-                    onNext != null -> ImeAction.Next
-                    onDone != null -> ImeAction.Done
-                    else -> ImeAction.Default
+    OutlinedTextField(
+        value = value,
+        modifier = modifier,
+        onValueChange = onValueChange,
+        label = { Text(label, color = Color.Black) },
+        placeholder = { Text(placeholder ?: "", color = Color.Black) },
+        singleLine = true,
+        enabled = enabled,
+        visualTransformation = if (isPasswordField && !showPassword)
+            PasswordVisualTransformation()
+        else VisualTransformation.None,
+        keyboardOptions = KeyboardOptions(
+            keyboardType = if (isPasswordField) KeyboardType.Password else KeyboardType.Text,
+            imeAction = when {
+                onNext != null -> ImeAction.Next
+                onDone != null -> ImeAction.Done
+                else -> ImeAction.Default
+            }
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { onNext?.invoke() },
+            onDone = { onDone?.invoke() }
+        ),
+        trailingIcon = {
+            if (isPasswordField) {
+                val image =
+                    if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                IconButton(onClick = { showPassword = !showPassword }) {
+                    Icon(
+                        imageVector = image,
+                        contentDescription = if (showPassword) "Hide password" else "Show password",
+                        tint = Color.Black
+                    )
                 }
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = { onNext?.invoke() },
-                onDone = { onDone?.invoke() }
-            ),
-            trailingIcon = {
-                if (isPasswordField) {
-                    val image =
-                        if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
-                    IconButton(onClick = { showPassword = !showPassword }) {
-                        Icon(
-                            imageVector = image,
-                            contentDescription = if (showPassword) "Hide password" else "Show password",
-                            tint = Color.Black
-                        )
-                    }
-                }
-            },
-            isError = error != null,  // <-- Shows error state if error is present
-            supportingText = {
-                if (error != null) {
-                    Text(error, color = Color.Red)
-                }
-            },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = if (error != null) Color.Red else Color.Black,
-                unfocusedBorderColor = if (error != null) Color.Red else Color.Black,
-                cursorColor = Color.Black,
-                focusedContainerColor = GrayLight,
-                unfocusedContainerColor = GrayLight,
-                disabledContainerColor = GrayLight
-            ),
-            shape = RoundedCornerShape(8.dp)
-        )
-    }
+            }
+        },
+        isError = error != null,  // <-- Shows error state if error is present
+        supportingText = {
+            if (error != null) {
+                Text(error, color = Color.Red)
+            }
+        },
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = if (error != null) Color.Red else Color.Black,
+            unfocusedBorderColor = if (error != null) Color.Red else Color.Black,
+            cursorColor = Color.Black,
+            focusedContainerColor = GrayLight,
+            unfocusedContainerColor = GrayLight,
+            disabledContainerColor = GrayLight
+        ),
+        shape = RoundedCornerShape(8.dp)
+    )
 }

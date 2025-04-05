@@ -7,6 +7,15 @@ import javax.inject.Inject
 class AuthRepository @Inject constructor(
     private val auth: FirebaseAuth
 ) {
+    suspend fun signUp(email: String, password: String): Result<String> {
+        return try {
+            auth.createUserWithEmailAndPassword(email, password).await()
+            Result.success(auth.currentUser?.uid ?: "")
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
     suspend fun logIn(email: String, password: String): Result<String> {
         return try {
             auth.signInWithEmailAndPassword(email, password).await()
@@ -49,14 +58,7 @@ suspend fun continueWithGoogle(credential: AuthCredential): Result<AuthResultDat
 
 
 
-suspend fun signUp(email: String, password: String): Result<String> {
-    return try {
-        auth.createUserWithEmailAndPassword(email, password).await()
-        Result.success(auth.currentUser?.uid ?: "")
-    } catch (e: Exception) {
-        Result.failure(e)
-    }
-}
+
 
 suspend fun resetPassword(email: String): Result<Unit> {
     return try {
