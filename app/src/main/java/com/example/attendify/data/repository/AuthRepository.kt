@@ -1,6 +1,7 @@
 package com.example.attendify.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -9,7 +10,9 @@ class AuthRepository @Inject constructor(
 ) {
     suspend fun signUp(email: String, password: String): Result<String> {
         return try {
-            auth.createUserWithEmailAndPassword(email, password).await()
+
+            val result=auth.createUserWithEmailAndPassword(email, password).await()
+            result.user?.sendEmailVerification()?.await()
             Result.success(auth.currentUser?.uid ?: "")
         } catch (e: Exception) {
             Result.failure(e)
@@ -24,6 +27,15 @@ class AuthRepository @Inject constructor(
             Result.failure(e)
         }
     }
+
+    fun signOut() {
+        auth.signOut()
+    }
+
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
+    }
+
 }
 
 
@@ -54,6 +66,12 @@ suspend fun continueWithGoogle(credential: AuthCredential): Result<AuthResultDat
     } catch (e: Exception) {
         Result.failure(e)
     }
+
+    suspend fun isEmailVerified(): Boolean {
+        auth.currentUser?.reload()
+        return auth.currentUser?.isEmailVerified ?: false
+    }
+
 }
 
 
