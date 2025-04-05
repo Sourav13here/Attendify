@@ -3,6 +3,7 @@ package com.example.attendify.data.repository
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Teacher
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirestoreRepository @Inject constructor(
@@ -47,4 +48,29 @@ class FirestoreRepository @Inject constructor(
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception -> onFailure(exception) }
     }
+
+
+    suspend fun getUser(userId: String): Pair<Any, String>? {
+        return try {
+            // Check Student collection
+            val studentSnapshot = db.collection("Student").document(userId).get().await()
+            val student = studentSnapshot.toObject(Student::class.java)
+            if (studentSnapshot.exists() && student != null) {
+                return student to "Student"
+            }
+
+            // Check Teacher collection
+            val teacherSnapshot = db.collection("Teacher").document(userId).get().await()
+            val teacher = teacherSnapshot.toObject(Teacher::class.java)
+            if (teacherSnapshot.exists() && teacher != null) {
+                return teacher to "Teacher"
+            }
+
+            null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 }

@@ -6,7 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,14 +15,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomIconButton
+import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.theme.AttendifyTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-fun VerificationStatus(navController: NavController) {
+fun VerificationStatus(
+    navController: NavController,
+    viewmodel: VerificationViewModel
+) {
     val userName = "John Smith"
     val branch = "CSE"
     val semester = "6th sem"
@@ -37,7 +46,14 @@ fun VerificationStatus(navController: NavController) {
         actions = {
             CustomIconButton(
                 imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                onClick = { }
+                onClick = {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        viewmodel.signOut()
+                        navController.navigate(NavRoutes.LoginPage.route) {
+                            popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
+                        }
+                    }
+                }
             )
         }
     ) { padding ->
@@ -47,7 +63,11 @@ fun VerificationStatus(navController: NavController) {
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp))
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
 
             Card(
                 modifier = Modifier
@@ -72,8 +92,7 @@ fun VerificationStatus(navController: NavController) {
             Spacer(modifier = Modifier.height(40.dp))
 
             Card(
-                modifier = Modifier
-                    .fillMaxWidth(0.85f),
+                modifier = Modifier.fillMaxWidth(0.85f),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
                 shape = RoundedCornerShape(16.dp)
             ) {
@@ -91,7 +110,9 @@ fun VerificationStatus(navController: NavController) {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = {
+                            // TODO: Trigger check from Firestore again (optional)
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
                         shape = RoundedCornerShape(16.dp)
                     ) {
@@ -108,7 +129,11 @@ fun VerificationStatus(navController: NavController) {
 @Preview(showSystemUi = true)
 @Composable
 fun DisplayVerification() {
+    val viewModel: VerificationViewModel = hiltViewModel()
     AttendifyTheme {
-        VerificationStatus(rememberNavController())
+        VerificationStatus(
+            navController = rememberNavController(),
+            viewModel
+        )
     }
 }
