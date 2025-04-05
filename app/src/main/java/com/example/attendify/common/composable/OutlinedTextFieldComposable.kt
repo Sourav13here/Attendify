@@ -44,6 +44,7 @@ fun CustomOutlinedTextField(
 
     OutlinedTextField(
         value = value,
+        modifier = modifier,
         onValueChange = onValueChange,
         label = { Text(label, color = Color.Black) },
         placeholder = { Text(placeholder ?: "", color = Color.Black) },

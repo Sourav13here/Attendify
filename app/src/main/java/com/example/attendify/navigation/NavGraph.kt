@@ -9,6 +9,8 @@ import com.example.attendify.ui.login.LoginViewModel
 import com.example.attendify.ui.sign_up.SignUp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.attendify.ui.sign_up.SignUpViewModel
+import com.example.attendify.ui.student.StudentDashboard
+import com.example.attendify.ui.teacher.TeacherDashboard
 import com.example.attendify.ui.verification.VerificationStatus
 
 @Composable
@@ -28,6 +30,12 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(NavRoutes.VerificationStatus.route) {
             VerificationStatus(navController)
+        }
+        composable(NavRoutes.TeacherDashboard.route) {
+            TeacherDashboard(navController)
+        }
+        composable(NavRoutes.StudentDashboard.route) {
+            StudentDashboard(navController)
         }
     }
 }
