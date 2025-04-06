@@ -20,14 +20,43 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.foundation.border
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
-fun StudentDashboard(navController: NavController) {
+fun StudentDashboard(navController: NavController, viewmodel: StudentDashboardViewModel) {
+    var showLogOutDialog by remember { mutableStateOf(false) }
+    if (showLogOutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewmodel.signOut()
+                    navController.navigate(NavRoutes.LoginPage.route) {
+                        popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+                    }
+                }
+                showLogOutDialog = false
+            },
+            onDismiss = {
+                showLogOutDialog = false
+            }
+        )
+    }
     AppScaffold(
         title = "STUDENT DASHBOARD",
         navController = navController,
+        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
+            fontWeight = FontWeight.Bold
+        ),
         actions = {
             CustomIconButton(
                 modifier = Modifier
@@ -35,10 +64,13 @@ fun StudentDashboard(navController: NavController) {
                     .clip(CircleShape)
                     .background(Color(0xFFE57373), shape = CircleShape),
                 imageVector = Icons.AutoMirrored.Filled.Logout,
-                onClick = {}
+                onClick = {
+                    showLogOutDialog = true
+                }
             )
         }
     ) { padding ->
+
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -46,6 +78,11 @@ fun StudentDashboard(navController: NavController) {
                 .fillMaxWidth(0.9f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             Text("John Smith", fontSize = 20.sp, fontWeight = FontWeight.Bold)
@@ -53,23 +90,26 @@ fun StudentDashboard(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-                LazyColumn(
-                    modifier = Modifier
-                        .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
-                        .fillMaxWidth(0.95f)
-                        .fillMaxHeight(0.9f)
-                        .padding(16.dp)
-                ) {
-                    item{
-                        repeat(7) {
-                                index ->
-                            AttendanceCard(subject = "CS1809213", title = "Computer Networks", percentage = listOf(100, 75, 40, 20, 0, 100, 100)[index])
-                        }
+            LazyColumn(
+                modifier = Modifier
+                    .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
+                    .fillMaxWidth(0.95f)
+                    .fillMaxHeight(0.9f)
+                    .padding(16.dp)
+            ) {
+                item {
+                    repeat(7) { index ->
+                        AttendanceCard(
+                            subject = "CS1809213",
+                            title = "Computer Networks",
+                            percentage = listOf(100, 75, 40, 20, 0, 100, 100)[index]
+                        )
                     }
                 }
             }
         }
     }
+}
 
 @Composable
 fun AttendanceCard(subject: String, title: String, percentage: Int) {
@@ -103,8 +143,8 @@ fun AttendanceCard(subject: String, title: String, percentage: Int) {
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun DisplayStudentDashboard() {
-    StudentDashboard(rememberNavController())
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun DisplayStudentDashboard() {
+//    StudentDashboard(rememberNavController())
+//}

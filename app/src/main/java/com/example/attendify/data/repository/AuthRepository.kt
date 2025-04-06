@@ -10,7 +10,6 @@ class AuthRepository @Inject constructor(
 ) {
     suspend fun signUp(email: String, password: String): Result<String> {
         return try {
-
             val result=auth.createUserWithEmailAndPassword(email, password).await()
             result.user?.sendEmailVerification()?.await()
             Result.success(auth.currentUser?.uid ?: "")
@@ -34,6 +33,10 @@ class AuthRepository @Inject constructor(
 
     fun getCurrentUserId(): String? {
         return auth.currentUser?.uid
+    }
+
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
     }
 
 }
@@ -94,14 +97,6 @@ fun signOut(): Result<Unit> {
     } catch (e: Exception) {
         Result.failure(e)
     }
-}
-
-fun getCurrentUserId(): String? {
-    return auth.currentUser?.uid
-}
-
-fun getCurrentUser(): FirebaseUser? {
-    return auth.currentUser
 }
 
  */

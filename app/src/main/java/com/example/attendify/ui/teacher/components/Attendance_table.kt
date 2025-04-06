@@ -1,4 +1,4 @@
-package com.example.attendify.ui.teacher.Attendance_Sheet_Components
+package com.example.attendify.ui.teacher.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,9 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 
-import com.example.attendify.ui.teacher.AttendanceSheet
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable

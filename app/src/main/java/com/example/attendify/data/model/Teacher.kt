@@ -1,9 +1,13 @@
 package com.example.attendify.data.model
 
+import com.google.firebase.firestore.PropertyName
+
 data class Teacher(
     val email: String = "",
     val name: String = "",
-    val isVerified: Boolean = false,
-    val isHod: Boolean = false,
+    @get:PropertyName("isVerified") @set:PropertyName("isVerified")
+    var isVerified: Boolean = false,
+    @get:PropertyName("isHod") @set:PropertyName("isHod")
+    var isHod: Boolean = false,
     val branch: String = ""
 )

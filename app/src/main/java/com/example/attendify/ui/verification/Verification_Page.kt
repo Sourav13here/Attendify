@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
+import com.example.attendify.data.model.Student
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
@@ -137,7 +138,7 @@ fun Verification_Page(navController: NavController) {
                             StudentVerificationItem(
                                 student = Student(
                                     name = "Faruk Khan",
-                                    rollNo = "23232323323",
+                                    rollNumber = "23232323323",
                                     email = "abc@gmail.com"
                                 )
                             )
@@ -222,7 +223,7 @@ fun StudentVerificationItem(student: Student) {
                 )
 
                 Text(
-                    text = "Roll No: ${student.rollNo}",
+                    text = "Roll No: ${student.rollNumber}",
                     fontSize = 14.sp,
                     color = Color.DarkGray
                 )
@@ -282,13 +283,6 @@ fun StudentVerificationItem(student: Student) {
         }
     }
 }
-
-
-data class Student(
-    val name: String,
-    val rollNo: String,
-    val email: String
-)
 
 @Preview(showSystemUi = true)
 @Composable

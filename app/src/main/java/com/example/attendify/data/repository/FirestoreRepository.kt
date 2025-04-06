@@ -73,4 +73,10 @@ class FirestoreRepository @Inject constructor(
         }
     }
 
+    suspend fun updateIsVerified(userId: String, collection: String, value: Boolean) {
+        db.collection(collection).document(userId)
+            .update("isVerified", value)
+            .await()
+    }
+
 }
