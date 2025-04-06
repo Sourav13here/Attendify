@@ -26,10 +26,40 @@ import com.example.attendify.ui.login.LoginViewModel
 fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var emailError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
     var showForgotPasswordDialog by remember { mutableStateOf(false) }
-    var loginError by remember { mutableStateOf<String?>(null) }
+
+    val loginError by viewModel.loginError.collectAsState()
+    val navigateToStudent by viewModel.navigateToStudentDashboard.collectAsState()
+    val navigateToTeacher by viewModel.navigateToTeacherDashboard.collectAsState()
+    val navigateToStatus by viewModel.navigateToStatus.collectAsState()
+
+
+    // Handle navigation
+    LaunchedEffect(navigateToStudent) {
+        if (navigateToStudent) {
+            navController.navigate(NavRoutes.StudentDashboard.route) {
+                popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
+            }
+            viewModel.resetNavigationState()
+        }
+    }
+    LaunchedEffect(navigateToTeacher) {
+        if (navigateToTeacher) {
+            navController.navigate(NavRoutes.TeacherDashboard.route) {
+                popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
+            }
+            viewModel.resetNavigationState()
+        }
+    }
+    LaunchedEffect(navigateToStatus) {
+        if (navigateToStatus) {
+            navController.navigate(NavRoutes.VerificationStatus.route) {
+                popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
+            }
+            viewModel.resetNavigationState()
+        }
+    }
+
 
     Card(
         modifier = Modifier
@@ -40,34 +70,32 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Email Input Field
             CustomOutlinedTextField(
                 value = email,
                 onValueChange = {
                     email = it
-                    emailError = null // Clear error when typing
+                    viewModel.clearLoginError()
                 },
                 label = "Email",
-                modifier = Modifier.customOutlinedTextField(),
-                error = emailError
+                modifier = Modifier.customOutlinedTextField()
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Password Input Field
             CustomOutlinedTextField(
                 value = password,
                 onValueChange = {
                     password = it
-                    passwordError = null // Clear error when typing
+                    viewModel.clearLoginError()
                 },
                 label = "Password",
                 isPasswordField = true,
                 modifier = Modifier.customOutlinedTextField(),
-                error = passwordError
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -78,7 +106,10 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
             )
 
             if (showForgotPasswordDialog) {
-                ForgetPasswordDialog { showForgotPasswordDialog = false }
+                ForgetPasswordDialog(
+                    onDismiss = { showForgotPasswordDialog = false },
+                    viewModel = viewModel
+                )
             }
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -89,18 +120,8 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
             }
 
             CustomButton(text = "Login", action = {
-                viewModel.login(email, password) { success, errorMessage ->
-                    if (success) {
-                        loginError = null
-                        navController.navigate(NavRoutes.VerificationStatus.route) {
-                            popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
-                        }
-                    } else {
-                        loginError = errorMessage
-                    }
-                }
+                viewModel.login(email.trim(), password)
             })
-
         }
     }
 }
