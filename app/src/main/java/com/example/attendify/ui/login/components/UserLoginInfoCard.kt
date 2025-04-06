@@ -40,7 +40,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().padding(top = 20.dp,bottom = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Email Input Field
@@ -55,7 +55,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
                 error = emailError
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             // Password Input Field
             CustomOutlinedTextField(
@@ -72,10 +72,16 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            CustomTextButton(
-                text = "Forgot Password?",
-                action = { showForgotPasswordDialog = true }
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ){
+                CustomTextButton(
+                    text = "Forgot Password?",
+                    action = { showForgotPasswordDialog = true }
+                )
+            }
+
 
             if (showForgotPasswordDialog) {
                 ForgetPasswordDialog { showForgotPasswordDialog = false }
