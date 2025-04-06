@@ -1,5 +1,6 @@
 package com.example.attendify.ui.verification
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,6 +24,7 @@ import com.example.attendify.common.composable.CustomIconButton
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.theme.AttendifyTheme
+import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +39,48 @@ fun VerificationStatus(
     val semester = "6th sem"
     val roll = "222020100023"
 
+    val navigateToStudentDashboard by viewmodel.navigateToStudentDashboard.collectAsState()
+    val navigateToTeacherDashboard by viewmodel.navigateToTeacherDashboard.collectAsState()
+
+    var showLogOutDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewmodel.refreshData()
+    }
+
+    LaunchedEffect(navigateToStudentDashboard) {
+        if (navigateToStudentDashboard) {
+            navController.navigate(NavRoutes.StudentDashboard.route) {
+                popUpTo(NavRoutes.VerificationStatus.route) { inclusive = true }
+            }
+        }
+    }
+
+    LaunchedEffect(navigateToTeacherDashboard) {
+        if (navigateToTeacherDashboard) {
+            navController.navigate(NavRoutes.TeacherDashboard.route) {
+                popUpTo(NavRoutes.VerificationStatus.route) { inclusive = true }
+            }
+        }
+    }
+
+    if (showLogOutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewmodel.signOut()
+                    navController.navigate(NavRoutes.LoginPage.route) {
+                        popUpTo(NavRoutes.VerificationStatus.route) { inclusive = true }
+                    }
+                }
+                showLogOutDialog = false
+            },
+            onDismiss = {
+                showLogOutDialog = false
+            }
+        )
+    }
+
     AppScaffold(
         title = "Verification Status",
         navController = navController,
@@ -47,12 +91,7 @@ fun VerificationStatus(
             CustomIconButton(
                 imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                 onClick = {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        viewmodel.signOut()
-                        navController.navigate(NavRoutes.LoginPage.route) {
-                            popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
-                        }
-                    }
+                    showLogOutDialog = true
                 }
             )
         }
@@ -111,7 +150,9 @@ fun VerificationStatus(
 
                     Button(
                         onClick = {
-                            // TODO: Trigger check from Firestore again (optional)
+                            Log.e("verification", "clicked")
+                           viewmodel.refreshData()
+
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
                         shape = RoundedCornerShape(16.dp)

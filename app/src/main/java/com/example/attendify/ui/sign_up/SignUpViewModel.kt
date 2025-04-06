@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendify.data.repository.AuthRepository
 import com.example.attendify.data.repository.FirestoreRepository
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,7 +45,8 @@ class SignUpViewModel @Inject constructor(
 
             if (result.isSuccess) {
                 val uid = result.getOrNull().orEmpty()
-                val isHod = email == "hod${branch.lowercase()}@bvec.ac.in"
+
+                val isHod = Regex("^hod[a-z]+@bvec\\.ac\\.in$").matches(email.trim().lowercase())
 
                 firestoreRepo.storeUserData(
                     uid = uid,
@@ -57,15 +57,14 @@ class SignUpViewModel @Inject constructor(
                     semester = semester,
                     rollno = rollno,
                     isHod = isHod,
-                    isVerified = isHod, // still mark verified in DB for HOD
+                    isVerified = false,
                     onSuccess = {
                         Toast.makeText(
                             context,
                             "Account created successfully. Please verify your email.",
                             Toast.LENGTH_LONG
                         ).show()
-
-                        _navigateToVerification.value = true // just trigger the navigation flag
+                        _navigateToVerification.value = true
                     },
                     onFailure = { e ->
                         Toast.makeText(context, "Failed to store user data: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -77,7 +76,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-
     fun resetNavigationState() {
-        _navigateToVerification.value = false    }
+        _navigateToVerification.value = false
+    }
 }

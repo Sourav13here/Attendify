@@ -2,9 +2,6 @@ package com.example.attendify.ui.teacher
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -15,23 +12,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
-import com.example.attendify.ui.teacher.Attendance_Sheet_Components.AttendanceTable
-import com.example.attendify.ui.teacher.Attendance_Sheet_Components.DateSelectionRow
-import com.example.attendify.ui.teacher.Attendance_Sheet_Components.getCurrentDate
-import com.example.attendify.ui.teacher.Attendance_Sheet_Components.getCurrentMonthYear
-import com.example.attendify.ui.teacher.Attendance_Sheet_Components.getNextMonth
-import com.example.attendify.ui.teacher.Attendance_Sheet_Components.getPreviousMonth
+import com.example.attendify.ui.teacher.components.AttendanceTable
+import com.example.attendify.ui.teacher.components.DateSelectionRow
+import com.example.attendify.ui.teacher.components.getCurrentDate
+import com.example.attendify.ui.teacher.components.getCurrentMonthYear
+import com.example.attendify.ui.teacher.components.getNextMonth
+import com.example.attendify.ui.teacher.components.getPreviousMonth
 import com.example.attendify.ui.theme.AttendifyTheme
-import java.text.SimpleDateFormat
-import java.util.*
 
 @Composable
 fun AttendanceSheet(navController: NavController) {
