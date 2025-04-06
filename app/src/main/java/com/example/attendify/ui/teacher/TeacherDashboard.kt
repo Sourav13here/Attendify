@@ -19,8 +19,14 @@ import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,14 +39,39 @@ import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomIconButton
+import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun TeacherDashboard(navController: NavController) {
+fun TeacherDashboard(navController: NavController, viewModel: TeacherDashboardViewModel) {
+    var showLogOutDialog by remember { mutableStateOf(false) }
+    if (showLogOutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewModel.signOut()
+                    navController.navigate(NavRoutes.LoginPage.route) {
+                        popUpTo(NavRoutes.TeacherDashboard.route) { inclusive = true }
+                    }
+                }
+                showLogOutDialog = false
+            },
+            onDismiss = {
+                showLogOutDialog = false
+            }
+        )
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         AppScaffold(
             title = "Teacher Dashboard",
             navController = navController,
+            titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
             actions = {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -53,7 +84,7 @@ fun TeacherDashboard(navController: NavController) {
                             .padding(2.dp)
                             .clip(CircleShape),
                         imageVector = Icons.AutoMirrored.Filled.Logout,
-                        onClick = {}
+                        onClick = { showLogOutDialog = true }
                     )
                 }
             }
@@ -66,6 +97,11 @@ fun TeacherDashboard(navController: NavController) {
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
@@ -133,8 +169,9 @@ fun SubjectCard(subjectCode: String, subjectName: String) {
         }
     }
 }
-@Preview(showSystemUi = true)
-@Composable
-fun DisplayTeacherDashboard() {
-    TeacherDashboard(rememberNavController())
-}
+
+//@Preview(showSystemUi = true)
+//@Composable
+//fun DisplayTeacherDashboard() {
+//    TeacherDashboard(rememberNavController())
+//}

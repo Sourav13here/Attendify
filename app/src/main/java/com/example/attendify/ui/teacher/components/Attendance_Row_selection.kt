@@ -1,4 +1,4 @@
-package com.example.attendify.ui.teacher.Attendance_Sheet_Components
+package com.example.attendify.ui.teacher.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

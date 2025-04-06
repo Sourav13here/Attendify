@@ -12,7 +12,9 @@ import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.splashscreen.SplashScreen
 import com.example.attendify.ui.splashscreen.SplashViewModel
 import com.example.attendify.ui.student.StudentDashboard
+import com.example.attendify.ui.student.StudentDashboardViewModel
 import com.example.attendify.ui.teacher.TeacherDashboard
+import com.example.attendify.ui.teacher.TeacherDashboardViewModel
 import com.example.attendify.ui.verification.VerificationStatus
 import com.example.attendify.ui.verification.VerificationViewModel
 
@@ -22,6 +24,8 @@ fun NavGraph(navController: NavHostController) {
     val signUpViewModel: SignUpViewModel = hiltViewModel()
     val verificationViewModel: VerificationViewModel = hiltViewModel()
     val splashViewModel: SplashViewModel = hiltViewModel()
+    val studentDashboardViewModel: StudentDashboardViewModel = hiltViewModel()
+    val teacherDashboardViewModel: TeacherDashboardViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -37,10 +41,10 @@ fun NavGraph(navController: NavHostController) {
             VerificationStatus(navController, verificationViewModel)
         }
         composable(NavRoutes.TeacherDashboard.route) {
-            TeacherDashboard(navController)
+            TeacherDashboard(navController, teacherDashboardViewModel)
         }
         composable(NavRoutes.StudentDashboard.route) {
-            StudentDashboard(navController)
+            StudentDashboard(navController, studentDashboardViewModel)
         }
         composable(NavRoutes.SplashScreen.route) {
             SplashScreen(navController, splashViewModel)
