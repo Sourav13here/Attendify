@@ -45,12 +45,7 @@ fun AttendanceRow(rollNo: String, studentName: String) {
             modifier = Modifier.width(120.dp)
         )
 
-        Divider(
-            color = Color.Gray,
-            modifier = Modifier
-                .width(1.dp)
-                .height(24.dp)
-        )
+        Divider(color = Color.Gray, modifier = Modifier.width(1.dp).height(24.dp))
 
         // Clickable Student Name
         Text(
