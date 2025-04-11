@@ -51,7 +51,7 @@ fun VerificationStatus(
     LaunchedEffect(navigateToStudentDashboard) {
         if (navigateToStudentDashboard) {
             navController.navigate(NavRoutes.StudentDashboard.route) {
-                popUpTo(NavRoutes.VerificationStatus.route) { inclusive = true }
+                popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
             }
         }
     }
@@ -59,7 +59,7 @@ fun VerificationStatus(
     LaunchedEffect(navigateToTeacherDashboard) {
         if (navigateToTeacherDashboard) {
             navController.navigate(NavRoutes.TeacherDashboard.route) {
-                popUpTo(NavRoutes.VerificationStatus.route) { inclusive = true }
+                popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.attendify.data.repository
 
 import com.example.attendify.data.model.Student
+import com.example.attendify.data.model.Subject
 import com.example.attendify.data.model.Teacher
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -77,6 +78,26 @@ class FirestoreRepository @Inject constructor(
         db.collection(collection).document(userId)
             .update("isVerified", value)
             .await()
+    }
+    fun addSubject(
+        subject: Subject,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        db.collection("Subjects")
+            .add(subject)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it) }
+    }
+
+    fun getSubjects(onSuccess: (List<Subject>) -> Unit, onFailure: (Exception) -> Unit) {
+        db.collection("Subjects")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val subjects = snapshot.toObjects(Subject::class.java)
+                onSuccess(subjects)
+            }
+            .addOnFailureListener { onFailure(it) }
     }
 
 }

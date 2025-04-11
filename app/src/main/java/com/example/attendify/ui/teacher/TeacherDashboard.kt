@@ -16,18 +16,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,22 +36,60 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomIconButton
+import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun TeacherDashboard(navController: NavController) {
-
+fun TeacherDashboard(navController: NavController, viewModel: TeacherDashboardViewModel = hiltViewModel()) {
     var showDialog by remember { mutableStateOf(false) }
+    val subjects by viewModel.subjects.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadSubjects()
+    }
+
+    subjects.forEach{
+        SubjectCard(it.subjectCode,it.subjectName)
+    }
+
+
+
+
+    //    Logout Panel
+    var showLogOutDialog by remember { mutableStateOf(false) }
+    if (showLogOutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewModel.signOut()
+                    navController.navigate(NavRoutes.LoginPage.route) {
+                        popUpTo(NavRoutes.TeacherDashboard.route) { inclusive = true }
+                    }
+                }
+                showLogOutDialog = false
+            },
+            onDismiss = {
+                showLogOutDialog = false
+            }
+        )
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         AppScaffold(
             title = "Teacher Dashboard",
             navController = navController,
+            titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
             actions = {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -67,7 +102,7 @@ fun TeacherDashboard(navController: NavController) {
                             .padding(2.dp)
                             .clip(CircleShape),
                         imageVector = Icons.AutoMirrored.Filled.Logout,
-                        onClick = {}
+                        onClick = { showLogOutDialog = true }
                     )
                 }
             }
@@ -80,6 +115,11 @@ fun TeacherDashboard(navController: NavController) {
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
@@ -97,7 +137,7 @@ fun TeacherDashboard(navController: NavController) {
                     CustomButton(
                         text = "Add Subjects",
                         modifier = Modifier.padding(16.dp),
-                        action = { showDialog = true }
+                        action = { /* Add Subjects Action */ }
                     )
                 }
 
@@ -133,11 +173,7 @@ fun TeacherDashboard(navController: NavController) {
             Text("Verify")
         }
     }
-
-    if (showDialog) {
-        AddSubjectPopup(onDismiss = { showDialog = false })
     }
-}
 
 @Composable
 fun SubjectCard(subjectCode: String, subjectName: String) {
@@ -151,65 +187,9 @@ fun SubjectCard(subjectCode: String, subjectName: String) {
         }
     }
 }
-/*TODO:Check UI of the code since preview not working due to faulty navigation*/
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun AddSubjectPopup(onDismiss: () -> Unit) {
-    val branches = listOf("CSE", "ME", "CIVIL", "ETE")
-    val semesters = listOf("1st sem", "2nd sem", "3rd sem", "4th sem", "5th sem", "6th sem")
-    var selectedBranch by remember { mutableStateOf(branches[0]) }
-    var selectedSemester by remember { mutableStateOf(semesters[0]) }
-    var subjectName by remember { mutableStateOf("") }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {},
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        },
-        title = { Text("Add Subject") },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = subjectName, onValueChange = { subjectName = it }, label = { Text("Subject Name") })
-                ExposedDropdownMenuBox(expanded = true, onExpandedChange = {}) {
-                    OutlinedTextField(
-                        value = selectedBranch,
-                        onValueChange = {},
-                        label = { Text("Select Branch") },
-                        readOnly = true
-                    )
-                    DropdownMenu(expanded = true, onDismissRequest = {}) {
-                        branches.forEach { branch ->
-                            DropdownMenuItem(text = { Text(branch) }, onClick = { selectedBranch = branch })
-                        }
-                    }
-                }
-                ExposedDropdownMenuBox(expanded = true, onExpandedChange = {}) {
-                    OutlinedTextField(
-                        value = selectedSemester,
-                        onValueChange = {},
-                        label = { Text("Select Semester") },
-                        readOnly = true
-                    )
-                    DropdownMenu(expanded = true, onDismissRequest = {}) {
-                        semesters.forEach { semester ->
-                            DropdownMenuItem(text = { Text(semester) }, onClick = { selectedSemester = semester })
-                        }
-                    }
-                }
-            }
-        }
-    )
-}
-@Preview(showSystemUi = true)
-@Composable
-fun DisplayTeacherDashboard() {
-    TeacherDashboard(rememberNavController())
-}
 //@Preview(showSystemUi = true)
 //@Composable
-//fun PreviewAddSubjectPopup() {
-//    AddSubjectPopup(onDismiss = {})
+//fun DisplayTeacherDashboard() {
+//    TeacherDashboard(rememberNavController())
 //}

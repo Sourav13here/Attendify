@@ -40,7 +40,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
     LaunchedEffect(navigateToVerification) {
         if (navigateToVerification) {
             navController.navigate(NavRoutes.VerificationStatus.route) {
-                popUpTo(NavRoutes.SignUpPage.route) { inclusive = true }
+                popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
             }
             viewModel.resetNavigationState()
         }

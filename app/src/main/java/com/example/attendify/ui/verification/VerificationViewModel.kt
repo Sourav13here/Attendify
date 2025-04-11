@@ -28,17 +28,12 @@ class VerificationViewModel @Inject constructor(
     val navigateToTeacherDashboard: StateFlow<Boolean> = _navigateToTeacherDashboard.asStateFlow()
 
     fun refreshData() {
-        Log.e("verification", "refreshdata")
         viewModelScope.launch {
-            Log.e("verification", "viewmodelscope")
             val user = authRepo.getCurrentUser()
             val userId = user?.uid ?: return@launch
 
             user.reload()
-            Log.e("verification", "email verified: ${user.isEmailVerified}")
-
             if (user.isEmailVerified) {
-                Log.e("verification", "if email verified")
                 val userData = firestoreRepo.getUser(userId)
 
                 userData?.let { (userObj, type) ->
@@ -58,9 +53,7 @@ class VerificationViewModel @Inject constructor(
                         }
                     }
                 }
-
             }
-            Log.e("verification", "not verified")
         }
     }
 
