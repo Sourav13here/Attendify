@@ -16,12 +16,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -186,6 +193,58 @@ fun SubjectCard(subjectCode: String, subjectName: String) {
             Text(text = subjectName)
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddSubjectPopup(onDismiss: () -> Unit) {
+    val branches = listOf("CSE", "ME", "CIVIL", "ETE")
+    val semesters = listOf("1st sem", "2nd sem", "3rd sem", "4th sem", "5th sem", "6th sem")
+    var selectedBranch by remember { mutableStateOf(branches[0]) }
+    var selectedSemester by remember { mutableStateOf(semesters[0]) }
+    var subjectName by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+        title = { Text("Add Subject") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(value = subjectName, onValueChange = { subjectName = it }, label = { Text("Subject Name") })
+                ExposedDropdownMenuBox(expanded = true, onExpandedChange = {}) {
+                    OutlinedTextField(
+                        value = selectedBranch,
+                        onValueChange = {},
+                        label = { Text("Select Branch") },
+                        readOnly = true
+                    )
+                    DropdownMenu(expanded = true, onDismissRequest = {}) {
+                        branches.forEach { branch ->
+                            DropdownMenuItem(text = { Text(branch) }, onClick = { selectedBranch = branch })
+                        }
+                    }
+                }
+                ExposedDropdownMenuBox(expanded = true, onExpandedChange = {}) {
+                    OutlinedTextField(
+                        value = selectedSemester,
+                        onValueChange = {},
+                        label = { Text("Select Semester") },
+                        readOnly = true
+                    )
+                    DropdownMenu(expanded = true, onDismissRequest = {}) {
+                        semesters.forEach { semester ->
+                            DropdownMenuItem(text = { Text(semester) }, onClick = { selectedSemester = semester })
+                        }
+                    }
+                }
+            }
+        }
+    )
 }
 
 //@Preview(showSystemUi = true)
