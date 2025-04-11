@@ -1,6 +1,5 @@
 package com.example.attendify.ui.teacher
 
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendify.data.model.Subject
@@ -20,17 +19,22 @@ class TeacherDashboardViewModel @Inject constructor(
     private val _subjects = MutableStateFlow<List<Subject>>(emptyList())
     val subjects: StateFlow<List<Subject>> = _subjects
 
-    fun loadSubjects(){
+    init{
+        loadSubjects()
+    }
+
+    fun loadSubjects() {
         firestoreRepo.getSubjects(
-            onSuccess ={_subjects.value = it},
-            onFailure = {/* handle error */ }
+            onSuccess = { _subjects.value = it },
+            onFailure = {it.printStackTrace()}
         )
     }
+
     fun addSubject(subject: Subject) {
         firestoreRepo.addSubject(
             subject,
             onSuccess = { loadSubjects() },
-            onFailure = {  }
+            onFailure = {it.printStackTrace() }
         )
     }
 
