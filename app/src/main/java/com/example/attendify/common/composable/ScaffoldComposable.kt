@@ -34,7 +34,7 @@ fun AppScaffold(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
