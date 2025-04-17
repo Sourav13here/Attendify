@@ -50,21 +50,27 @@ fun NavGraph(navController: NavHostController) {
                 },
                 navArgument("semester"){
                     type = NavType.StringType
+                    defaultValue = "null"
+                    nullable = true
                 },
                 navArgument("roll"){
                     type = NavType.StringType
+                    defaultValue = "null"
+                    nullable = true
                 }
             )
         ) {
             backStackEntry ->
-            val username = backStackEntry.arguments?.getString("username") ?: ""
-            val branch = backStackEntry.arguments?.getString("branch") ?: ""
-            val semester = backStackEntry.arguments?.getString("semester") ?: ""
-            val roll = backStackEntry.arguments?.getString("roll") ?: ""
+            val userType = backStackEntry.arguments?.getString("userType") ?: "student"
+            val username = backStackEntry.arguments?.getString("username") ?: "N/A"
+            val branch = backStackEntry.arguments?.getString("branch") ?: "N/A"
+            val semester = backStackEntry.arguments?.getString("semester")
+            val roll = backStackEntry.arguments?.getString("roll")
 
             VerificationStatus(
                 navController = navController,
                 viewmodel = verificationViewModel,
+                userType = userType,
                 username = username,
                 branch = branch,
                 semester = semester,

@@ -60,10 +60,11 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
         if (navigateToVerification) {
             navController.navigate(
                 NavRoutes.VerificationStatus.createRoute(
+                    userType = accountType.lowercase(),
                     username = username,
                     branch = branch,
                     semester = semester,
-                    roll = rollno
+                    roll = rollno,
                 )
             ) {
                 popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
