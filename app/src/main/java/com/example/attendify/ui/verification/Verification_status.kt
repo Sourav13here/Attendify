@@ -32,13 +32,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun VerificationStatus(
     navController: NavController,
-    viewmodel: VerificationViewModel
+    viewmodel: VerificationViewModel,
+    username: String,
+    branch : String,
+    semester: String,
+    roll: String
 ) {
-    val userName = "John Smith"
-    val branch = "CSE"
-    val semester = "6th sem"
-    val roll = "222020100023"
-
     val navigateToStudentDashboard by viewmodel.navigateToStudentDashboard.collectAsState()
     val navigateToTeacherDashboard by viewmodel.navigateToTeacherDashboard.collectAsState()
 
@@ -122,9 +121,9 @@ fun VerificationStatus(
                 ) {
                     Text("YOUR DETAILS", fontSize = 16.sp)
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(userName, fontSize = 18.sp)
-                    Text("$branch - $semester", fontSize = 16.sp)
-                    Text("Roll - $roll", fontSize = 16.sp)
+                    Text(text = username, fontSize = 18.sp)
+                    Text(text = "$branch - $semester", fontSize = 16.sp)
+                    Text(text = "Roll - $roll", fontSize = 16.sp)
                 }
             }
 
@@ -167,14 +166,14 @@ fun VerificationStatus(
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun DisplayVerification() {
-    val viewModel: VerificationViewModel = hiltViewModel()
-    AttendifyTheme {
-        VerificationStatus(
-            navController = rememberNavController(),
-            viewModel
-        )
-    }
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun DisplayVerification() {
+//    val viewModel: VerificationViewModel = hiltViewModel()
+//    AttendifyTheme {
+//        VerificationStatus(
+//            navController = rememberNavController(),
+//            viewModel
+//        )
+//    }
+//}
