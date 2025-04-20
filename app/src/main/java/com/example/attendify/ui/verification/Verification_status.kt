@@ -1,6 +1,7 @@
 package com.example.attendify.ui.verification
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,9 +55,10 @@ fun VerificationStatus(
     semester: String?,
     roll: String?
 ) {
+    val context = LocalContext.current
     val navigateToStudentDashboard by viewmodel.navigateToStudentDashboard.collectAsState()
     val navigateToTeacherDashboard by viewmodel.navigateToTeacherDashboard.collectAsState()
-
+    val userData by viewmodel.userData.collectAsState()
     var showLogOutDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -67,6 +70,12 @@ fun VerificationStatus(
             roll = roll
         )
         viewmodel.refreshData()
+    }
+
+    LaunchedEffect(userData) {
+        userData?.let {
+            Toast.makeText(context, "Welcome ${it["username"]}", Toast.LENGTH_SHORT).show()
+        }
     }
 
     LaunchedEffect(navigateToStudentDashboard) {
@@ -141,15 +150,40 @@ fun VerificationStatus(
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("YOUR DETAILS", fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = username, fontSize = 18.sp)
-                    Text(text = branch, fontSize = 16.sp)
-                    // Show roll number only if it's not null or "null" string
-                    if (!roll.isNullOrEmpty() && roll != "null" && userType == "student") {
-                        Text(text = "$semester", fontSize = 16.sp)
-                        Text(text = "Roll - $roll", fontSize = 16.sp)
-                    }
+                    userData?.let { data ->
+                        Text(text = data["username"]?.toString() ?: "No username", fontSize = 18.sp)
+
+                        val branch = data["branch"]?.toString() ?: "No branch"
+
+                        if (userType == "student") {
+                            // Student-specific fields
+                            val semester = data["semester"]?.toString()
+                            val roll = data["roll"]?.toString()
+
+                            Text(
+                                text = buildString {
+                                    append(branch)
+                                    semester?.let { append(" - $it") }
+                                },
+                                fontSize = 16.sp
+                            )
+
+                            if (!roll.isNullOrEmpty() && roll != "null") {
+                                Text(text = "Roll - $roll", fontSize = 16.sp)
+                            }
+                        } else {
+                            // Teacher display
+                            Text(text = branch, fontSize = 16.sp)
+
+                            // Add any teacher-specific fields here if needed
+                            // For example:
+                            // val isHod = data["isHod"]?.toString()
+                            // isHod?.let {
+                            //     Text(text = if (it == "true") "HOD" else "Teacher", fontSize = 16.sp)
+                            // }
+                        }
+                    } ?: Text("Loading your details...", fontSize = 16.sp)
+
                 }
             }
 
@@ -177,7 +211,6 @@ fun VerificationStatus(
                         onClick = {
                             Log.e("verification", "clicked")
                             viewmodel.refreshData()
-
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
                         shape = RoundedCornerShape(16.dp)
