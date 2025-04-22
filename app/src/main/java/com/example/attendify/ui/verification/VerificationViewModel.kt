@@ -8,6 +8,7 @@ import com.example.attendify.data.model.Teacher
 import com.example.attendify.data.repository.FirestoreRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,6 +43,18 @@ class VerificationViewModel @Inject constructor(
 
     private val _navigateToTeacherDashboard = MutableStateFlow(false)
     val navigateToTeacherDashboard: StateFlow<Boolean> = _navigateToTeacherDashboard.asStateFlow()
+
+    private val _snackbarMessage = MutableStateFlow<String?>(null)
+    val snackbarMessage: StateFlow<String?> = _snackbarMessage
+
+    fun showSnackbar(message: String) {
+        _snackbarMessage.value = message
+    }
+
+    fun clearSnackbar() {
+        _snackbarMessage.value = null
+    }
+
 
 
     // Function to verify and save user data
