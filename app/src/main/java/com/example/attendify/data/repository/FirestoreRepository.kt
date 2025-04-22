@@ -23,9 +23,9 @@ class FirestoreRepository @Inject constructor(
         onSuccess: () -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        val collectionPath = if (accountType == "Student") "Student" else "Teacher"
+        val collectionPath = if (accountType == "student") "Student" else "Teacher"
 
-        val userData = if (accountType == "Student") {
+        val userData = if (accountType == "student") {
             Student(
                 name = username,
                 email = email,
