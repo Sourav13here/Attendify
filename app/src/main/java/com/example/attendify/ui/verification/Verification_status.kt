@@ -175,45 +175,45 @@ fun VerificationStatus(
                 }
 
             }
-        }
 
-        Spacer(modifier = Modifier.height(40.dp))
 
-        Card(
-            modifier = Modifier.fillMaxWidth(0.85f),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(0.85f),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Your account is not verified yet.")
-                Text(
-                    "Please wait for the admin to verify your account.",
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Button(
-                    onClick = {
-                        Log.e("verification", "clicked")
-                        viewmodel.refreshData()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
-                    shape = RoundedCornerShape(16.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Refresh")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                    Text("Your account is not verified yet.")
+                    Text(
+                        "Please wait for the admin to verify your account.",
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(
+                        onClick = {
+                            Log.e("verification", "clicked")
+                            viewmodel.refreshData()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("Refresh")
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                    }
                 }
             }
         }
     }
 }
-
 
 
 //@Preview(showSystemUi = true)
