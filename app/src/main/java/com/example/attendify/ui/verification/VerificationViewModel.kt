@@ -1,34 +1,36 @@
 package com.example.attendify.ui.verification
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Teacher
-import com.example.attendify.data.repository.AuthRepository
 import com.example.attendify.data.repository.FirestoreRepository
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+sealed class UserData {
+    data class StudentData(val student: Student) : UserData()
+    data class TeacherData(val teacher: Teacher) : UserData()
+}
 @HiltViewModel
 class VerificationViewModel @Inject constructor(
-    private val authRepo: AuthRepository,
-    private val firestoreRepo: FirestoreRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val firestoreRepository: FirestoreRepository,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
-    private val firestore = FirebaseFirestore.getInstance()
 
-    // State management with SavedStateHandle
-    val userData = savedStateHandle.getStateFlow("userData", null as Map<String, Any>?)
-    val userType = savedStateHandle.getStateFlow("userType", "")
 
-    // Regular state flows
+    private val _userData = MutableStateFlow<UserData?>(null)
+    val userData: StateFlow<UserData?> = _userData.asStateFlow()
+
+    private val _userType = MutableStateFlow<String?>(null)
+    val userType: StateFlow<String?> = _userType
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -36,36 +38,13 @@ class VerificationViewModel @Inject constructor(
     val errorMessage: StateFlow<String?> = _errorMessage
 
     private val _navigateToStudentDashboard = MutableStateFlow(false)
-    val navigateToStudentDashboard: StateFlow<Boolean> = _navigateToStudentDashboard
+    val navigateToStudentDashboard: StateFlow<Boolean> = _navigateToStudentDashboard.asStateFlow()
 
     private val _navigateToTeacherDashboard = MutableStateFlow(false)
-    val navigateToTeacherDashboard: StateFlow<Boolean> = _navigateToTeacherDashboard
+    val navigateToTeacherDashboard: StateFlow<Boolean> = _navigateToTeacherDashboard.asStateFlow()
 
-    fun clearError() {
-        _errorMessage.value = null
-    }
 
-    fun fetchUserData(userType: String) {
-        val collection = if (userType == "student") "Student" else "Teacher"
-        val userId = authRepo.getCurrentUser()?.uid ?: return
-
-        viewModelScope.launch {
-            try {
-                val docSnapshot = firestore.collection(collection).document(userId).get().await()
-                Log.d("FirestoreDebug", "Fetched data: ${docSnapshot.data}")
-
-                if (docSnapshot.exists()) {
-                    val userMap = docSnapshot.data as? Map<String, Any> ?: emptyMap()
-                    savedStateHandle["userData"] = docSnapshot.data ?: emptyMap()
-                    Log.d("FirestoreDebug", "Saved to state: $userMap")
-                }
-            } catch (e: Exception) {
-                _errorMessage.value = "Failed to fetch data: ${e.message}"
-                Log.e("FirestoreDebug", "Fetch error", e)
-            }
-        }
-    }
-
+    // Function to verify and save user data
     fun verifyAndSaveUser(
         userType: String,
         username: String,
@@ -83,120 +62,112 @@ class VerificationViewModel @Inject constructor(
             return
         }
 
-        val userMap = hashMapOf(
-            "username" to username,
-            "branch" to branch
-        ).apply {
-            if (userType == "student") {
-                put("semester", semester ?: "")
-                put("roll", roll ?: "")
-            }
-        }
-
-        val collection = if (userType == "student") "Student" else "Teacher"
-        savedStateHandle["userType"] = userType
-
+        _isLoading.value = true
         viewModelScope.launch {
-            _isLoading.value = true
             try {
-                val userId = authRepo.getCurrentUser()?.uid ?: run {
+                val userId = auth.currentUser?.uid ?: run {
                     _errorMessage.value = "No authenticated user found"
                     return@launch
                 }
+                val result =  firestoreRepository.getUser(userId)
 
-                val docRef = firestore.collection(collection).document(userId)
-                val snapshot = docRef.get().await()
-
-                if (!snapshot.exists()) {
-                    docRef.set(userMap).await()
-                    Log.d("Firestore", "User saved successfully")
-                    savedStateHandle["userData"] = userMap
-                } else {
-                    Log.d("Firestore", "User already exists")
-                    docRef.update(userMap as Map<String, Any>).await()
+                // Check if the user exists in Firestore
+                if (result == null) {
+                    _errorMessage.value = "User not found"
+                    return@launch
                 }
 
-                fetchUserData(userType)
+                val (user, type) = result
+                _userType.value = type
+
+                // Check if the user is verified
+                when (user) {
+                    is Student -> {
+                        _userData.value = UserData.StudentData(user)
+                        if (user.isVerified) {
+                            _navigateToStudentDashboard.value = true
+                        } else {
+                            _errorMessage.value =
+                                "Your account is not verified. Please contact admin."
+                        }
+                    }
+
+                    is Teacher -> {
+                        _userData.value = UserData.TeacherData(user)
+                        if (user.isVerified) {
+                            _navigateToTeacherDashboard.value = true
+                        } else {
+                            _errorMessage.value =
+                                "Your account is not verified. Please contact admin."
+                        }
+                    }
+
+                    else -> {
+                        _errorMessage.value = "Unknown user type"
+                    }
+                }
             } catch (e: Exception) {
-                _errorMessage.value = "Failed to save user: ${e.localizedMessage}"
-                Log.e("Firestore", "Exception saving user", e)
+                _errorMessage.value = "Error verifying user: ${e.localizedMessage}"
+                Log.e("VerificationViewModel", "Verification failed", e)
             } finally {
                 _isLoading.value = false
             }
         }
     }
 
+
+    // Refresh data if needed
     fun refreshData() {
-        val currentUserType = userType.value
-        if (currentUserType.isBlank()) {
-            _errorMessage.value = "User type not set"
-            return
-        }
-
+        _isLoading.value = true
         viewModelScope.launch {
-            _isLoading.value = true
+
             try {
-                val user = authRepo.getCurrentUser() ?: run {
-                    _errorMessage.value = "No authenticated user found"
-                    return@launch
-                }
+                val firebaseUser = auth.getCurrentUser()
+                val id = firebaseUser?.uid ?: return@launch
 
-                user.reload().await()
-                if (!user.isEmailVerified) {
-                    _errorMessage.value = "Email not verified yet"
-                    return@launch
-                }
+                firebaseUser.reload()
+                if (firebaseUser.isEmailVerified) {
+                    val userData = firestoreRepository.getUser(id)
 
-                val userId = user.uid
-                val userDataResult = firestoreRepo.getUser(userId)
+                    userData?.let { (userObj, type) ->
+                        _userType.value = type
 
-                userDataResult?.let { (userObj, type) ->
-                    val dataMap = when (userObj) {
-                        is Student -> mapOf(
-                            "username" to userObj.name,
-                            "branch" to userObj.branch,
-                            "semester" to userObj.semester,
-                            "roll" to userObj.rollNumber
-                        )
+                        when (userObj) {
+                            is Teacher -> {
+                                _userData.value = UserData.TeacherData(userObj)
+                                if (userObj.isHod) {
+                                    firestoreRepository.updateIsVerified(id, "Teacher", true)
+                                    _navigateToTeacherDashboard.value = true
+                                } else if (userObj.isVerified) {
+                                    _navigateToTeacherDashboard.value = true
+                                }
+                            }
 
-                        is Teacher -> mapOf(
-                            "username" to userObj.name,
-                            "branch" to userObj.branch
-                        )
-
-                        else -> emptyMap()
+                            is Student -> {
+                                _userData.value = UserData.StudentData(userObj)
+                                if (userObj.isVerified) {
+                                    _navigateToStudentDashboard.value = true
+                                }
+                            }
+                        }
                     }
-
-                    savedStateHandle["userData"] = dataMap
-
-                    when (type) {
-                        "Teacher" -> _navigateToTeacherDashboard.value = true
-                        "Student" -> _navigateToStudentDashboard.value = true
-                    }
-                } ?: run {
-                    _errorMessage.value = "User data not found"
                 }
+
+
             } catch (e: Exception) {
-                _errorMessage.value = "Refresh failed: ${e.localizedMessage}"
-                Log.e("Verification", "Refresh error", e)
+                _errorMessage.value = "Failed to refresh data: ${e.localizedMessage}"
+                Log.e("VerificationViewModel", "Error refreshing data", e)
             } finally {
                 _isLoading.value = false
             }
         }
     }
-
     fun signOut() {
         viewModelScope.launch {
-            _isLoading.value = true
             try {
-                authRepo.signOut()
-                savedStateHandle.remove<Map<String, Any>>("userData")
-                savedStateHandle.remove<String>("userType")
+                auth.signOut()
             } catch (e: Exception) {
-                _errorMessage.value = "Sign out failed: ${e.localizedMessage}"
-                Log.e("Verification", "Sign out error", e)
-            } finally {
-                _isLoading.value = false
+                e.printStackTrace()
             }
         }
     }

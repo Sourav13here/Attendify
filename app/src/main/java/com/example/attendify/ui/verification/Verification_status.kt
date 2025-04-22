@@ -74,7 +74,11 @@ fun VerificationStatus(
 
     LaunchedEffect(userData) {
         userData?.let {
-            Toast.makeText(context, "Welcome ${it["username"]}", Toast.LENGTH_SHORT).show()
+            val username = when (it) {
+                is UserData.StudentData -> it.student.name
+                is UserData.TeacherData -> it.teacher.name
+            }
+            Toast.makeText(context, "Welcome $username", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -149,81 +153,68 @@ fun VerificationStatus(
                         .fillMaxWidth()
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
+                )
+                {
                     userData?.let { data ->
-                        Text(text = data["username"]?.toString() ?: "No username", fontSize = 18.sp)
-
-                        val branch = data["branch"]?.toString() ?: "No branch"
-
-                        if (userType == "student") {
-                            // Student-specific fields
-                            val semester = data["semester"]?.toString()
-                            val roll = data["roll"]?.toString()
-
-                            Text(
-                                text = buildString {
-                                    append(branch)
-                                    semester?.let { append(" - $it") }
-                                },
-                                fontSize = 16.sp
-                            )
-
-                            if (!roll.isNullOrEmpty() && roll != "null") {
-                                Text(text = "Roll - $roll", fontSize = 16.sp)
+                        when (data) {
+                            is UserData.StudentData -> {
+                                Text("Name: ${data.student.name}")
+                                Text("Email: ${data.student.email}")
+                                Text("Semester: ${data.student.semester}")
+                                Text("Roll NO: ${data.student.rollNumber}")
+                                Text("Branch: ${data.student.branch}")
                             }
-                        } else {
-                            // Teacher display
-                            Text(text = branch, fontSize = 16.sp)
 
-                            // Add any teacher-specific fields here if needed
-                            // For example:
-                            // val isHod = data["isHod"]?.toString()
-                            // isHod?.let {
-                            //     Text(text = if (it == "true") "HOD" else "Teacher", fontSize = 16.sp)
-                            // }
+                            is UserData.TeacherData -> {
+                                Text("Name: ${data.teacher.name}")
+                                Text("Email: ${data.teacher.email}")
+                                Text("Branch: ${data.teacher.branch}")
+                            }
                         }
                     } ?: Text("Loading your details...", fontSize = 16.sp)
-
                 }
+
             }
+        }
 
-            Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
-            Card(
-                modifier = Modifier.fillMaxWidth(0.85f),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
-                shape = RoundedCornerShape(16.dp)
+        Card(
+            modifier = Modifier.fillMaxWidth(0.85f),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Your account is not verified yet.")
-                    Text(
-                        "Please wait for the admin to verify your account.",
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
+                Text("Your account is not verified yet.")
+                Text(
+                    "Please wait for the admin to verify your account.",
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(10.dp))
 
-                    Button(
-                        onClick = {
-                            Log.e("verification", "clicked")
-                            viewmodel.refreshData()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("Refresh")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
-                    }
+                Button(
+                    onClick = {
+                        Log.e("verification", "clicked")
+                        viewmodel.refreshData()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text("Refresh")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
                 }
             }
         }
     }
 }
+
+
 
 //@Preview(showSystemUi = true)
 //@Composable
