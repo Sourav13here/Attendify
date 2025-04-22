@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -17,9 +18,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,11 +59,16 @@ fun VerificationStatus(
     semester: String?,
     roll: String?
 ) {
+    val isLoading by viewmodel.isLoading.collectAsState()
     val context = LocalContext.current
     val navigateToStudentDashboard by viewmodel.navigateToStudentDashboard.collectAsState()
     val navigateToTeacherDashboard by viewmodel.navigateToTeacherDashboard.collectAsState()
     val userData by viewmodel.userData.collectAsState()
     var showLogOutDialog by remember { mutableStateOf(false) }
+    val snackbarMessage by viewmodel.snackbarMessage.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
 
     LaunchedEffect(Unit) {
         viewmodel.verifyAndSaveUser(
@@ -70,6 +79,14 @@ fun VerificationStatus(
             roll = roll
         )
         viewmodel.refreshData()
+    }
+
+    // 📣 Show snackbar when there's a message
+    LaunchedEffect(snackbarMessage) {
+        snackbarMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewmodel.clearSnackbar()
+        }
     }
 
     LaunchedEffect(userData) {
@@ -128,7 +145,8 @@ fun VerificationStatus(
                     showLogOutDialog = true
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -201,13 +219,24 @@ fun VerificationStatus(
                         onClick = {
                             Log.e("verification", "clicked")
                             viewmodel.refreshData()
+                            viewmodel.showSnackbar("Refereshing your status")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
+                        enabled = !isLoading,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if(isLoading) Color.Gray else Color(0xFFE57373)),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Refresh")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                        if(isLoading){
+                            CircularProgressIndicator(
+                                color = Color.Black,
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }else{
+                            Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Refresh")
+                        }
                     }
                 }
             }
