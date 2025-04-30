@@ -1,29 +1,49 @@
 package com.example.attendify.ui.verification
 
 import android.util.Log
-import androidx.compose.foundation.layout.*
+import android.widget.Toast
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomIconButton
 import com.example.attendify.navigation.NavRoutes
-import com.example.attendify.ui.sign_up.SignUpViewModel
-import com.example.attendify.ui.theme.AttendifyTheme
 import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,20 +52,51 @@ import kotlinx.coroutines.launch
 @Composable
 fun VerificationStatus(
     navController: NavController,
-    viewmodel: VerificationViewModel
+    viewmodel: VerificationViewModel,
+    userType: String,
+    username: String,
+    branch: String,
+    semester: String?,
+    roll: String?
 ) {
-    val userName = "John Smith"
-    val branch = "CSE"
-    val semester = "6th sem"
-    val roll = "222020100023"
-
+    val isLoading by viewmodel.isLoading.collectAsState()
+    val context = LocalContext.current
     val navigateToStudentDashboard by viewmodel.navigateToStudentDashboard.collectAsState()
     val navigateToTeacherDashboard by viewmodel.navigateToTeacherDashboard.collectAsState()
-
+    val userData by viewmodel.userData.collectAsState()
     var showLogOutDialog by remember { mutableStateOf(false) }
+    val snackbarMessage by viewmodel.snackbarMessage.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
 
     LaunchedEffect(Unit) {
+        viewmodel.verifyAndSaveUser(
+            userType = userType,
+            username = username,
+            branch = branch,
+            semester = semester,
+            roll = roll
+        )
         viewmodel.refreshData()
+    }
+
+    // 📣 Show snackbar when there's a message
+    LaunchedEffect(snackbarMessage) {
+        snackbarMessage?.let { message ->
+            snackbarHostState.showSnackbar(message)
+            viewmodel.clearSnackbar()
+        }
+    }
+
+    LaunchedEffect(userData) {
+        userData?.let {
+            val username = when (it) {
+                is UserData.StudentData -> it.student.name
+                is UserData.TeacherData -> it.teacher.name
+            }
+            Toast.makeText(context, "Welcome $username", Toast.LENGTH_SHORT).show()
+        }
     }
 
     LaunchedEffect(navigateToStudentDashboard) {
@@ -94,7 +145,8 @@ fun VerificationStatus(
                     showLogOutDialog = true
                 }
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -119,14 +171,29 @@ fun VerificationStatus(
                         .fillMaxWidth()
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("YOUR DETAILS", fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(userName, fontSize = 18.sp)
-                    Text("$branch - $semester", fontSize = 16.sp)
-                    Text("Roll - $roll", fontSize = 16.sp)
+                )
+                {
+                    userData?.let { data ->
+                        when (data) {
+                            is UserData.StudentData -> {
+                                Text("Name: ${data.student.name}")
+                                Text("Email: ${data.student.email}")
+                                Text("Semester: ${data.student.semester}")
+                                Text("Roll NO: ${data.student.rollNumber}")
+                                Text("Branch: ${data.student.branch}")
+                            }
+
+                            is UserData.TeacherData -> {
+                                Text("Name: ${data.teacher.name}")
+                                Text("Email: ${data.teacher.email}")
+                                Text("Branch: ${data.teacher.branch}")
+                            }
+                        }
+                    } ?: Text("Loading your details...", fontSize = 16.sp)
                 }
+
             }
+
 
             Spacer(modifier = Modifier.height(40.dp))
 
@@ -151,15 +218,25 @@ fun VerificationStatus(
                     Button(
                         onClick = {
                             Log.e("verification", "clicked")
-                           viewmodel.refreshData()
-
+                            viewmodel.refreshData()
+                            viewmodel.showSnackbar("Refereshing your status")
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373)),
+                        enabled = !isLoading,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if(isLoading) Color.Gray else Color(0xFFE57373)),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("Refresh")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                        if(isLoading){
+                            CircularProgressIndicator(
+                                color = Color.Black,
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp
+                            )
+                        }else{
+                            Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Refresh")
+                        }
                     }
                 }
             }
@@ -167,14 +244,15 @@ fun VerificationStatus(
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun DisplayVerification() {
-    val viewModel: VerificationViewModel = hiltViewModel()
-    AttendifyTheme {
-        VerificationStatus(
-            navController = rememberNavController(),
-            viewModel
-        )
-    }
-}
+
+//@Preview(showSystemUi = true)
+//@Composable
+//fun DisplayVerification() {
+//    val viewModel: VerificationViewModel = hiltViewModel()
+//    AttendifyTheme {
+//        VerificationStatus(
+//            navController = rememberNavController(),
+//            viewModel
+//        )
+//    }
+//}

@@ -8,6 +8,8 @@ import com.example.attendify.ui.login.Login
 import com.example.attendify.ui.login.LoginViewModel
 import com.example.attendify.ui.sign_up.SignUp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.splashscreen.SplashScreen
 import com.example.attendify.ui.splashscreen.SplashViewModel
@@ -37,8 +39,43 @@ fun NavGraph(navController: NavHostController) {
         composable(NavRoutes.SignUpPage.route) {
             SignUp(navController, signUpViewModel)
         }
-        composable(NavRoutes.VerificationStatus.route) {
-            VerificationStatus(navController, verificationViewModel)
+        composable(
+            route = NavRoutes.VerificationStatus.route,
+            arguments = listOf(
+                navArgument("username"){
+                    type = NavType.StringType
+                },
+                navArgument("branch"){
+                    type = NavType.StringType
+                },
+                navArgument("semester"){
+                    type = NavType.StringType
+                    defaultValue = "null"
+                    nullable = true
+                },
+                navArgument("roll"){
+                    type = NavType.StringType
+                    defaultValue = "null"
+                    nullable = true
+                }
+            )
+        ) {
+            backStackEntry ->
+            val userType = backStackEntry.arguments?.getString("userType") ?: "student"
+            val username = backStackEntry.arguments?.getString("username") ?: "N/A"
+            val branch = backStackEntry.arguments?.getString("branch") ?: "N/A"
+            val semester = backStackEntry.arguments?.getString("semester")
+            val roll = backStackEntry.arguments?.getString("roll")
+
+            VerificationStatus(
+                navController = navController,
+                viewmodel = verificationViewModel,
+                userType = userType,
+                username = username,
+                branch = branch,
+                semester = semester,
+                roll = roll
+            )
         }
         composable(NavRoutes.TeacherDashboard.route) {
             TeacherDashboard(navController, teacherDashboardViewModel)

@@ -25,6 +25,7 @@ fun AppScaffold(
     showBackButton: Boolean = false,
     contentDescriptionBackButton: String? = null,
     showLogo: Boolean = false,
+    snackbarHost: @Composable () -> Unit = {},
     contentDescriptionLogo: String? = null,
     showTeacherBottomNav: Boolean = false,
     actions: @Composable RowScope.() -> Unit = {},
@@ -34,7 +35,7 @@ fun AppScaffold(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
