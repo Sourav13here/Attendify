@@ -75,9 +75,7 @@ fun TeacherDashboard(
     subjects.forEach {
         SubjectCard(
             it.subjectCode, it.subjectName,
-            onClick = {
-
-            }
+            onClick = { TODO() }
         )
     }
 
@@ -193,13 +191,9 @@ fun TeacherDashboard(
                         } else {
                             subjects.forEach { subject ->
                                 SubjectCard(
-                                    subjectCode = subject.subjectCode,
-                                    subjectName = subject.subjectName,
-                                    onClick = {
-                                        navController.navigate("${NavRoutes.SubjectPage.route}/${subject.subjectCode}")
-                                    }
+                                    subject.subjectCode, subject.subjectName,
+                                    onClick = { TODO() }
                                 )
-
                             }
                         }
                     }
