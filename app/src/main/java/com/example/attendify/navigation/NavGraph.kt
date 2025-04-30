@@ -19,6 +19,7 @@ import com.example.attendify.ui.teacher.TeacherDashboard
 import com.example.attendify.ui.teacher.TeacherDashboardViewModel
 import com.example.attendify.ui.verification.VerificationStatus
 import com.example.attendify.ui.verification.VerificationViewModel
+import com.example.attendify.ui.verification.Verification_Page
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -85,6 +86,9 @@ fun NavGraph(navController: NavHostController) {
         }
         composable(NavRoutes.SplashScreen.route) {
             SplashScreen(navController, splashViewModel)
+        }
+        composable(NavRoutes.VerificationPage.route) {
+            Verification_Page(navController)
         }
     }
 }
