@@ -15,6 +15,7 @@ import com.example.attendify.ui.splashscreen.SplashScreen
 import com.example.attendify.ui.splashscreen.SplashViewModel
 import com.example.attendify.ui.student.StudentDashboard
 import com.example.attendify.ui.student.StudentDashboardViewModel
+import com.example.attendify.ui.teacher.AttendanceSheet
 import com.example.attendify.ui.teacher.TeacherDashboard
 import com.example.attendify.ui.teacher.TeacherDashboardViewModel
 import com.example.attendify.ui.verification.VerificationStatus
@@ -90,5 +91,11 @@ fun NavGraph(navController: NavHostController) {
         composable(NavRoutes.VerificationPage.route) {
             Verification_Page(navController)
         }
+
+        composable("${NavRoutes.SubjectPage.route}/{subjectCode}") { backStackEntry ->
+            val subjectCode = backStackEntry.arguments?.getString("subjectCode") ?: ""
+            AttendanceSheet(subjectCode = subjectCode, navController = navController)
+        }
+
     }
 }

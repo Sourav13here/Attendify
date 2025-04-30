@@ -27,7 +27,7 @@ import com.example.attendify.ui.teacher.components.getPreviousMonth
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
-fun AttendanceSheet(navController: NavController) {
+fun AttendanceSheet(navController: NavController, subjectCode: String ) {
     var selectedDate by remember { mutableStateOf(getCurrentDate()) }
     var currentMonth by remember { mutableStateOf(getCurrentMonthYear()) }
 
@@ -100,6 +100,9 @@ fun AttendanceSheet(navController: NavController) {
 @Composable
 fun AttendanceSheetScreenPreview() {
     AttendifyTheme {
-        AttendanceSheet(navController = rememberNavController())
+        AttendanceSheet(
+            navController = rememberNavController(),
+            subjectCode = "CD18638162"
+        )
     }
 }

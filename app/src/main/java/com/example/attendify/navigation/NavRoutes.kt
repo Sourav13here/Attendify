@@ -16,5 +16,5 @@ sealed class NavRoutes(val route: String) {
     object StudentDashboard : NavRoutes("student dashboard")
     object SplashScreen : NavRoutes("splash screen")
     object VerificationPage: NavRoutes("verification page")
-
+    object SubjectPage : NavRoutes("subject_page")
 }
