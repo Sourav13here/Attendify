@@ -48,7 +48,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var accountType by remember { mutableStateOf("Student") }
+    var accountType by remember { mutableStateOf("student") }
     var branch by remember { mutableStateOf("") }
     var semester by remember { mutableStateOf("") }
     var rollno by remember { mutableStateOf("") }
@@ -148,8 +148,8 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 RadioButton(
-                                    selected = accountType == "Student",
-                                    onClick = { accountType = "Student" })
+                                    selected = accountType == "student",
+                                    onClick = { accountType = "student" })
                                 Text("Student", color = Color.Black)
                             }
 
@@ -166,8 +166,8 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 RadioButton(
-                                    selected = accountType == "Teacher",
-                                    onClick = { accountType = "Teacher" })
+                                    selected = accountType == "teacher",
+                                    onClick = { accountType = "teacher" })
                                 Text("Teacher", color = Color.Black)
                             }
                         }
@@ -190,7 +190,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                     modifier = Modifier.weight(1f)
                                 )
 
-                                if (accountType == "Student") {
+                                if (accountType == "student") {
                                     Spacer(modifier = Modifier.width(8.dp))
                                     CustomExposedDropdown(
                                         label = "Semester",
@@ -202,7 +202,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                 }
                             }
 
-                            if (accountType == "Student") {
+                            if (accountType == "student") {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 CustomOutlinedTextField(
                                     value = rollno,
