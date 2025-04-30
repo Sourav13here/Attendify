@@ -47,6 +47,10 @@ class VerificationViewModel @Inject constructor(
     private val _snackbarMessage = MutableStateFlow<String?>(null)
     val snackbarMessage: StateFlow<String?> = _snackbarMessage
 
+    private val _showEmailNotVerifiedBox = MutableStateFlow(false)
+    val showEmailNotVerifiedBox: StateFlow<Boolean> = _showEmailNotVerifiedBox.asStateFlow()
+
+
     fun showSnackbar(message: String) {
         _snackbarMessage.value = message
     }
@@ -133,40 +137,40 @@ class VerificationViewModel @Inject constructor(
     fun refreshData() {
         _isLoading.value = true
         viewModelScope.launch {
-
             try {
-                val firebaseUser = auth.getCurrentUser()
+                val firebaseUser = auth.currentUser
                 val id = firebaseUser?.uid ?: return@launch
 
                 firebaseUser.reload()
-                if (firebaseUser.isEmailVerified) {
-                    val userData = firestoreRepository.getUser(id)
 
-                    userData?.let { (userObj, type) ->
-                        _userType.value = type
+                if (!firebaseUser.isEmailVerified) {
+                    _showEmailNotVerifiedBox.value = true
+                    return@launch
+                } else {
+                    _showEmailNotVerifiedBox.value = false
+                }
 
-                        when (userObj) {
-                            is Teacher -> {
-                                _userData.value = UserData.TeacherData(userObj)
-                                if (userObj.isHod) {
-                                    firestoreRepository.updateIsVerified(id, "Teacher", true)
-                                    _navigateToTeacherDashboard.value = true
-                                } else if (userObj.isVerified) {
-                                    _navigateToTeacherDashboard.value = true
-                                }
+                val userData = firestoreRepository.getUser(id)
+                userData?.let { (userObj, type) ->
+                    _userType.value = type
+                    when (userObj) {
+                        is Teacher -> {
+                            _userData.value = UserData.TeacherData(userObj)
+                            if (userObj.isHod) {
+                                firestoreRepository.updateIsVerified(id, "Teacher", true)
+                                _navigateToTeacherDashboard.value = true
+                            } else if (userObj.isVerified) {
+                                _navigateToTeacherDashboard.value = true
                             }
-
-                            is Student -> {
-                                _userData.value = UserData.StudentData(userObj)
-                                if (userObj.isVerified) {
-                                    _navigateToStudentDashboard.value = true
-                                }
+                        }
+                        is Student -> {
+                            _userData.value = UserData.StudentData(userObj)
+                            if (userObj.isVerified) {
+                                _navigateToStudentDashboard.value = true
                             }
                         }
                     }
                 }
-
-
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to refresh data: ${e.localizedMessage}"
                 Log.e("VerificationViewModel", "Error refreshing data", e)
@@ -175,6 +179,8 @@ class VerificationViewModel @Inject constructor(
             }
         }
     }
+
+
     fun signOut() {
         viewModelScope.launch {
             try {

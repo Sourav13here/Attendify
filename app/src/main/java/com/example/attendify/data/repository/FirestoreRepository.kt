@@ -72,6 +72,7 @@ class FirestoreRepository @Inject constructor(
             e.printStackTrace()
             null
         }
+
     }
 
     suspend fun updateIsVerified(userId: String, collection: String, value: Boolean) {
@@ -99,5 +100,14 @@ class FirestoreRepository @Inject constructor(
             }
             .addOnFailureListener { onFailure(it) }
     }
+//    suspend fun getUserDetails(uid: String, accountType: String): Map<String, Any>? {
+//        return try {
+//            val snapshot = db.collection(accountType).document(uid).get().await()
+//            if (snapshot.exists()) snapshot.data else null
+//        } catch (e: Exception) {
+//            null
+//        }
+//    }
+
 
 }

@@ -40,15 +40,23 @@ class AuthRepository @Inject constructor(
         auth.signOut()
     }
 
-    fun getCurrentUserId(): String? {
-        return auth.currentUser?.uid
+
+    suspend fun isEmailVerified(): Boolean {
+        auth.currentUser?.reload()?.await()
+        return auth.currentUser?.isEmailVerified ?: false
     }
 
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
     }
 
+    fun getCurrentUserId(): String? = auth.currentUser?.uid
+
+    fun getCurrentUserEmail(): String? = auth.currentUser?.email
+
+
 }
+
 
 
 
@@ -79,10 +87,7 @@ suspend fun continueWithGoogle(credential: AuthCredential): Result<AuthResultDat
         Result.failure(e)
     }
 
-    suspend fun isEmailVerified(): Boolean {
-        auth.currentUser?.reload()
-        return auth.currentUser?.isEmailVerified ?: false
-    }
+
 
 }
 

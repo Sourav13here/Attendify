@@ -23,7 +23,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
-import com.example.attendify.data.model.Student
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
@@ -136,9 +135,9 @@ fun Verification_Page(navController: NavController) {
                     ) {
                         items(6) { index ->
                             StudentVerificationItem(
-                                student = Student(
+                                student = Students(
                                     name = "Faruk Khan",
-                                    rollNumber = "23232323323",
+                                    rollNo = "23232323323",
                                     email = "abc@gmail.com"
                                 )
                             )
@@ -200,7 +199,7 @@ fun DropdownSelector(label: String, items: List<String>, onItemSelected: (String
 }
 
 @Composable
-fun StudentVerificationItem(student: Student) {
+fun StudentVerificationItem(student: Students) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,7 +222,7 @@ fun StudentVerificationItem(student: Student) {
                 )
 
                 Text(
-                    text = "Roll No: ${student.rollNumber}",
+                    text = "Roll No: ${student.rollNo}",
                     fontSize = 14.sp,
                     color = Color.DarkGray
                 )
@@ -284,6 +283,12 @@ fun StudentVerificationItem(student: Student) {
     }
 }
 
+
+data class Students(
+    val name: String,
+    val rollNo: String,
+    val email: String
+)
 @Preview(showSystemUi = true)
 @Composable
 fun VerificationScreenPreview() {
