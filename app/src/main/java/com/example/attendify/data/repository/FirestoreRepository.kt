@@ -8,7 +8,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirestoreRepository @Inject constructor(
-    private val db: FirebaseFirestore
+    val db: FirebaseFirestore
 ) {
     fun storeUserData(
         uid: String,
@@ -27,6 +27,7 @@ class FirestoreRepository @Inject constructor(
 
         val userData = if (accountType == "student") {
             Student(
+                uid = uid,
                 name = username,
                 email = email,
                 isVerified = isVerified,
@@ -36,6 +37,7 @@ class FirestoreRepository @Inject constructor(
             )
         } else {
             Teacher(
+                uid = uid,
                 name = username,
                 email = email,
                 isVerified = isVerified,
@@ -108,6 +110,45 @@ class FirestoreRepository @Inject constructor(
 //            null
 //        }
 //    }
+
+    fun getUnverifiedStudents(branch: String, semester: String, onResult: (List<Student>) -> Unit) {
+        if (branch.isBlank() || semester.isBlank()) {
+            onResult(emptyList())
+            return
+        }
+
+        db.collection("Student")
+            .whereEqualTo("isVerified", false)
+            .whereEqualTo("branch", branch)
+            .whereEqualTo("semester", semester)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val students = snapshot.toObjects(Student::class.java)
+                onResult(students)
+            }
+    }
+
+
+    fun getUnverifiedTeachers(branch: String, onResult: (List<Teacher>) -> Unit) {
+        if (branch.isBlank()) {
+            onResult(emptyList())
+            return
+        }
+
+        db.collection("Teacher")
+            .whereEqualTo("isVerified", false)
+            .whereEqualTo("branch", branch)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val teachers = snapshot.toObjects(Teacher::class.java)
+                onResult(teachers)
+            }
+    }
+
+
+    suspend fun deleteUser(uid: String, collection: String) {
+        db.collection(collection).document(uid).delete().await()
+    }
 
 
 }
