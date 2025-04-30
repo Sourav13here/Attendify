@@ -1,6 +1,9 @@
 package com.example.attendify.ui.verification
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendify.data.model.Student
@@ -8,7 +11,6 @@ import com.example.attendify.data.model.Teacher
 import com.example.attendify.data.repository.FirestoreRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +21,7 @@ sealed class UserData {
     data class StudentData(val student: Student) : UserData()
     data class TeacherData(val teacher: Teacher) : UserData()
 }
+
 @HiltViewModel
 class VerificationViewModel @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
@@ -50,6 +53,12 @@ class VerificationViewModel @Inject constructor(
     private val _showEmailNotVerifiedBox = MutableStateFlow(false)
     val showEmailNotVerifiedBox: StateFlow<Boolean> = _showEmailNotVerifiedBox.asStateFlow()
 
+    private val _unverifiedStudents = MutableStateFlow<List<Student>>(emptyList())
+    val unverifiedStudents: StateFlow<List<Student>> = _unverifiedStudents.asStateFlow()
+
+    private val _unverifiedTeachers = MutableStateFlow<List<Teacher>>(emptyList())
+    val unverifiedTeachers: StateFlow<List<Teacher>> = _unverifiedTeachers.asStateFlow()
+
 
     fun showSnackbar(message: String) {
         _snackbarMessage.value = message
@@ -58,7 +67,6 @@ class VerificationViewModel @Inject constructor(
     fun clearSnackbar() {
         _snackbarMessage.value = null
     }
-
 
 
     // Function to verify and save user data
@@ -86,7 +94,7 @@ class VerificationViewModel @Inject constructor(
                     _errorMessage.value = "No authenticated user found"
                     return@launch
                 }
-                val result =  firestoreRepository.getUser(userId)
+                val result = firestoreRepository.getUser(userId)
 
                 // Check if the user exists in Firestore
                 if (result == null) {
@@ -132,6 +140,49 @@ class VerificationViewModel @Inject constructor(
         }
     }
 
+    fun fetchUnverifiedUsers(accountType: String, branch: String, semester: String = "") {
+        if (accountType.isBlank()) {
+            Log.w("VerificationViewModel", "fetchUnverifiedUsers called with empty accountType")
+            return
+        }
+
+        viewModelScope.launch {
+            Log.d("VerificationViewModel", "Fetching users: accountType=$accountType, branch=$branch, semester=$semester")
+            if (accountType == "student") {
+                firestoreRepository.getUnverifiedStudents(branch, semester) {
+                    _unverifiedStudents.value = it
+                    Log.d("VerificationViewModel", "Fetched ${it.size} unverified students")
+                }
+            } else {
+                firestoreRepository.getUnverifiedTeachers(branch) {
+                    _unverifiedTeachers.value = it
+                    Log.d("VerificationViewModel", "Fetched ${it.size} unverified teachers")
+                }
+            }
+        }
+    }
+
+
+    fun approveUser(uid: String, accountType: String) {
+        viewModelScope.launch {
+            firestoreRepository.updateIsVerified(
+                uid,
+                if (accountType == "student") "Student" else "Teacher",
+                true
+            )
+            fetchUnverifiedUsers(accountType, "", "") // re-fetch
+        }
+    }
+
+    fun rejectUser(uid: String, accountType: String) {
+        viewModelScope.launch {
+            firestoreRepository.deleteUser(
+                uid,
+                if (accountType == "student") "Student" else "Teacher"
+            )
+            fetchUnverifiedUsers(accountType, "", "") // re-fetch
+        }
+    }
 
     // Refresh data if needed
     fun refreshData() {
@@ -163,6 +214,7 @@ class VerificationViewModel @Inject constructor(
                                 _navigateToTeacherDashboard.value = true
                             }
                         }
+
                         is Student -> {
                             _userData.value = UserData.StudentData(userObj)
                             if (userObj.isVerified) {

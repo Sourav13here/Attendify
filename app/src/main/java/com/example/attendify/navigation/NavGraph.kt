@@ -89,7 +89,7 @@ fun NavGraph(navController: NavHostController) {
             SplashScreen(navController, splashViewModel)
         }
         composable(NavRoutes.VerificationPage.route) {
-            Verification_Page(navController)
+            Verification_Page(navController,verificationViewModel)
         }
 
         composable("${NavRoutes.SubjectPage.route}/{subjectCode}") { backStackEntry ->

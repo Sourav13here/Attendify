@@ -3,6 +3,7 @@ package com.example.attendify.data.model
 import com.google.firebase.firestore.PropertyName
 
 data class Student(
+    val uid : String = "",
     val email: String = "",
     val name: String = "",
     @get:PropertyName("isVerified") @set:PropertyName("isVerified")

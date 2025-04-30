@@ -33,8 +33,8 @@ class SignUpViewModel @Inject constructor(
         rollno: String
     ) {
         if (username.isBlank() || email.isBlank() || password.isBlank() ||
-            (accountType == "Student" && (branch.isBlank() || semester.isBlank() || rollno.isBlank())) ||
-            (accountType == "Teacher" && branch.isBlank())
+            (accountType == "student" && (branch.isBlank() || semester.isBlank() || rollno.isBlank())) ||
+            (accountType == "teacher" && branch.isBlank())
         ) {
             Toast.makeText(context, "All fields are mandatory", Toast.LENGTH_SHORT).show()
             return
