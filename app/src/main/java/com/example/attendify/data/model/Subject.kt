@@ -7,3 +7,4 @@ data class Subject(
     val semester: String = "",
     val createdBy: String = ""
 )
+

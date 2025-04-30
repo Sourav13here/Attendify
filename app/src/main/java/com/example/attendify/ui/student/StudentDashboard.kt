@@ -1,5 +1,6 @@
 package com.example.attendify.ui.student
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -8,17 +9,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomIconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,19 +28,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.teacher.components.SubjectCard
 import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun StudentDashboard(navController: NavController, viewmodel: StudentDashboardViewModel) {
+fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
     var showLogOutDialog by remember { mutableStateOf(false) }
+
     if (showLogOutDialog) {
         LogoutConfirmationDialog(
             onConfirm = {
                 CoroutineScope(Dispatchers.Main).launch {
-                    viewmodel.signOut()
+                    viewModel.signOut()
                     navController.navigate(NavRoutes.LoginPage.route) {
                         popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
                     }
@@ -51,6 +54,7 @@ fun StudentDashboard(navController: NavController, viewmodel: StudentDashboardVi
             }
         )
     }
+
     AppScaffold(
         title = "STUDENT DASHBOARD",
         navController = navController,
@@ -85,10 +89,17 @@ fun StudentDashboard(navController: NavController, viewmodel: StudentDashboardVi
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text("John Smith", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            Text("CSE - 6th sem", fontSize = 16.sp)
+            val student = viewModel.student.value
+            if (student != null) {
+                Text(student.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text("${student.branch} - ${student.semester} sem", fontSize = 16.sp)
+            } else {
+                CircularProgressIndicator()
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            val subjectsWithAttendance = viewModel.subjectwithattendance.value
 
             LazyColumn(
                 modifier = Modifier
@@ -97,22 +108,25 @@ fun StudentDashboard(navController: NavController, viewmodel: StudentDashboardVi
                     .fillMaxHeight(0.9f)
                     .padding(16.dp)
             ) {
-                item {
-                    repeat(7) { index ->
-                        AttendanceCard(
-                            subject = "CS1809213",
-                            title = "Computer Networks",
-                            percentage = listOf(100, 75, 40, 20, 0, 100, 100)[index]
-                        )
-                    }
+                items(subjectsWithAttendance) { subjectWithAttendance ->
+                    AttendanceCard(
+                        subject = subjectWithAttendance.subject.subjectName,
+                        title = subjectWithAttendance.subjectCode,
+                        percentage = subjectWithAttendance.attendancePercentage,
+                        onClick = {
+                            navController.navigate("${NavRoutes.AttendanceStudent.route}/${subjectWithAttendance.subject.subjectName}")
+                        }
+                    )
                 }
             }
+
         }
     }
 }
 
+
 @Composable
-fun AttendanceCard(subject: String, title: String, percentage: Int) {
+fun AttendanceCard(subject: String, title: String, percentage: Int,onClick: () -> Unit) {
     val color = when {
         percentage >= 75 -> Color.Green
         percentage in 40..74 -> Color.Yellow
@@ -125,7 +139,9 @@ fun AttendanceCard(subject: String, title: String, percentage: Int) {
             .padding(8.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
             .background(color = Color.White, RoundedCornerShape(16.dp))
+            .clickable { onClick() }
             .padding(12.dp),
+
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
@@ -136,6 +152,7 @@ fun AttendanceCard(subject: String, title: String, percentage: Int) {
             modifier = Modifier
                 .size(30.dp)
                 .background(color, shape = CircleShape),
+
             contentAlignment = Alignment.Center
         ) {
             Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
@@ -143,8 +160,16 @@ fun AttendanceCard(subject: String, title: String, percentage: Int) {
     }
 }
 
-//@Preview(showSystemUi = true)
+//@Preview(showSystemUi = true, showBackground = true)
 //@Composable
-//fun DisplayStudentDashboard() {
-//    StudentDashboard(rememberNavController())
+//fun PreviewStudentDashboard() {
+//    val mockViewModel = object : StudentDashboardViewModel() {
+//        // You can override signOut or other functions here if needed
+//    }
+//
+//    StudentDashboard(
+//        navController = rememberNavController(),
+//        viewmodel = mockViewModel
+//    )
 //}
+
