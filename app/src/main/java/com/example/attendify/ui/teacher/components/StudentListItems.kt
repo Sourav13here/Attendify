@@ -27,7 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AttendanceRow(rollNo: String, studentName: String) {
+fun StudentListItems(
+    rollNo: String,
+    studentName: String,
+    onAttendanceMarked: (status: Int) -> Unit,
+    attendanceStatus: Map<String, Boolean>
+) {
     var isPresent by remember { mutableStateOf(false) }
     var isAbsent by remember { mutableStateOf(false) }
     var showFullNameDialog by remember { mutableStateOf(false) }
@@ -45,7 +50,9 @@ fun AttendanceRow(rollNo: String, studentName: String) {
             modifier = Modifier.width(120.dp)
         )
 
-        Divider(color = Color.Gray, modifier = Modifier.width(1.dp).height(24.dp))
+        Divider(color = Color.Gray, modifier = Modifier
+            .width(1.dp)
+            .height(24.dp))
 
         // Clickable Student Name
         Text(
@@ -63,30 +70,33 @@ fun AttendanceRow(rollNo: String, studentName: String) {
         Box(
             modifier = Modifier
                 .size(30.dp)
-                .background(if (isPresent) Color.Green else Color(0xFFC8E6C9)) // Dark green if selected, else light green
+                .background(if (isPresent) Color.Green else Color(0xFFC8E6C9))
                 .clickable {
-                    if (isPresent) {
-                        isPresent = false  // Deselect if already selected
-                    } else {
+                    if (!isPresent) {
                         isPresent = true
-                        isAbsent = false  // Ensure "A" is deselected
+                        isAbsent = false
+                        onAttendanceMarked(1) // Mark as present
+                    } else {
+                        isPresent = false
+                        onAttendanceMarked(-1) // Cancel selection
                     }
                 }
         )
 
-        Spacer(modifier = Modifier.width(4.dp)) // Space between P and A
+        Spacer(modifier = Modifier.width(4.dp))
 
-        //"A" Button (Toggle Selection)
         Box(
             modifier = Modifier
                 .size(30.dp)
-                .background(if (isAbsent) Color.Red else Color(0xFFFFCDD2)) // Dark red if selected, else light red
+                .background(if (isAbsent) Color.Red else Color(0xFFFFCDD2))
                 .clickable {
-                    if (isAbsent) {
-                        isAbsent = false  // Deselect if already selected
-                    } else {
+                    if (!isAbsent) {
                         isAbsent = true
-                        isPresent = false  // Ensure "P" is deselected
+                        isPresent = false
+                        onAttendanceMarked(0) // Mark as absent
+                    } else {
+                        isAbsent = false
+                        onAttendanceMarked(-1) // Cancel selection
                     }
                 }
         )

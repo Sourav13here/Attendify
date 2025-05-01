@@ -1,11 +1,14 @@
 package com.example.attendify.data.repository
 
+import com.example.attendify.data.model.Attendance
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Subject
 import com.example.attendify.data.model.Teacher
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.text.get
 
 class FirestoreRepository @Inject constructor(
     val db: FirebaseFirestore
@@ -82,6 +85,7 @@ class FirestoreRepository @Inject constructor(
             .update("isVerified", value)
             .await()
     }
+
     fun addSubject(
         subject: Subject,
         onSuccess: () -> Unit,
@@ -128,7 +132,6 @@ class FirestoreRepository @Inject constructor(
             }
     }
 
-
     fun getUnverifiedTeachers(branch: String, onResult: (List<Teacher>) -> Unit) {
         if (branch.isBlank()) {
             onResult(emptyList())
@@ -145,6 +148,57 @@ class FirestoreRepository @Inject constructor(
             }
     }
 
+    fun getVerifiedStudents(branch: String, semester: String, onResult: (List<Student>) -> Unit) {
+        if (branch.isBlank() || semester.isBlank()) {
+            onResult(emptyList())
+            return
+        }
+
+        db.collection("Student")
+            .whereEqualTo("isVerified", true)
+            .whereEqualTo("branch", branch)
+            .whereEqualTo("semester", semester)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val students = snapshot.toObjects(Student::class.java)
+                onResult(students)
+            }
+    }
+
+    fun storeAttendance(attendance: Attendance, branch: String, semester: String) {
+        val date = attendance.date
+        db.collection("Attendance")
+            .document(branch)
+            .collection(semester)
+            .document(attendance.subjectName)
+            .collection(date)
+            .document(attendance.studentEmail)
+            .set(attendance)
+    }
+    suspend fun getAttendanceForDate(
+        date: String,
+        subjectName: String,
+        branch: String,
+        semester: String
+    ): Map<String, Boolean> {
+        return try {
+            val snapshot = db.collection("Attendance")
+                .document(branch)
+                .collection(semester)
+                .document(subjectName)
+                .collection(date)
+                .get()
+                .await()
+
+            snapshot.documents.associate { doc ->
+                val studentEmail = doc.getString("studentEmail") ?: ""
+                val status = doc.getBoolean("status") ?: false
+                studentEmail to status
+            }
+        } catch (e: Exception) {
+            emptyMap()
+        }
+    }
 
     suspend fun deleteUser(uid: String, collection: String) {
         db.collection(collection).document(uid).delete().await()
@@ -153,6 +207,11 @@ class FirestoreRepository @Inject constructor(
     suspend fun getStudentDetails(userId: String): Student {
         val document = db.collection("Student").document(userId).get().await()
         return document.toObject(Student::class.java) ?: throw Exception("Student not found")
+    }
+
+    suspend fun getTeacherDetails(userId: String): Teacher {
+        val document = db.collection("Teacher").document(userId).get().await()
+        return document.toObject(Teacher::class.java) ?: throw Exception("Teacher not found")
     }
 
     suspend fun getSubjectsByBranchAndSemester(branch: String, semester: String): List<Subject> {
@@ -169,6 +228,7 @@ class FirestoreRepository @Inject constructor(
             emptyList()
         }
     }
+
     suspend fun getAttendanceForStudent(studentId: String, subjectCode: String): Int {
         return try {
             val snapshot = db.collection("Attendance")
@@ -187,7 +247,4 @@ class FirestoreRepository @Inject constructor(
             0
         }
     }
-
-
-
 }

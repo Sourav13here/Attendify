@@ -1,6 +1,7 @@
 package com.example.attendify.ui.teacher
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,20 +17,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,18 +35,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomIconButton
 import com.example.attendify.data.model.Subject
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.teacher.components.AddSubjectPopup
-import com.example.attendify.ui.teacher.components.SubjectCard
+import com.example.attendify.ui.teacher.components.VerifyFloatingButton
 import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,21 +57,13 @@ fun TeacherDashboard(
     viewModel: TeacherDashboardViewModel = hiltViewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    var showLogOutDialog by remember { mutableStateOf(false) }
     val subjects by viewModel.subjects.collectAsState()
+    val teacher = viewModel.teacher.value
 
     LaunchedEffect(Unit) {
         viewModel.loadSubjects()
     }
-
-    subjects.forEach {
-        SubjectCard(
-            it.subjectCode, it.subjectName,
-            onClick = {
-
-            }
-        )
-    }
-
 
     if (showDialog) {
         AddSubjectPopup(
@@ -98,9 +81,6 @@ fun TeacherDashboard(
         )
     }
 
-
-    //    Logout Panel
-    var showLogOutDialog by remember { mutableStateOf(false) }
     if (showLogOutDialog) {
         LogoutConfirmationDialog(
             onConfirm = {
@@ -112,18 +92,15 @@ fun TeacherDashboard(
                 }
                 showLogOutDialog = false
             },
-            onDismiss = {
-                showLogOutDialog = false
-            }
+            onDismiss = { showLogOutDialog = false }
         )
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AppScaffold(
             title = "Teacher Dashboard",
             navController = navController,
-            titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
+            titleTextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             actions = {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -145,7 +122,7 @@ fun TeacherDashboard(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(bottom = 80.dp) // Leaves space for FAB
+                    .padding(bottom = 80.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -156,13 +133,17 @@ fun TeacherDashboard(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = "Welcome, JOHN SMITH",
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .background(Color.LightGray, RoundedCornerShape(8.dp))
-                        .padding(12.dp)
-                )
+                if (teacher != null) {
+                    Text(
+                        text = "Welcome, " + teacher.name,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .background(Color.LightGray, RoundedCornerShape(8.dp))
+                            .padding(12.dp)
+                    )
+                } else {
+                    CircularProgressIndicator()
+                }
 
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -186,43 +167,50 @@ fun TeacherDashboard(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         if (subjects.isEmpty()) {
-                            Text(
-                                "No subjects added yet.",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                            Text("No subjects added yet.", style = MaterialTheme.typography.bodyMedium)
                         } else {
                             subjects.forEach { subject ->
-                                SubjectCard(
-                                    subjectCode = subject.subjectCode,
-                                    subjectName = subject.subjectName,
-                                    onClick = {
-                                        navController.navigate("${NavRoutes.SubjectPage.route}/${subject.subjectCode}")
-                                    }
-                                )
-
+                                if (teacher != null) {
+                                    SubjectCard(
+                                        subjectCode = subject.subjectCode,
+                                        subjectName = subject.subjectName,
+                                        subjectBranch = subject.branch,
+                                        subjectSem = subject.semester,
+                                        onClick = {
+                                            navController.navigate(
+                                                "${NavRoutes.AttendanceSheet.route}/${subject.subjectCode}/${subject.subjectName}/${subject.branch}/${subject.semester}/${teacher.email}"
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        VerifyFloatingButton(navController)
+    }
+}
 
-        /*TODO: Add Badge for convenience [to know when ]*/
-        FloatingActionButton(
-            onClick = {
-                navController.navigate(NavRoutes.VerificationPage.route) {
-
-                }
-            },
-            containerColor = Color.LightGray,
-            contentColor = Color.Black,
-            shape = CircleShape,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-
-                .padding(16.dp)
-        ) {
-            Text("Verify")
+@Composable
+fun SubjectCard(
+    subjectCode: String,
+    subjectBranch: String,
+    subjectSem: String,
+    subjectName: String,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable { onClick() }, // Make it clickable
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = "$subjectCode - $subjectBranch ($subjectSem)", fontWeight = FontWeight.Bold)
+            Text(text = subjectName)
         }
     }
 }

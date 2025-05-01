@@ -52,8 +52,6 @@ class AuthRepository @Inject constructor(
 
     fun getCurrentUserId(): String? = auth.currentUser?.uid
 
-    fun getCurrentUserEmail(): String? = auth.currentUser?.email
-
 
 }
 

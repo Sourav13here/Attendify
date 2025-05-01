@@ -13,7 +13,6 @@ import androidx.navigation.navArgument
 import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.splashscreen.SplashScreen
 import com.example.attendify.ui.splashscreen.SplashViewModel
-import com.example.attendify.ui.student.AttendanceStudent
 import com.example.attendify.ui.student.StudentDashboard
 import com.example.attendify.ui.student.StudentDashboardViewModel
 import com.example.attendify.ui.teacher.AttendanceSheet
@@ -93,17 +92,22 @@ fun NavGraph(navController: NavHostController) {
             Verification_Page(navController,verificationViewModel)
         }
 
-        composable("${NavRoutes.SubjectPage.route}/{subjectCode}") { backStackEntry ->
-            val subjectCode = backStackEntry.arguments?.getString("subjectCode") ?: ""
-            AttendanceSheet(subjectCode = subjectCode, navController = navController)
-        }
-
         composable(
-            "${NavRoutes.AttendanceStudent.route}/{subjectName}",
-            arguments = listOf(navArgument("subjectName") { type = NavType.StringType })
+            route = "${NavRoutes.AttendanceSheet.route}/{subjectCode}/{subjectName}/{branch}/{semester}/{teacherEmail}"
         ) { backStackEntry ->
+            val subjectCode = backStackEntry.arguments?.getString("subjectCode") ?: ""
             val subjectName = backStackEntry.arguments?.getString("subjectName") ?: ""
-            AttendanceStudent(navController, subjectName)
+            val branch = backStackEntry.arguments?.getString("branch") ?: ""
+            val semester = backStackEntry.arguments?.getString("semester") ?: ""
+            val teacherEmail = backStackEntry.arguments?.getString("teacherEmail") ?: ""
+            AttendanceSheet(
+                navController = navController,
+                subjectCode = subjectCode,
+                subjectName = subjectName,
+                branch = branch,
+                semester = semester,
+                teacherEmail = teacherEmail
+            )
         }
 
 
