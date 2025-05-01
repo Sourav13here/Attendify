@@ -114,7 +114,8 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
                         title = subjectWithAttendance.subjectCode,
                         percentage = subjectWithAttendance.attendancePercentage,
                         onClick = {
-                            navController.navigate("${NavRoutes.AttendanceStudent.route}/${subjectWithAttendance.subject.subjectName}")
+                            navController.navigate("${NavRoutes.AttendanceStudent.route}/${subjectWithAttendance.subject.subjectName}|${subjectWithAttendance.subject.subjectCode}")
+
                         }
                     )
                 }

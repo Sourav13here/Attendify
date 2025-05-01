@@ -21,7 +21,8 @@ import com.example.attendify.ui.student.components.SubjectInfoCard
 import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
-fun AttendanceStudent(navController: NavController, subjectName: String) {
+fun AttendanceStudent(navController: NavController, subjectInfo: String) {
+    val (subjectName, subjectCode) = subjectInfo.split("|")
     val totalClasses = 15
     val attendedClasses = 10
     val percentage = (attendedClasses * 100) / totalClasses
@@ -41,7 +42,7 @@ fun AttendanceStudent(navController: NavController, subjectName: String) {
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            SubjectInfoCard(subjectName)
+            SubjectInfoCard(subjectName = subjectName, subjectCode = subjectCode)
             Spacer(modifier = Modifier.height(20.dp))
 
             CalendarView()
@@ -55,6 +56,7 @@ fun AttendanceStudent(navController: NavController, subjectName: String) {
         }
     }
 }
+
 
 
 

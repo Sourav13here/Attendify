@@ -150,5 +150,44 @@ class FirestoreRepository @Inject constructor(
         db.collection(collection).document(uid).delete().await()
     }
 
+    suspend fun getStudentDetails(userId: String): Student {
+        val document = db.collection("Student").document(userId).get().await()
+        return document.toObject(Student::class.java) ?: throw Exception("Student not found")
+    }
+
+    suspend fun getSubjectsByBranchAndSemester(branch: String, semester: String): List<Subject> {
+        return try {
+            val snapshot = db.collection("Subjects")
+                .whereEqualTo("branch", branch)
+                .whereEqualTo("semester", semester)
+                .get()
+                .await()
+
+            snapshot.toObjects(Subject::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+    suspend fun getAttendanceForStudent(studentId: String, subjectCode: String): Int {
+        return try {
+            val snapshot = db.collection("Attendance")
+                .whereEqualTo("studentId", studentId)
+                .whereEqualTo("subjectCode", subjectCode)
+                .get()
+                .await()
+
+            val documents = snapshot.documents
+            val total = documents.size
+            val present = documents.count { it.getBoolean("present") == true }
+
+            if (total == 0) 0 else (present * 100) / total
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
+        }
+    }
+
+
 
 }

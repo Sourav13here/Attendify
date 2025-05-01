@@ -12,27 +12,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SubjectInfoCard(subjectName: String) {
+fun SubjectInfoCard(subjectName: String, subjectCode: String) {
     Card(
         modifier = Modifier.fillMaxWidth(0.85f),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
     ) {
         Column(
-            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "CS1809213",
+                text = subjectCode,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
             Text(
-                subjectName,
+                text = subjectName,
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp
             )
         }
     }
-
 }
+

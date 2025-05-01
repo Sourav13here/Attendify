@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.splashscreen.SplashScreen
 import com.example.attendify.ui.splashscreen.SplashViewModel
+import com.example.attendify.ui.student.AttendanceStudent
 import com.example.attendify.ui.student.StudentDashboard
 import com.example.attendify.ui.student.StudentDashboardViewModel
 import com.example.attendify.ui.teacher.AttendanceSheet
@@ -96,6 +97,15 @@ fun NavGraph(navController: NavHostController) {
             val subjectCode = backStackEntry.arguments?.getString("subjectCode") ?: ""
             AttendanceSheet(subjectCode = subjectCode, navController = navController)
         }
+
+        composable(
+            "${NavRoutes.AttendanceStudent.route}/{subjectName}",
+            arguments = listOf(navArgument("subjectName") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val subjectName = backStackEntry.arguments?.getString("subjectName") ?: ""
+            AttendanceStudent(navController, subjectName)
+        }
+
 
     }
 }
