@@ -99,7 +99,8 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val subjectsWithAttendance = viewModel.subjectwithattendance.value
+            val subjectsWithAttendance = viewModel.subjectAttendancePairs.value
+
 
             LazyColumn(
                 modifier = Modifier
@@ -108,17 +109,17 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
                     .fillMaxHeight(0.9f)
                     .padding(16.dp)
             ) {
-                items(subjectsWithAttendance) { subjectWithAttendance ->
+                items(subjectsWithAttendance) { (subject, percentage) ->
                     AttendanceCard(
-                        subject = subjectWithAttendance.subject.subjectName,
-                        title = subjectWithAttendance.subjectCode,
-                        percentage = subjectWithAttendance.attendancePercentage,
+                        subject = subject.subjectName,
+                        title = subject.subjectCode,
+                        percentage = percentage,
                         onClick = {
-                            navController.navigate("${NavRoutes.AttendanceStudent.route}/${subjectWithAttendance.subject.subjectName}|${subjectWithAttendance.subject.subjectCode}")
-
+                            navController.navigate("${NavRoutes.AttendanceStudent.route}/${subject.subjectName}|${subject.subjectCode}")
                         }
                     )
                 }
+
             }
 
         }

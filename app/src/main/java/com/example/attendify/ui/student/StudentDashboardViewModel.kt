@@ -1,6 +1,5 @@
 package com.example.attendify.ui.student
 
-import SubjectWithAttendance
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,8 +24,8 @@ class StudentDashboardViewModel @Inject constructor(
     private val _subjects = mutableStateOf<List<Subject>>(emptyList())
     val subjects = _subjects
 
-    private val _subjectwithattendance = mutableStateOf<List<SubjectWithAttendance>>(emptyList())
-    val subjectwithattendance = _subjectwithattendance
+    private val _subjectAttendancePairs = mutableStateOf<List<Pair<Subject, Int>>>(emptyList())
+    val subjectAttendancePairs = _subjectAttendancePairs
 
     init {
         fetchStudentData()
@@ -53,16 +52,13 @@ class StudentDashboardViewModel @Inject constructor(
 
                 val attendanceList = subjectsData.map { subject ->
                     val percentage = firestoreRepo.getAttendanceForStudent(
-                        studentId = student.rollNumber, // or UID based on how you store attendance
+                        studentId = student.rollNumber,
                         subjectCode = subject.subjectCode
                     )
-                    SubjectWithAttendance(
-                        subject = subject,
-                        subjectCode = subject.subjectCode,
-                        attendancePercentage = percentage
-                    )
+                    subject to percentage // Pair<Subject, Int>
                 }
-                _subjectwithattendance.value = attendanceList
+                _subjectAttendancePairs.value = attendanceList
+
             } catch (e: Exception) {
                 e.printStackTrace()
             }
