@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,9 +25,10 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import com.example.attendify.R
 
 @Composable
-fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected: (String) -> Unit) {
+fun ScrollableDateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected: (String) -> Unit) {
     val daysInMonth = getDaysInMonth(currentMonth)
 
     //Get today's full date (DD MMMM YYYY) for correct highlighting
@@ -35,7 +37,7 @@ fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected:
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 8.dp)
     ) {
         items(daysInMonth) { date ->
             val dateString = String.format("%02d", date)  // Two-digit format
@@ -49,14 +51,14 @@ fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected:
             Box(
                 modifier = Modifier
                     .padding(4.dp)
-                    .size(60.dp, 70.dp)
+                    .size(width = 48.dp, height = 60.dp)
                     .border(
-                        BorderStroke(2.dp, if (isToday) Color.Blue else Color.Transparent),
-                        RoundedCornerShape(8.dp)
+                        BorderStroke(2.dp, if (isToday) Color(0xFF4CAEFF) else Color.Transparent),
+                        RoundedCornerShape(16.dp)
                     )
                     .background(
-                        if (isSelectedDate) Color(0xFF4CAEFF) else Color.Transparent,
-                        RoundedCornerShape(4.dp)
+                        if (isSelectedDate) colorResource(R.color.lightBlue) else Color.Transparent,
+                        RoundedCornerShape(16.dp)
                     )
                     .clickable { onDateSelected(dateString) },
                 contentAlignment = Alignment.Center
@@ -72,13 +74,6 @@ fun DateSelectionRow(selectedDate: String, currentMonth: String, onDateSelected:
 fun getCurrentFullDate(): String {
     return SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(Date())
 }
-
-
-
-
-
-
-
 
 // Date & Month Utility Functions
 fun getCurrentDate(): String = SimpleDateFormat("dd", Locale.getDefault()).format(Date())

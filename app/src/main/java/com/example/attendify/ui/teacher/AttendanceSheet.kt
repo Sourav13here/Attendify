@@ -2,6 +2,7 @@ package com.example.attendify.ui.teacher
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,28 +13,48 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
-import com.example.attendify.ui.teacher.components.AttendanceTable
-import com.example.attendify.ui.teacher.components.DateSelectionRow
+import com.example.attendify.ui.teacher.components.ScrollableDateSelectionRow
+import com.example.attendify.ui.teacher.components.StudentList
 import com.example.attendify.ui.teacher.components.getCurrentDate
 import com.example.attendify.ui.teacher.components.getCurrentMonthYear
 import com.example.attendify.ui.teacher.components.getNextMonth
 import com.example.attendify.ui.teacher.components.getPreviousMonth
-import com.example.attendify.ui.theme.AttendifyTheme
 
 @Composable
-fun AttendanceSheet(navController: NavController, subjectCode: String ) {
+fun AttendanceSheet(
+    navController: NavController,
+    subjectCode: String,
+    subjectName: String,
+    branch: String,
+    semester: String,
+    teacherEmail: String,
+    viewModel: TeacherDashboardViewModel = hiltViewModel()
+) {
     var selectedDate by remember { mutableStateOf(getCurrentDate()) }
     var currentMonth by remember { mutableStateOf(getCurrentMonthYear()) }
 
+    val students by viewModel.students.collectAsState()
+    val isLoadingStudentsList by viewModel.isLoadingStudentsList.collectAsState()
+
+    val attendanceStatus by viewModel.attendanceStatusByEmail.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadStudents(branch, semester)
+    }
+    LaunchedEffect(selectedDate, currentMonth) {
+        val fullDate = "$currentMonth-$selectedDate" // e.g., "2025-04-30"
+        viewModel.loadAttendanceStatusForDate(fullDate, subjectName, branch, semester)
+    }
+
     AppScaffold(
-        title = "Computer Networks",
+        title = subjectName,
         navController = navController,
+        titleTextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Medium),
         showLogo = false,
         showBackButton = true
     ) { padding ->
@@ -53,8 +74,7 @@ fun AttendanceSheet(navController: NavController, subjectCode: String ) {
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "CS1809213", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    Text(text = "Computer Networks", fontSize = 14.sp)
+                    Text(text = "$subjectCode ($branch - $semester sem)", fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -62,8 +82,8 @@ fun AttendanceSheet(navController: NavController, subjectCode: String ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
@@ -81,30 +101,19 @@ fun AttendanceSheet(navController: NavController, subjectCode: String ) {
                 }
             }
 
-            // Scrollable Date Selection
-            DateSelectionRow(selectedDate, currentMonth) { newDate ->
+            ScrollableDateSelectionRow(selectedDate, currentMonth) { newDate ->
                 selectedDate = newDate
             }
 
-            // Attendance Table
-            AttendanceTable()
+            // Student List
+            StudentList(
+                students = students,
+                subjectName = subjectName,
+                markedBy = teacherEmail,
+                loading = isLoadingStudentsList,
+                viewModel = viewModel,
+                attendanceStatus = attendanceStatus
+            )
         }
     }
 }
-
-
-
-
-
-@Preview(showSystemUi = true)
-@Composable
-fun AttendanceSheetScreenPreview() {
-    AttendifyTheme {
-        AttendanceSheet(
-            navController = rememberNavController(),
-            subjectCode = "CD18638162"
-        )
-    }
-}
-
-
