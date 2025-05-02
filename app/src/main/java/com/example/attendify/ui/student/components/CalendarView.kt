@@ -1,8 +1,10 @@
 package com.example.attendify.ui.student.components
 
 import android.text.format.DateUtils.isToday
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,15 +42,14 @@ import com.example.attendify.ui.student.StudentDashboardViewModel
 
 @Composable
 fun CalendarView(
-    attendanceMap: Map<String, Int>,
+    attendanceMap: Map<String, Int>, // Firestore data: "yyyy-MM-dd" -> 1 or 0
     initialDate: LocalDate,
+    localAttendanceMap: MutableMap<String, Int>, // Temporary attendance changes
     viewmodel: StudentDashboardViewModel
 ) {
     var currentDate by remember { mutableStateOf(initialDate) }
     val currentMonth = currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val currentYear = currentDate.year
-
-
 
     Column(
         modifier = Modifier
@@ -56,14 +58,14 @@ fun CalendarView(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        // Header: Month + Navigation
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             IconButton(onClick = { currentDate = currentDate.minusMonths(1) }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Previous Month")
-        }
+            }
 
             Text("$currentMonth $currentYear", fontSize = 18.sp)
 
@@ -74,23 +76,25 @@ fun CalendarView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Week Days Row
-        val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+        // Weekday headers
+        val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            days.forEach { Text(it, fontSize = 14.sp) }
+            weekdays.forEach {
+                Text(text = it, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+            }
         }
 
-        // Generate the calendar dynamically based on the current month
+        // Calendar generation
         val firstDayOfMonth = currentDate.withDayOfMonth(1)
-        val startDay = firstDayOfMonth.dayOfWeek.value % 7  // Adjust Sunday as 0
-        val totalDays = firstDayOfMonth.month.length(firstDayOfMonth.isLeapYear)
+        val startDayOffset = (firstDayOfMonth.dayOfWeek.value + 6) % 7 // To make Monday first
+        val totalDaysInMonth = currentDate.month.length(firstDayOfMonth.isLeapYear)
 
         val daysGrid = mutableListOf<List<String>>()
         var day = 1
-        for (week in 0 until 6) {  // Max 6 weeks in a month
+        for (week in 0 until 6) {
             val row = mutableListOf<String>()
             for (col in 0 until 7) {
-                if (week == 0 && col < startDay || day > totalDays) {
+                if (week == 0 && col < startDayOffset || day > totalDaysInMonth) {
                     row.add("")
                 } else {
                     row.add(day.toString())
@@ -100,44 +104,67 @@ fun CalendarView(
             daysGrid.add(row)
         }
 
-        // Display the days in a grid format
+        // Grid UI
         daysGrid.forEach { week ->
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                week.forEach { day ->
-                    val fullDate = if (day.isNotEmpty()) {
-                        LocalDate.of(currentDate.year, currentDate.month, day.toInt()).toString()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                week.forEach { dayStr ->
+                    val fullDate = if (dayStr.isNotEmpty()) {
+                        LocalDate.of(currentDate.year, currentDate.month, dayStr.toInt()).toString()
                     } else ""
 
-                    val isToday = day == LocalDate.now().dayOfMonth.toString() &&
-                            currentDate.month == LocalDate.now().month &&
-                            currentDate.year == LocalDate.now().year
+                    // Prioritize local attendance changes over Firestore data
+                    val attendanceStatus = if (fullDate.isNotEmpty()) {
+                        localAttendanceMap[fullDate] ?: attendanceMap[fullDate] ?: -1
+                    } else -1
+                    val isToday = fullDate == LocalDate.now().toString()
 
                     Box(
                         modifier = Modifier
                             .size(32.dp)
                             .background(
-                                color = when (attendanceMap[fullDate]) {
-                                    1 -> Color.Green
-                                    0 -> Color.Red
+                                color = when (attendanceStatus) {
+                                    1 -> Color(0xFF81C784) // Green
+                                    0 -> Color(0xFFE57373) // Red
                                     else -> Color.Transparent
                                 },
-                                shape = RoundedCornerShape(4.dp)
+                                shape = RoundedCornerShape(6.dp)
                             )
+                            .border(
+                                width = if (isToday) 2.dp else 0.dp,
+                                color = if (isToday) Color(0xFF64B5F6) else Color.Transparent,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .clickable(
+                                enabled = fullDate.isNotEmpty() && attendanceMap[fullDate] == null // Allow clicking only if not in Firestore
+                            ) {
 
-                            .then(
-                                if (isToday) Modifier
-                                    .padding(2.dp)
-                                    .border(2.dp, Color.Blue, RoundedCornerShape(4.dp))
-                                else Modifier
-                            ),
+                                 val currentStatus = localAttendanceMap[fullDate]
+                                when (currentStatus) {
+                                    1 -> localAttendanceMap[fullDate] = 0  // Present → Absent
+                                    0 -> localAttendanceMap.remove(fullDate)  // Absent → Remove entry
+                                    else -> localAttendanceMap[fullDate] = 1
+                                }
+                                    Log.d("CalendarClick", "Clicked $fullDate, Now = ${localAttendanceMap[fullDate]}")
+
+
+
+                            },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(day, fontSize = 12.sp, color = Color.Black)
+                        Text(dayStr, fontSize = 12.sp, color = Color.Black)
                     }
                 }
             }
         }
     }
 }
+
+
+
+
+
 
 

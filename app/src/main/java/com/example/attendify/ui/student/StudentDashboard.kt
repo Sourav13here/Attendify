@@ -15,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +30,7 @@ import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomIconButton
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.student.components.AttendanceReportCard
 import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,6 +39,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
     var showLogOutDialog by remember { mutableStateOf(false) }
+
+
+
     LaunchedEffect(Unit) {
         val userId = viewModel.authRepo.getCurrentUser()?.uid
         if (userId == null) {
@@ -148,40 +153,40 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 }
 
 
-    @Composable
-    fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
-        val color = when {
-            percentage >= 75 -> Color.Green
-            percentage in 40..74 -> Color.Yellow
-            percentage in 1..39 -> Color.Red
-            else -> Color.Black
+@Composable
+fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
+    val color = when {
+        percentage >= 75 -> Color.Green
+        percentage in 40..74 -> Color.Yellow
+        percentage in 1..39 -> Color.Red
+        else -> Color.Black
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
+            .background(color = Color.White, RoundedCornerShape(16.dp))
+            .clickable { onClick() }
+            .padding(12.dp),
+
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(subject, fontWeight = FontWeight.Bold)
+            Text(title, fontSize = 14.sp)
         }
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
-                .background(color = Color.White, RoundedCornerShape(16.dp))
-                .clickable { onClick() }
-                .padding(12.dp),
+                .size(30.dp)
+                .background(color, shape = CircleShape),
 
-            verticalAlignment = Alignment.CenterVertically
+            contentAlignment = Alignment.Center
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(subject, fontWeight = FontWeight.Bold)
-                Text(title, fontSize = 14.sp)
-            }
-            Box(
-                modifier = Modifier
-                    .size(30.dp)
-                    .background(color, shape = CircleShape),
-
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
-            }
+            Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
         }
     }
+}
 
 
 //@Preview(showSystemUi = true, showBackground = true)
@@ -196,4 +201,5 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 //        viewmodel = mockViewModel
 //    )
 //}
+
 
