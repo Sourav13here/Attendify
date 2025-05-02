@@ -1,5 +1,6 @@
 package com.example.attendify.ui.student.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,7 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun AttendanceReportCard(totalClasses: Int, attendedClasses: Int, percentage: Int) {
+fun AttendanceReportCard(
+    totalClasses: Int,
+    attendedClasses: Int,
+    percentage: Int
+) {
+    Log.d("AttendanceReportCard", "Total Classes: $totalClasses, Attended Classes: $attendedClasses, Percentage: $percentage")
+
+
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)
@@ -23,8 +31,7 @@ fun AttendanceReportCard(totalClasses: Int, attendedClasses: Int, percentage: In
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6))
-    )
-    {
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -37,19 +44,17 @@ fun AttendanceReportCard(totalClasses: Int, attendedClasses: Int, percentage: In
                 Icon(
                     imageVector = Icons.Default.Assessment,
                     contentDescription = "Attendance Report",
-                    tint = Color(0xFF673AB7), // Darker purple
+                    tint = Color(0xFF673AB7),
                     modifier = Modifier.padding(end = 8.dp)
                 )
-
-
                 Spacer(modifier = Modifier.width(12.dp))
-
                 Text(
                     text = "Attendance Report",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -62,9 +67,9 @@ fun AttendanceReportCard(totalClasses: Int, attendedClasses: Int, percentage: In
                     title = "Percentage",
                     value = "$percentage%",
                     valueColor = when {
-                        percentage >= 75 -> Color(0xFF4CAF50) // Green
-                        percentage >= 60 -> Color(0xFFFFA000) // Amber
-                        else -> Color(0xFFF44336) // Red
+                        percentage >= 75 -> Color(0xFF4CAF50)
+                        percentage >= 60 -> Color(0xFFFFA000)
+                        else -> Color(0xFFF44336)
                     }
                 )
             }
@@ -77,9 +82,9 @@ fun AttendanceReportCard(totalClasses: Int, attendedClasses: Int, percentage: In
                     .fillMaxWidth()
                     .height(8.dp),
                 color = when {
-                    percentage >= 75 -> Color(0xFF4CAF50) // Green
-                    percentage >= 60 -> Color(0xFFFFA000) // Amber
-                    else -> Color(0xFFF44336) // Red
+                    percentage >= 75 -> Color(0xFF4CAF50)
+                    percentage >= 60 -> Color(0xFFFFA000)
+                    else -> Color(0xFFF44336)
                 },
                 trackColor = Color.LightGray
             )
@@ -96,6 +101,7 @@ fun AttendanceReportCard(totalClasses: Int, attendedClasses: Int, percentage: In
         }
     }
 }
+
 
 @Composable
 fun AttendanceStatItem(
