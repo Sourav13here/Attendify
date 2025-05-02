@@ -41,7 +41,6 @@ class TeacherDashboardViewModel @Inject constructor(
     val attendanceStatusByEmail: StateFlow<Map<String, Int>> = _attendanceStatusByEmail
 
     init {
-//        loadSubjects()
         fetchTeacherData()
     }
 
@@ -75,9 +74,8 @@ class TeacherDashboardViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val attendance = Attendance(
-                    date = date,
+                    date = mapOf(date to status),
                     studentEmail = studentEmail,
-                    status = status,
                     subjectName = subjectName,
                     markedBy = markedBy
                 )
@@ -91,13 +89,14 @@ class TeacherDashboardViewModel @Inject constructor(
         }
     }
 
+
     private fun fetchTeacherData() {
         val userId = authRepo.getCurrentUser()?.uid ?: return
         viewModelScope.launch {
             try {
                 val teacherData = firestoreRepo.getTeacherDetails(userId)
                 _teacher.value = teacherData
-//                fetchSubjectsForStudent(studentData)
+                loadSubjects(teacherData.email)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
