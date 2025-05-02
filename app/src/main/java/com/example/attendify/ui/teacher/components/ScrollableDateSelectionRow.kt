@@ -37,7 +37,7 @@ fun ScrollableDateSelectionRow(selectedDate: String, currentMonth: String, onDat
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = 4.dp)
     ) {
         items(daysInMonth) { date ->
             val dateString = String.format("%02d", date)  // Two-digit format
@@ -65,7 +65,7 @@ fun ScrollableDateSelectionRow(selectedDate: String, currentMonth: String, onDat
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = dayOfWeek, fontSize = 12.sp, fontWeight = FontWeight.Light)
-                    Text(text = dateString, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                    Text(text = dateString, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -102,4 +102,12 @@ fun getDayOfWeek(day: Int, monthYear: String): String {
     calendar.time = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).parse(monthYear)!!
     calendar.set(Calendar.DAY_OF_MONTH, day)
     return SimpleDateFormat("EEE", Locale.getDefault()).format(calendar.time)
+}
+
+fun getFormattedFullDate(selectedDate: String, currentMonth: String): String {
+    val inputFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    val date = inputFormat.parse("$selectedDate $currentMonth")!!
+    return outputFormat.format(date)
 }

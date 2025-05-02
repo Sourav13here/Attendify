@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
     var showLogOutDialog by remember { mutableStateOf(false) }
-
     LaunchedEffect(Unit) {
         val userId = viewModel.authRepo.getCurrentUser()?.uid
         if (userId == null) {
@@ -142,48 +141,48 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
                         )
                     }
                 }
+
             }
-
-
         }
     }
 }
 
 
-@Composable
-fun AttendanceCard(subject: String, title: String, percentage: Int,onClick: () -> Unit) {
-    val color = when {
-        percentage >= 75 -> Color.Green
-        percentage in 40..74 -> Color.Yellow
-        percentage in 1..39 -> Color.Red
-        else -> Color.Black
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
-            .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
-            .background(color = Color.White, RoundedCornerShape(16.dp))
-            .clickable { onClick() }
-            .padding(12.dp),
-
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(subject, fontWeight = FontWeight.Bold)
-            Text(title, fontSize = 14.sp)
+    @Composable
+    fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
+        val color = when {
+            percentage >= 75 -> Color.Green
+            percentage in 40..74 -> Color.Yellow
+            percentage in 1..39 -> Color.Red
+            else -> Color.Black
         }
-        Box(
+        Row(
             modifier = Modifier
-                .size(30.dp)
-                .background(color, shape = CircleShape),
+                .fillMaxWidth()
+                .padding(8.dp)
+                .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
+                .background(color = Color.White, RoundedCornerShape(16.dp))
+                .clickable { onClick() }
+                .padding(12.dp),
 
-            contentAlignment = Alignment.Center
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(subject, fontWeight = FontWeight.Bold)
+                Text(title, fontSize = 14.sp)
+            }
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(color, shape = CircleShape),
+
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
+            }
         }
     }
-}
+
 
 //@Preview(showSystemUi = true, showBackground = true)
 //@Composable

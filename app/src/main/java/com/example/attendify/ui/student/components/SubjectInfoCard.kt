@@ -22,6 +22,7 @@ fun SubjectInfoCard(subjectName: String, subjectCode: String) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Text(
             text = subjectName,
             style = MaterialTheme.typography.titleMedium.copy(
@@ -29,11 +30,13 @@ fun SubjectInfoCard(subjectName: String, subjectCode: String) {
                 color = Color.Black
             )
         )
+
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = subjectCode,
             style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)
         )
+        }
     }
-}
+
 

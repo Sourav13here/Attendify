@@ -1,6 +1,9 @@
 package com.example.attendify.ui.student.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -10,22 +13,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Assessment
+
 @Composable
-fun AttendanceReportCard(
-    totalClasses: Int,
-    attendedClasses: Int,
-    percentage: Int
-) {
+fun AttendanceReportCard(totalClasses: Int, attendedClasses: Int, percentage: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)
             .padding(8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6)) // Set light purple background
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6))
     )
     {
         Column(
@@ -53,7 +50,6 @@ fun AttendanceReportCard(
                     fontWeight = FontWeight.Bold
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
@@ -126,4 +122,5 @@ fun AttendanceStatItem(
         )
     }
 }
+
 

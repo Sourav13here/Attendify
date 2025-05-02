@@ -13,7 +13,6 @@ import androidx.navigation.navArgument
 import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.splashscreen.SplashScreen
 import com.example.attendify.ui.splashscreen.SplashViewModel
-import com.example.attendify.ui.student.AttendanceStudent
 import com.example.attendify.ui.student.StudentDashboard
 import com.example.attendify.ui.student.StudentDashboardViewModel
 import com.example.attendify.ui.teacher.AttendanceSheet
@@ -22,6 +21,7 @@ import com.example.attendify.ui.teacher.TeacherDashboardViewModel
 import com.example.attendify.ui.verification.VerificationStatus
 import com.example.attendify.ui.verification.VerificationViewModel
 import com.example.attendify.ui.verification.Verification_Page
+import com.example.attendify.ui.student.AttendanceStudent
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -92,7 +92,6 @@ fun NavGraph(navController: NavHostController) {
         composable(NavRoutes.VerificationPage.route) {
             Verification_Page(navController,verificationViewModel)
         }
-
         composable(
             route = "attendance_student/{subjectName}/{subjectCode}/{branch}/{semester}/{studentEmail}",
             arguments = listOf(
@@ -123,7 +122,6 @@ fun NavGraph(navController: NavHostController) {
 
 
 
-
         composable(
             route = "${NavRoutes.AttendanceSheet.route}/{subjectCode}/{subjectName}/{branch}/{semester}/{teacherEmail}"
         ) { backStackEntry ->
@@ -138,7 +136,8 @@ fun NavGraph(navController: NavHostController) {
                 subjectName = subjectName,
                 branch = branch,
                 semester = semester,
-                teacherEmail = teacherEmail
+                teacherEmail = teacherEmail,
+                viewModel = teacherDashboardViewModel,
             )
         }
 

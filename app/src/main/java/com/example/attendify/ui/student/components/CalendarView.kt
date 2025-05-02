@@ -1,5 +1,6 @@
 package com.example.attendify.ui.student.components
 
+import android.text.format.DateUtils.isToday
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +41,6 @@ fun CalendarView(
     initialDate: LocalDate
 ) {
     var currentDate by remember { mutableStateOf(initialDate) }
-
     val currentMonth = currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val currentYear = currentDate.year
 
@@ -56,14 +56,12 @@ fun CalendarView(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            // Navigate to previous month
             IconButton(onClick = { currentDate = currentDate.minusMonths(1) }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Previous Month")
-            }
+        }
 
             Text("$currentMonth $currentYear", fontSize = 18.sp)
 
-            // Navigate to next month
             IconButton(onClick = { currentDate = currentDate.plusMonths(1) }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "Next Month")
             }
@@ -77,13 +75,14 @@ fun CalendarView(
             days.forEach { Text(it, fontSize = 14.sp) }
         }
 
+        // Generate the calendar dynamically based on the current month
         val firstDayOfMonth = currentDate.withDayOfMonth(1)
-        val startDay = firstDayOfMonth.dayOfWeek.value % 7
+        val startDay = firstDayOfMonth.dayOfWeek.value % 7  // Adjust Sunday as 0
         val totalDays = firstDayOfMonth.month.length(firstDayOfMonth.isLeapYear)
 
         val daysGrid = mutableListOf<List<String>>()
         var day = 1
-        for (week in 0 until 6) {
+        for (week in 0 until 6) {  // Max 6 weeks in a month
             val row = mutableListOf<String>()
             for (col in 0 until 7) {
                 if (week == 0 && col < startDay || day > totalDays) {
@@ -96,14 +95,13 @@ fun CalendarView(
             daysGrid.add(row)
         }
 
-        // Display days in grid
+        // Display the days in a grid format
         daysGrid.forEach { week ->
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 week.forEach { day ->
                     val isToday = day == LocalDate.now().dayOfMonth.toString() &&
                             currentDate.month == LocalDate.now().month &&
                             currentDate.year == LocalDate.now().year
-
                     Box(
                         modifier = Modifier
                             .size(32.dp)
@@ -125,20 +123,10 @@ fun CalendarView(
                     ) {
                         Text(day, fontSize = 12.sp, color = Color.Black)
                     }
-
                 }
             }
         }
     }
 }
 
-
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun DisplayCalendarView() {
-//    AttendifyTheme {
-//        CalendarView()
-//    }
-//}
 

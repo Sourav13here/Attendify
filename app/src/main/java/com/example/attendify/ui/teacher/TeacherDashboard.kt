@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,9 +61,10 @@ fun TeacherDashboard(
     var showLogOutDialog by remember { mutableStateOf(false) }
     val subjects by viewModel.subjects.collectAsState()
     val teacher = viewModel.teacher.value
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.loadSubjects()
+        viewModel.loadSubjects(teacher?.email ?: "")
     }
 
     if (showDialog) {
@@ -70,12 +72,15 @@ fun TeacherDashboard(
             onDismiss = { showDialog = false },
             onSubmit = { code, name, branch, semester ->
                 viewModel.addSubject(
-                    Subject(
+                    teacherEmail = teacher!!.email,
+                    subject = Subject(
                         subjectCode = code,
                         subjectName = name,
+                        createdBy = teacher?.email ?: "",
                         branch = branch,
                         semester = semester
-                    )
+                    ),
+                    context = context
                 )
             }
         )

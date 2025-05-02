@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.attendify.common.composable.AppScaffold
@@ -20,8 +21,6 @@ import com.example.attendify.ui.student.components.CalendarView
 import com.example.attendify.ui.student.components.SubjectInfoCard
 import com.example.attendify.ui.theme.AttendifyTheme
 import java.time.LocalDate
-import androidx.hilt.navigation.compose.hiltViewModel
-
 
 @Composable
 fun AttendanceStudent(
@@ -54,8 +53,7 @@ fun AttendanceStudent(
         showBackButton = true,
         contentDescriptionBackButton = "Back",
         titleTextStyle = MaterialTheme.typography.titleMedium
-    )
-    { padding ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)

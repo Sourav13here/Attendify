@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,8 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -35,14 +33,14 @@ fun StudentList(
     subjectName: String,
     markedBy: String,
     loading: Boolean,
-    viewModel: TeacherDashboardViewModel,
-    attendanceStatus: Map<String, Boolean>
+    date: String,
+    viewModel: TeacherDashboardViewModel
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
-            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+            .padding(8.dp)
+            .border(1.dp, Color.Gray)
     ) {
         // Header Row
         Row(
@@ -50,7 +48,8 @@ fun StudentList(
                 .fillMaxWidth()
                 .background(Color(0xFFFF9999))
                 .padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = "Roll No",
@@ -72,27 +71,39 @@ fun StudentList(
                 fontSize = 14.sp,
                 modifier = Modifier
                     .width(160.dp)
-                    .padding(start = 8.dp)
             )
-
+            Divider(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp),
+                color = Color.Black
+            )
             Text(
                 text = "P",
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = Color.Green,
                 modifier = Modifier
-                    .width(30.dp)
-                    .padding(start = 8.dp),
+                    .width(30.dp),
                 textAlign = TextAlign.Center
             )
-
-            Spacer(modifier = Modifier.width(4.dp))
 
             Text(
                 text = "A",
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = Color.Red,
+                modifier = Modifier.width(30.dp),
+                textAlign = TextAlign.Center
+            )
+            Divider(
+                modifier = Modifier
+                    .width(1.dp)
+                    .height(24.dp),
+                color = Color.Black
+            )
+            Text(
+                text = "%",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
                 modifier = Modifier.width(30.dp),
                 textAlign = TextAlign.Center
             )
@@ -125,10 +136,10 @@ fun StudentList(
 
             else -> {
                 LazyColumn {
-                    items(students) { student ->
+                    itemsIndexed(students.sortedBy { it.rollNumber }) { index, student ->
                         StudentListItems(
-                            rollNo = student.rollNumber,
-                            studentName = student.name,
+                            index = index,
+                            student = student,
                             onAttendanceMarked = { status ->
                                 if (status != -1) {
                                     viewModel.markAttendance(
@@ -137,11 +148,14 @@ fun StudentList(
                                         semester = student.semester,
                                         status = status,
                                         subjectName = subjectName,
-                                        markedBy = markedBy
+                                        markedBy = markedBy,
+                                        date = date
                                     )
                                 }
                             },
-                            attendanceStatus = attendanceStatus
+                            date = date,
+                            subjectName = subjectName,
+                            viewModel = viewModel
                         )
                     }
                 }
