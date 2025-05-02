@@ -40,8 +40,22 @@ class TeacherDashboardViewModel @Inject constructor(
     private val _attendanceStatusByEmail = MutableStateFlow<Map<String, Int>>(emptyMap())
     val attendanceStatusByEmail: StateFlow<Map<String, Int>> = _attendanceStatusByEmail
 
+    private val _studentAttendanceInfo = MutableStateFlow<Map<String, Int>>(emptyMap())
+    val studentAttendanceInfo: StateFlow<Map<String, Int>> = _studentAttendanceInfo
+
     init {
         fetchTeacherData()
+    }
+
+    fun loadAttendancePercentages(subjectName: String, branch: String, semester: String) {
+        viewModelScope.launch {
+            try {
+                val result = firestoreRepo.getAttendancePercentages(subjectName, branch, semester)
+                _studentAttendanceInfo.value = result
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun loadAttendanceStatusForDate(
@@ -83,6 +97,7 @@ class TeacherDashboardViewModel @Inject constructor(
                     put(studentEmail, status)
                 }
                 firestoreRepo.storeAttendance(attendance, branch, semester)
+                loadAttendancePercentages(subjectName, branch, semester)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

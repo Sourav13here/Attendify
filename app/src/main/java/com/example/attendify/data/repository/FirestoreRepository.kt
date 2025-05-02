@@ -202,23 +202,28 @@ class FirestoreRepository @Inject constructor(
         semester: String
     ): Map<String, Int> {
         val attendanceMap = mutableMapOf<String, Int>()
+
         val snapshot = db.collection("Attendance")
             .document(branch)
             .collection(semester)
             .document(subjectName)
-            .collection(date)
+            .collection("students")
             .get()
             .await()
 
         for (doc in snapshot.documents) {
-            val studentEmail = doc.getString("studentEmail")
-            val status = doc.getLong("status")?.toInt() // Safe conversion
+            val attendance = doc.toObject(Attendance::class.java)
+            val status = attendance?.date?.get(date)
+            val studentEmail = attendance?.studentEmail
+
             if (studentEmail != null && status != null) {
                 attendanceMap[studentEmail] = status
             }
         }
+
         return attendanceMap
     }
+
 
     suspend fun deleteUser(uid: String, collection: String) {
         db.collection(collection).document(uid).delete().await()
@@ -313,4 +318,34 @@ class FirestoreRepository @Inject constructor(
         }
         return attendanceMap
     }
+
+    suspend fun getAttendancePercentages(
+        subjectName: String,
+        branch: String,
+        semester: String
+    ): Map<String, Int> {
+        val map = mutableMapOf<String, Int>()
+
+        val snapshot = db.collection("Attendance")
+            .document(branch)
+            .collection(semester)
+            .document(subjectName)
+            .collection("students")
+            .get()
+            .await()
+
+        for (doc in snapshot.documents) {
+            val attendance = doc.toObject(Attendance::class.java)
+            val records = attendance?.date ?: continue
+
+            val total = records.size
+            val present = records.values.count { it == 1 }
+
+            val percentage = if (total > 0) (present * 100) / total else 0
+            map[attendance.studentEmail] = percentage
+        }
+
+        return map
+    }
+
 }
