@@ -100,7 +100,7 @@ class StudentDashboardViewModel @Inject constructor(
         }
     }
 
-    private val _attendanceMap = mutableStateOf<Map<String, Boolean>>(emptyMap())
+    private val _attendanceMap = mutableStateOf<Map<String, Int>>(emptyMap())
     val attendanceMap = _attendanceMap
 
     private val _totalClasses = mutableStateOf(0)
@@ -111,31 +111,49 @@ class StudentDashboardViewModel @Inject constructor(
 
 
     fun fetchAttendanceForSubject(
-        subjectCode: String,
+        subjectName: String,
         branch: String,
         semester: String
     ) {
         viewModelScope.launch {
             try {
-                val studentId = _student.value?.rollNumber ?: return@launch
+                val studentEmail = _student.value?.email ?: return@launch
+                Log.d("StudentVM", "Fetching attendance for subjectName=$subjectName, branch=$branch, semester=$semester, studentEmail=$studentEmail")
 
-                // Fetch all attendance records for the subject
                 val attendanceRecords = firestoreRepo.getAllAttendanceForStudent1(
-                    subjectCode = subjectCode,
+                    subjectName = subjectName,
                     branch = branch,
                     semester = semester,
-                    studentId = studentId
+                    studentEmail = studentEmail
                 )
 
+                Log.d("StudentVM", "Fetched attendance records: ${attendanceRecords.size}")
                 _attendanceMap.value = attendanceRecords
+
                 _totalClasses.value = attendanceRecords.size
-                _attendedClasses.value = attendanceRecords.values.count { it }
+                _attendedClasses.value = attendanceRecords.values.count { it == 1 }
+
+                // ⬇️ Separate present and absent dates
+                val present = mutableListOf<String>()
+                val absent = mutableListOf<String>()
+                attendanceRecords.forEach { (date, status) ->
+                    if (status == 1) present.add(date)
+                    else absent.add(date)
+                }
+
+                _presentDates.value = present
+                _absentDates.value = absent
 
             } catch (e: Exception) {
                 Log.e("StudentVM", "Failed to fetch attendance", e)
             }
         }
     }
+
+
+
+
+
 
 
     fun getAttendancePercentage(): Int {

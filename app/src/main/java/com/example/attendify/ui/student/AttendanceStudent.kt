@@ -1,5 +1,6 @@
 package com.example.attendify.ui.student
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,14 +33,21 @@ fun AttendanceStudent(
     studentEmail: String,
     viewModel: StudentDashboardViewModel = hiltViewModel()
 ) {
-    // Trigger fetch on first composition
-    LaunchedEffect(subjectName) {
-        viewModel.fetchAttendanceForSubject(
-            subjectCode = subjectCode,
-            branch = branch,
-            semester = semester
-        )
+    val student by remember { viewModel.student }
 
+    // Trigger fetch only after student is loaded
+    LaunchedEffect(subjectName, student) {
+        if (student != null) {
+            Log.d("AttendanceStudent", "Student is available, fetching attendance")
+            viewModel.fetchAttendanceForSubject(
+                subjectName = subjectName,   // Use 'subjectName' instead of 'subjectCode'
+                branch = branch,
+                semester = semester
+            )
+
+        } else {
+            Log.d("AttendanceStudent", "Student is null, skipping attendance fetch")
+        }
     }
 
     val attendanceMap by remember { viewModel.attendanceMap }
@@ -80,15 +88,3 @@ fun AttendanceStudent(
         }
     }
 }
-
-
-
-
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun DisplayAttendanceStudent() {
-//    AttendifyTheme {
-//        AttendanceStudent(rememberNavController())
-//    }
-//}
