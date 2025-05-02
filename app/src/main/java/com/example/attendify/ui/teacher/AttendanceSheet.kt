@@ -1,5 +1,6 @@
 package com.example.attendify.ui.teacher
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import com.example.attendify.ui.teacher.components.ScrollableDateSelectionRow
 import com.example.attendify.ui.teacher.components.StudentList
 import com.example.attendify.ui.teacher.components.getCurrentDate
 import com.example.attendify.ui.teacher.components.getCurrentMonthYear
+import com.example.attendify.ui.teacher.components.getFormattedFullDate
 import com.example.attendify.ui.teacher.components.getNextMonth
 import com.example.attendify.ui.teacher.components.getPreviousMonth
 
@@ -33,24 +35,20 @@ fun AttendanceSheet(
     branch: String,
     semester: String,
     teacherEmail: String,
-    viewModel: TeacherDashboardViewModel = hiltViewModel()
+    viewModel: TeacherDashboardViewModel
 ) {
     var selectedDate by remember { mutableStateOf(getCurrentDate()) }
     var currentMonth by remember { mutableStateOf(getCurrentMonthYear()) }
-
     val students by viewModel.students.collectAsState()
     val isLoadingStudentsList by viewModel.isLoadingStudentsList.collectAsState()
-
-    val attendanceStatus by viewModel.attendanceStatusByEmail.collectAsState()
+    val fullDate = getFormattedFullDate(selectedDate, currentMonth)
 
     LaunchedEffect(Unit) {
         viewModel.loadStudents(branch, semester)
     }
     LaunchedEffect(selectedDate, currentMonth) {
-        val fullDate = "$currentMonth-$selectedDate" // e.g., "2025-04-30"
         viewModel.loadAttendanceStatusForDate(fullDate, subjectName, branch, semester)
     }
-
     AppScaffold(
         title = subjectName,
         navController = navController,
@@ -67,15 +65,16 @@ fun AttendanceSheet(
             // Subject Box
             Box(
                 modifier = Modifier
-                    .padding(4.dp)
                     .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
                     .background(Color.LightGray, RoundedCornerShape(8.dp))
-                    .padding(12.dp),
+                    .padding(8.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "$subjectCode ($branch - $semester sem)", fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                }
+                Text(
+                    text = "$subjectCode ($branch - $semester sem)",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             // Month Navigation
@@ -90,14 +89,20 @@ fun AttendanceSheet(
                     currentMonth = getPreviousMonth(currentMonth)
                     selectedDate = "01" // Reset to 1st of new month
                 }) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Previous Month")
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Previous Month"
+                    )
                 }
                 Text(text = currentMonth, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 IconButton(onClick = {
                     currentMonth = getNextMonth(currentMonth)
                     selectedDate = "01" // Reset to 1st of new month
                 }) {
-                    Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Next Month")
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Next Month"
+                    )
                 }
             }
 
@@ -112,7 +117,7 @@ fun AttendanceSheet(
                 markedBy = teacherEmail,
                 loading = isLoadingStudentsList,
                 viewModel = viewModel,
-                attendanceStatus = attendanceStatus
+                date = fullDate
             )
         }
     }

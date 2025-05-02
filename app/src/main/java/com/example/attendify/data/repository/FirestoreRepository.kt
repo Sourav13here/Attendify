@@ -6,14 +6,13 @@ import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Subject
 import com.example.attendify.data.model.Teacher
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
-import java.time.LocalDate
 import javax.inject.Inject
-import kotlin.text.get
 
 class FirestoreRepository @Inject constructor(
-    val db: FirebaseFirestore,
-
+    val db: FirebaseFirestore
 ) {
     fun storeUserData(
         uid: String,
@@ -57,29 +56,21 @@ class FirestoreRepository @Inject constructor(
             .addOnFailureListener { exception -> onFailure(exception) }
     }
 
-
     suspend fun getUser(userId: String): Pair<Any, String>? {
         return try {
-            // Check Student collection
             val studentSnapshot = db.collection("Student").document(userId).get().await()
             val student = studentSnapshot.toObject(Student::class.java)
-            if (studentSnapshot.exists() && student != null) {
-                return student to "Student"
-            }
+            if (studentSnapshot.exists() && student != null) return student to "Student"
 
-            // Check Teacher collection
             val teacherSnapshot = db.collection("Teacher").document(userId).get().await()
             val teacher = teacherSnapshot.toObject(Teacher::class.java)
-            if (teacherSnapshot.exists() && teacher != null) {
-                return teacher to "Teacher"
-            }
+            if (teacherSnapshot.exists() && teacher != null) return teacher to "Teacher"
 
             null
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
-
     }
 
     suspend fun updateIsVerified(userId: String, collection: String, value: Boolean) {
@@ -88,19 +79,20 @@ class FirestoreRepository @Inject constructor(
             .await()
     }
 
-    fun addSubject(
-        subject: Subject,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
+    fun addSubject(subject: Subject, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         db.collection("Subjects")
             .add(subject)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { onFailure(it) }
     }
 
-    fun getSubjects(onSuccess: (List<Subject>) -> Unit, onFailure: (Exception) -> Unit) {
+    fun getSubjects(
+        teacherEmail: String,
+        onSuccess: (List<Subject>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         db.collection("Subjects")
+            .whereEqualTo("createdBy", teacherEmail)
             .get()
             .addOnSuccessListener { snapshot ->
                 val subjects = snapshot.toObjects(Subject::class.java)
@@ -108,14 +100,6 @@ class FirestoreRepository @Inject constructor(
             }
             .addOnFailureListener { onFailure(it) }
     }
-//    suspend fun getUserDetails(uid: String, accountType: String): Map<String, Any>? {
-//        return try {
-//            val snapshot = db.collection(accountType).document(uid).get().await()
-//            if (snapshot.exists()) snapshot.data else null
-//        } catch (e: Exception) {
-//            null
-//        }
-//    }
 
     fun getUnverifiedStudents(branch: String, semester: String, onResult: (List<Student>) -> Unit) {
         if (branch.isBlank() || semester.isBlank()) {
@@ -177,29 +161,30 @@ class FirestoreRepository @Inject constructor(
             .document(attendance.studentEmail)
             .set(attendance)
     }
+
     suspend fun getAttendanceForDate(
         date: String,
         subjectName: String,
         branch: String,
         semester: String
-    ): Map<String, Boolean> {
-        return try {
-            val snapshot = db.collection("Attendance")
-                .document(branch)
-                .collection(semester)
-                .document(subjectName)
-                .collection(date)
-                .get()
-                .await()
+    ): Map<String, Int> {
+        val attendanceMap = mutableMapOf<String, Int>()
+        val snapshot = db.collection("Attendance")
+            .document(branch)
+            .collection(semester)
+            .document(subjectName)
+            .collection(date)
+            .get()
+            .await()
 
-            snapshot.documents.associate { doc ->
-                val studentEmail = doc.getString("studentEmail") ?: ""
-                val status = doc.getBoolean("status") ?: false
-                studentEmail to status
+        for (doc in snapshot.documents) {
+            val studentEmail = doc.getString("studentEmail")
+            val status = doc.getLong("status")?.toInt() // Safe conversion
+            if (studentEmail != null && status != null) {
+                attendanceMap[studentEmail] = status
             }
-        } catch (e: Exception) {
-            emptyMap()
         }
+        return attendanceMap
     }
 
     suspend fun deleteUser(uid: String, collection: String) {
@@ -208,12 +193,8 @@ class FirestoreRepository @Inject constructor(
 
     suspend fun getStudentDetails(userId: String): Student {
         val document = db.collection("Student").document(userId).get().await()
-        if (!document.exists()) {
-            Log.e("Firestore", "No document found for UID: $userId")
-        }
         return document.toObject(Student::class.java) ?: throw Exception("Student not found")
     }
-
 
     suspend fun getTeacherDetails(userId: String): Teacher {
         val document = db.collection("Teacher").document(userId).get().await()
@@ -298,5 +279,4 @@ class FirestoreRepository @Inject constructor(
         }
         return attendanceMap
     }
-
 }

@@ -22,6 +22,5 @@ sealed class NavRoutes(val route: String) {
         }
     }
 
-
     object AttendanceSheet : NavRoutes("Attendance Sheet")
 }

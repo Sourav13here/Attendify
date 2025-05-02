@@ -36,17 +36,14 @@ class StudentDashboardViewModel @Inject constructor(
         val userId = authRepo.getCurrentUser()?.uid
         Log.d("StudentDashboardVM", "UserID: $userId")
         if (userId == null) return
-
         viewModelScope.launch {
             try {
                 val studentData = firestoreRepo.getStudentDetails(userId)
-                Log.d("StudentDashboardVM", "Student fetched: $studentData")
                 _student.value = studentData
                 fetchSubjectsForStudent(studentData)
             } catch (e: Exception) {
-                Log.e("StudentDashboardVM", "Failed to fetch student", e)
+                e.printStackTrace()
             }
-
         }
     }
 
@@ -70,8 +67,6 @@ class StudentDashboardViewModel @Inject constructor(
             }
         }
     }
-
-
 
     private val _attendanceMap = mutableStateOf<Map<String, Boolean>>(emptyMap())
     val attendanceMap = _attendanceMap
@@ -118,7 +113,6 @@ class StudentDashboardViewModel @Inject constructor(
             0
         }
     }
-
 
 
 
