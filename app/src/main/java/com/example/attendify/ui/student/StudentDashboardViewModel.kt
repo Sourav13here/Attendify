@@ -10,6 +10,8 @@ import com.example.attendify.data.model.Subject
 import com.example.attendify.data.repository.AuthRepository
 import com.example.attendify.data.repository.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,9 +30,39 @@ class StudentDashboardViewModel @Inject constructor(
     private val _subjectAttendancePairs = mutableStateOf<List<Pair<Subject, Int>>>(emptyList())
     val subjectAttendancePairs = _subjectAttendancePairs
 
+    private val _presentDates = MutableStateFlow<List<String>>(emptyList())
+    val presentDates: StateFlow<List<String>> = _presentDates
+
+    private val _absentDates = MutableStateFlow<List<String>>(emptyList())
+    val absentDates: StateFlow<List<String>> = _absentDates
+
     init {
         fetchStudentData()
     }
+
+//    fun loadStudentAttendance(branch: String, semester: String) {
+//        val email = authRepo.getCurrentUser()?.email ?: return
+//        viewModelScope.launch {
+//            try {
+//                val allAttendance = firestoreRepo.getAllAttendanceForStudent1(email, branch, semester)
+//                val present = mutableListOf<String>()
+//                val absent = mutableListOf<String>()
+//
+//                allAttendance.forEach { attendance ->
+//                    when (attendance.status) {
+//                        1 -> present.add(attendance.date)
+//                        0 -> absent.add(attendance.date)
+//                    }
+//                }
+//
+//                _presentDates.value = present
+//                _absentDates.value = absent
+//
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        }
+//    }
 
     private fun fetchStudentData() {
         val userId = authRepo.getCurrentUser()?.uid
@@ -88,7 +120,7 @@ class StudentDashboardViewModel @Inject constructor(
                 val studentId = _student.value?.rollNumber ?: return@launch
 
                 // Fetch all attendance records for the subject
-                val attendanceRecords = firestoreRepo.getAllAttendanceForStudent(
+                val attendanceRecords = firestoreRepo.getAllAttendanceForStudent1(
                     subjectCode = subjectCode,
                     branch = branch,
                     semester = semester,

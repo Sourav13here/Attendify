@@ -113,7 +113,7 @@ fun StudentListItems(
         Divider(modifier = Modifier.width(1.dp).height(24.dp), color = Color.Black)
 
         Text(
-            text = "100", // Placeholder
+            text = "90", // Placeholder
             fontSize = 14.sp,
             modifier = Modifier.width(30.dp),
             textAlign = TextAlign.Center

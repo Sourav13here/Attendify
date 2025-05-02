@@ -5,9 +5,8 @@ import com.example.attendify.data.model.Attendance
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Subject
 import com.example.attendify.data.model.Teacher
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -152,15 +151,49 @@ class FirestoreRepository @Inject constructor(
     }
 
     fun storeAttendance(attendance: Attendance, branch: String, semester: String) {
-        val date = attendance.date
-        db.collection("Attendance")
+        val attendanceRef = db.collection("Attendance")
             .document(branch)
             .collection(semester)
             .document(attendance.subjectName)
-            .collection(date)
+            .collection("students")
             .document(attendance.studentEmail)
-            .set(attendance)
+
+        attendanceRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                val currentDateMap = mutableMapOf<String, Int>()
+
+                if (documentSnapshot.exists()) {
+                    // Document exists, update the date map
+                    val existingAttendance = documentSnapshot.toObject(Attendance::class.java)
+                    currentDateMap.putAll(existingAttendance?.date ?: emptyMap())
+                }
+
+                // Overwrite or add new date entry
+                val (newDate, newStatus) = attendance.date.entries.first()
+                currentDateMap[newDate] = newStatus
+
+                // Build updated attendance object
+                val updatedAttendance = Attendance(
+                    date = currentDateMap,
+                    studentEmail = attendance.studentEmail,
+                    subjectName = attendance.subjectName,
+                    markedBy = attendance.markedBy
+                )
+
+                // Save updated attendance object
+                attendanceRef.set(updatedAttendance)
+                    .addOnSuccessListener {
+                        Log.d("Firestore", "Attendance marked or updated successfully.")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Firestore", "Failed to mark/update attendance: ", e)
+                    }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error reading document: ", e)
+            }
     }
+
 
     suspend fun getAttendanceForDate(
         date: String,
@@ -251,7 +284,8 @@ class FirestoreRepository @Inject constructor(
         }
     }
 
-    suspend fun getAllAttendanceForStudent(
+
+    suspend fun getAllAttendanceForStudent1(
         subjectCode: String,
         branch: String,
         semester: String,

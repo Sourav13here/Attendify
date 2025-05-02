@@ -35,14 +35,19 @@ import androidx.compose.ui.unit.sp
 import com.example.attendify.ui.theme.AttendifyTheme
 import java.time.LocalDate
 import com.example.attendify.R
+import com.example.attendify.ui.student.StudentDashboardViewModel
+
 @Composable
 fun CalendarView(
     attendanceMap: Map<String, Boolean>,
-    initialDate: LocalDate
+    initialDate: LocalDate,
+    viewmodel: StudentDashboardViewModel
 ) {
     var currentDate by remember { mutableStateOf(initialDate) }
     val currentMonth = currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val currentYear = currentDate.year
+
+
 
     Column(
         modifier = Modifier

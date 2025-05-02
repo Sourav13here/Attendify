@@ -67,7 +67,8 @@ fun AttendanceStudent(
 
             CalendarView(
                 attendanceMap = attendanceMap,
-                initialDate = LocalDate.now()
+                initialDate = LocalDate.now(),
+                viewmodel = viewModel
             )
             Spacer(modifier = Modifier.height(20.dp))
 
