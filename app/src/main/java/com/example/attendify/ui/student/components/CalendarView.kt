@@ -1,6 +1,7 @@
 package com.example.attendify.ui.student.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,12 +35,14 @@ import com.example.attendify.ui.theme.AttendifyTheme
 import java.time.LocalDate
 import com.example.attendify.R
 @Composable
-fun CalendarView() {
-    var currentDate by remember { mutableStateOf(LocalDate.now()) }
+fun CalendarView(
+    attendanceMap: Map<String, Boolean>,
+    initialDate: LocalDate
+) {
+    var currentDate by remember { mutableStateOf(initialDate) }
+
     val currentMonth = currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val currentYear = currentDate.year
-    val present = listOf("12", "13", "24", "25", "30")
-    val absent = listOf("1", "3", "4")
 
     Column(
         modifier = Modifier
@@ -53,12 +56,14 @@ fun CalendarView() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
+            // Navigate to previous month
             IconButton(onClick = { currentDate = currentDate.minusMonths(1) }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBackIos, contentDescription = "Previous Month")
             }
 
-            Text("$currentMonth $currentYear", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("$currentMonth $currentYear", fontSize = 18.sp)
 
+            // Navigate to next month
             IconButton(onClick = { currentDate = currentDate.plusMonths(1) }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowForwardIos, contentDescription = "Next Month")
             }
@@ -69,17 +74,16 @@ fun CalendarView() {
         // Week Days Row
         val days = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            days.forEach { Text(it, fontSize = 14.sp, fontWeight = FontWeight.Bold) }
+            days.forEach { Text(it, fontSize = 14.sp) }
         }
 
-        // Generate the calendar dynamically based on the current month
         val firstDayOfMonth = currentDate.withDayOfMonth(1)
-        val startDay = firstDayOfMonth.dayOfWeek.value % 7  // Adjust Sunday as 0
+        val startDay = firstDayOfMonth.dayOfWeek.value % 7
         val totalDays = firstDayOfMonth.month.length(firstDayOfMonth.isLeapYear)
 
         val daysGrid = mutableListOf<List<String>>()
         var day = 1
-        for (week in 0 until 6) {  // Max 6 weeks in a month
+        for (week in 0 until 6) {
             val row = mutableListOf<String>()
             for (col in 0 until 7) {
                 if (week == 0 && col < startDay || day > totalDays) {
@@ -92,34 +96,49 @@ fun CalendarView() {
             daysGrid.add(row)
         }
 
-        // Display the days in a grid format
+        // Display days in grid
         daysGrid.forEach { week ->
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 week.forEach { day ->
+                    val isToday = day == LocalDate.now().dayOfMonth.toString() &&
+                            currentDate.month == LocalDate.now().month &&
+                            currentDate.year == LocalDate.now().year
+
                     Box(
                         modifier = Modifier
                             .size(32.dp)
                             .background(
-                                if (day in present) Color.Green
-                                else if (day in absent) colorResource(R.color.lightRed)
-                                else Color.Transparent,
+                                color = when (attendanceMap[day]) {
+                                    true -> Color.Green
+                                    false -> Color.Red
+                                    else -> Color.Transparent
+                                },
                                 shape = RoundedCornerShape(4.dp)
+                            )
+                            .then(
+                                if (isToday) Modifier
+                                    .padding(2.dp)
+                                    .border(2.dp, Color.Blue, RoundedCornerShape(4.dp))
+                                else Modifier
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(day, fontSize = 12.sp, color = Color.Black)
                     }
+
                 }
             }
         }
     }
 }
 
-@Preview(showSystemUi = true)
-@Composable
-fun DisplayCalendarView() {
-    AttendifyTheme {
-        CalendarView()
-    }
-}
+
+
+//@Preview(showSystemUi = true)
+//@Composable
+//fun DisplayCalendarView() {
+//    AttendifyTheme {
+//        CalendarView()
+//    }
+//}
 

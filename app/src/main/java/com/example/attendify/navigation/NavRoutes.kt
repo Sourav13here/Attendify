@@ -16,6 +16,12 @@ sealed class NavRoutes(val route: String) {
     object StudentDashboard : NavRoutes("student dashboard")
     object SplashScreen : NavRoutes("splash screen")
     object VerificationPage: NavRoutes("verification page")
-    object AttendanceStudent : NavRoutes("attendance_student")
+    object AttendanceStudent : NavRoutes("attendance_student/{subjectName}/{subjectCode}") {
+        fun createRoute(subjectName: String, subjectCode: String): String {
+            return "attendance_student/$subjectName/$subjectCode"
+        }
+    }
+
+
     object AttendanceSheet : NavRoutes("Attendance Sheet")
 }

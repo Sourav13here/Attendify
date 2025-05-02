@@ -1,5 +1,6 @@
 package com.example.attendify.data.repository
 
+import android.util.Log
 import com.example.attendify.data.model.Attendance
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Subject
@@ -11,7 +12,8 @@ import javax.inject.Inject
 import kotlin.text.get
 
 class FirestoreRepository @Inject constructor(
-    val db: FirebaseFirestore
+    val db: FirebaseFirestore,
+
 ) {
     fun storeUserData(
         uid: String,
@@ -206,8 +208,12 @@ class FirestoreRepository @Inject constructor(
 
     suspend fun getStudentDetails(userId: String): Student {
         val document = db.collection("Student").document(userId).get().await()
+        if (!document.exists()) {
+            Log.e("Firestore", "No document found for UID: $userId")
+        }
         return document.toObject(Student::class.java) ?: throw Exception("Student not found")
     }
+
 
     suspend fun getTeacherDetails(userId: String): Teacher {
         val document = db.collection("Teacher").document(userId).get().await()
@@ -239,7 +245,7 @@ class FirestoreRepository @Inject constructor(
 
             val documents = snapshot.documents
             val total = documents.size
-            val present = documents.count { it.getBoolean("present") == true }
+            val present = documents.count { it.getBoolean("status") == true }
 
             if (total == 0) 0 else (present * 100) / total
         } catch (e: Exception) {
@@ -247,4 +253,50 @@ class FirestoreRepository @Inject constructor(
             0
         }
     }
+
+    suspend fun getTotalClasses(subjectName: String, branch: String, semester: String): Int {
+        return try {
+            val snapshot = db.collection("Attendance")
+                .document(branch)
+                .collection(semester)
+                .document(subjectName)
+                .get()
+                .await()
+
+            // Return total number of classes
+            snapshot.getLong("totalClasses")?.toInt() ?: 0
+        } catch (e: Exception) {
+            0
+        }
+    }
+
+    suspend fun getAllAttendanceForStudent(
+        subjectCode: String,
+        branch: String,
+        semester: String,
+        studentId: String
+    ): Map<String, Boolean> {
+        val attendanceMap = mutableMapOf<String, Boolean>()
+        val snapshots = db.collection("attendance")
+            .document(subjectCode)
+            .collection("dates")
+            .get()
+            .await()
+
+        for (doc in snapshots.documents) {
+            val date = doc.id
+            val studentSnapshot = doc.reference
+                .collection("students")
+                .document(studentId)
+                .get()
+                .await()
+
+            if (studentSnapshot.exists()) {
+                val isPresent = studentSnapshot.getBoolean("isPresent") ?: false
+                attendanceMap[date] = isPresent
+            }
+        }
+        return attendanceMap
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.attendify.ui.student
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StudentDashboardViewModel @Inject constructor(
-    private val authRepo: AuthRepository,
+    val authRepo: AuthRepository,
     private val firestoreRepo: FirestoreRepository
 ) : ViewModel() {
     private val _student = mutableStateOf<Student?>(null)
@@ -32,15 +33,20 @@ class StudentDashboardViewModel @Inject constructor(
     }
 
     private fun fetchStudentData() {
-        val userId = authRepo.getCurrentUser()?.uid ?: return
+        val userId = authRepo.getCurrentUser()?.uid
+        Log.d("StudentDashboardVM", "UserID: $userId")
+        if (userId == null) return
+
         viewModelScope.launch {
             try {
                 val studentData = firestoreRepo.getStudentDetails(userId)
+                Log.d("StudentDashboardVM", "Student fetched: $studentData")
                 _student.value = studentData
                 fetchSubjectsForStudent(studentData)
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e("StudentDashboardVM", "Failed to fetch student", e)
             }
+
         }
     }
 
@@ -64,6 +70,56 @@ class StudentDashboardViewModel @Inject constructor(
             }
         }
     }
+
+
+
+    private val _attendanceMap = mutableStateOf<Map<String, Boolean>>(emptyMap())
+    val attendanceMap = _attendanceMap
+
+    private val _totalClasses = mutableStateOf(0)
+    val totalClasses = _totalClasses
+
+    private val _attendedClasses = mutableStateOf(0)
+    val attendedClasses = _attendedClasses
+
+
+    fun fetchAttendanceForSubject(
+        subjectCode: String,
+        branch: String,
+        semester: String
+    ) {
+        viewModelScope.launch {
+            try {
+                val studentId = _student.value?.rollNumber ?: return@launch
+
+                // Fetch all attendance records for the subject
+                val attendanceRecords = firestoreRepo.getAllAttendanceForStudent(
+                    subjectCode = subjectCode,
+                    branch = branch,
+                    semester = semester,
+                    studentId = studentId
+                )
+
+                _attendanceMap.value = attendanceRecords
+                _totalClasses.value = attendanceRecords.size
+                _attendedClasses.value = attendanceRecords.values.count { it }
+
+            } catch (e: Exception) {
+                Log.e("StudentVM", "Failed to fetch attendance", e)
+            }
+        }
+    }
+
+
+    fun getAttendancePercentage(): Int {
+        return if (_totalClasses.value > 0) {
+            (_attendedClasses.value * 100) / _totalClasses.value
+        } else {
+            0
+        }
+    }
+
+
 
 
 

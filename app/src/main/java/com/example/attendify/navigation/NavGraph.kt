@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.example.attendify.ui.sign_up.SignUpViewModel
 import com.example.attendify.ui.splashscreen.SplashScreen
 import com.example.attendify.ui.splashscreen.SplashViewModel
+import com.example.attendify.ui.student.AttendanceStudent
 import com.example.attendify.ui.student.StudentDashboard
 import com.example.attendify.ui.student.StudentDashboardViewModel
 import com.example.attendify.ui.teacher.AttendanceSheet
@@ -91,6 +92,37 @@ fun NavGraph(navController: NavHostController) {
         composable(NavRoutes.VerificationPage.route) {
             Verification_Page(navController,verificationViewModel)
         }
+
+        composable(
+            route = "attendance_student/{subjectName}/{subjectCode}/{branch}/{semester}/{studentEmail}",
+            arguments = listOf(
+                navArgument("subjectName") { type = NavType.StringType },
+                navArgument("subjectCode") { type = NavType.StringType },
+                navArgument("branch") { type = NavType.StringType },
+                navArgument("semester") { type = NavType.StringType },
+                navArgument("studentEmail") { type = NavType.StringType }
+            )
+
+        ) { backStackEntry ->
+            val subjectName = backStackEntry.arguments?.getString("subjectName") ?: ""
+            val subjectCode = backStackEntry.arguments?.getString("subjectCode") ?: ""
+            val branch = backStackEntry.arguments?.getString("branch") ?: ""
+            val semester = backStackEntry.arguments?.getString("semester") ?: ""
+            val studentEmail = backStackEntry.arguments?.getString("studentEmail") ?: ""
+
+            AttendanceStudent(
+                navController = navController,
+                subjectName = subjectName,
+                subjectCode = subjectCode,
+                branch = branch,
+                semester = semester,
+                studentEmail = studentEmail
+            )
+
+        }
+
+
+
 
         composable(
             route = "${NavRoutes.AttendanceSheet.route}/{subjectCode}/{subjectName}/{branch}/{semester}/{teacherEmail}"

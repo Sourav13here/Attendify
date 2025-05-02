@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
     var showLogOutDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        val userId = viewModel.authRepo.getCurrentUser()?.uid
+        if (userId == null) {
+            navController.navigate(NavRoutes.LoginPage.route) {
+                popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+            }
+        }
+    }
 
     if (showLogOutDialog) {
         LogoutConfirmationDialog(
@@ -89,6 +99,8 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             Spacer(modifier = Modifier.height(16.dp))
 
             val student = viewModel.student.value
+            val subjectsWithAttendance = viewModel.subjectAttendancePairs.value
+
             if (student != null) {
                 Text(student.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text("${student.branch} - ${student.semester} sem", fontSize = 16.sp)
@@ -98,7 +110,6 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            val subjectsWithAttendance = viewModel.subjectAttendancePairs.value
 
 
             LazyColumn(
@@ -106,20 +117,33 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
                     .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
                     .fillMaxWidth(0.95f)
                     .fillMaxHeight(0.9f)
-                    .padding(16.dp)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                items(subjectsWithAttendance) { (subject, percentage) ->
-                    AttendanceCard(
-                        subject = subject.subjectName,
-                        title = subject.subjectCode,
-                        percentage = percentage,
-                        onClick = {
-                            navController.navigate("${NavRoutes.AttendanceStudent.route}/${subject.subjectName}|${subject.subjectCode}")
-                        }
-                    )
+                if (subjectsWithAttendance.isEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(100.dp))
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(100.dp))
+                    }
+                } else {
+                    items(subjectsWithAttendance) { (subject, percentage) ->
+                        AttendanceCard(
+                            subject = subject.subjectName,
+                            title = subject.subjectCode,
+                            percentage = percentage,
+                            onClick = {
+                                student?.let {
+                                    navController.navigate(
+                                        "attendance_student/${subject.subjectName}/${subject.subjectCode}/${it.branch}/${it.semester}/${it.email}"
+                                    )
+                                }
+                            }
+                        )
+                    }
                 }
-
             }
+
 
         }
     }

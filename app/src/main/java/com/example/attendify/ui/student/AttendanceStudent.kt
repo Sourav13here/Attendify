@@ -19,21 +19,43 @@ import com.example.attendify.ui.student.components.AttendanceReportCard
 import com.example.attendify.ui.student.components.CalendarView
 import com.example.attendify.ui.student.components.SubjectInfoCard
 import com.example.attendify.ui.theme.AttendifyTheme
+import java.time.LocalDate
+import androidx.hilt.navigation.compose.hiltViewModel
+
 
 @Composable
-fun AttendanceStudent(navController: NavController, subjectInfo: String) {
-    val (subjectName, subjectCode) = subjectInfo.split("|")
-    val totalClasses = 15
-    val attendedClasses = 10
-    val percentage = (attendedClasses * 100) / totalClasses
+fun AttendanceStudent(
+    navController: NavController,
+    subjectName: String,
+    subjectCode: String,
+    branch: String,
+    semester: String,
+    studentEmail: String,
+    viewModel: StudentDashboardViewModel = hiltViewModel()
+) {
+    // Trigger fetch on first composition
+    LaunchedEffect(subjectName) {
+        viewModel.fetchAttendanceForSubject(
+            subjectCode = subjectCode,
+            branch = branch,
+            semester = semester
+        )
+
+    }
+
+    val attendanceMap by remember { viewModel.attendanceMap }
+    val totalClasses by remember { viewModel.totalClasses }
+    val attendedClasses by remember { viewModel.attendedClasses }
+    val percentage = viewModel.getAttendancePercentage()
 
     AppScaffold(
-        title = subjectName,
+        title = "",
         navController = navController,
         showBackButton = true,
         contentDescriptionBackButton = "Back",
         titleTextStyle = MaterialTheme.typography.titleMedium
-    ) { padding ->
+    )
+    { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -45,7 +67,10 @@ fun AttendanceStudent(navController: NavController, subjectInfo: String) {
             SubjectInfoCard(subjectName = subjectName, subjectCode = subjectCode)
             Spacer(modifier = Modifier.height(20.dp))
 
-            CalendarView()
+            CalendarView(
+                attendanceMap = attendanceMap,
+                initialDate = LocalDate.now()
+            )
             Spacer(modifier = Modifier.height(20.dp))
 
             AttendanceReportCard(
