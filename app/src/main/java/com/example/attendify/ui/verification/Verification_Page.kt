@@ -44,6 +44,7 @@ import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Teacher
+import com.example.attendify.navigation.NavRoutes
 
 @Composable
 fun Verification_Page(navController: NavController, viewModel: VerificationViewModel) {
@@ -179,30 +180,43 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                     }
 
                     if (selectedBranch == "Select Branch" || (selectedTab == 0 && selectedSemester == "Select Semester")) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center,) {
                             Text("Please select a branch${if (selectedTab == 0) " and semester" else ""} to view users.")
                         }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(vertical = 6.dp)
-                        ) {
-                            if (selectedTab == 0) {
-                                items(students) { student ->
-                                    StudentVerificationItem(
-                                        student = student,
-                                        onApprove = { viewModel.approveUser(student.uid, "student") },
-                                        onReject = { viewModel.rejectUser(student.uid, "student") }
-                                    )
-                                }
-                            } else {
-                                items(teachers) { teacher ->
-                                    TeacherVerificationItem(
-                                        teacher = teacher,
-                                        onApprove = { viewModel.approveUser(teacher.uid, "teacher") },
-                                        onReject = { viewModel.rejectUser(teacher.uid, "teacher") }
-                                    )
+                    }
+                    else {
+                        if ((selectedTab == 0 && students.isEmpty()) || (selectedTab == 1 && teachers.isEmpty())) {
+                            // Show message when list is empty
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(20.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("No unverified users found.")
+                            }
+                        } else {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(vertical = 6.dp)
+                            ) {
+                                if (selectedTab == 0) {
+                                    items(students) { student ->
+                                        StudentVerificationItem(
+                                            student = student,
+                                            onApprove = { viewModel.approveUser(student.uid, "student") },
+                                            onReject = { viewModel.rejectUser(student.uid, "student") }
+                                        )
+                                    }
+                                } else {
+                                    items(teachers) { teacher ->
+                                        TeacherVerificationItem(
+                                            teacher = teacher,
+                                            onApprove = { viewModel.approveUser(teacher.uid, "teacher") },
+                                            onReject = { viewModel.rejectUser(teacher.uid, "teacher") }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -218,9 +232,9 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 contentAlignment = Alignment.Center
             ) {
                 CustomButton(
-                    text = "Done",
+                    text = "Verify",
                     modifier = Modifier.width(160.dp),
-                    action = {}
+                    action = {navController.navigate(NavRoutes.TeacherDashboard.route)}
                 )
             }
         }
