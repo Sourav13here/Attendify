@@ -49,6 +49,8 @@ fun StudentListItems(
     var isPresent by remember { mutableIntStateOf(-1) }
     val attendanceStatus by viewModel.attendanceStatusByEmail.collectAsState()
     val status = attendanceStatus[student.email]
+    val studentPercentages by viewModel.studentAttendanceInfo.collectAsState()
+    val percent = studentPercentages[student.email] ?: 0
 
     LaunchedEffect(status) {
         if (status != null) {
@@ -56,6 +58,13 @@ fun StudentListItems(
         } else {
             isPresent = -1
         }
+    }
+    LaunchedEffect(studentPercentages) {
+        viewModel.loadAttendancePercentages(
+            subjectName = subjectName,
+            branch = student.branch,
+            semester = student.semester
+        )
     }
 
     Row(
@@ -113,7 +122,7 @@ fun StudentListItems(
         Divider(modifier = Modifier.width(1.dp).height(24.dp), color = Color.Black)
 
         Text(
-            text = "90", // Placeholder
+            text = percent.toString(), // Placeholder
             fontSize = 14.sp,
             modifier = Modifier.width(30.dp),
             textAlign = TextAlign.Center

@@ -6,3 +6,7 @@ data class Attendance(
     val subjectName: String = "",
     val markedBy: String = ""
 )
+data class StudentAttendanceInfo(
+    val studentEmail: String,
+    val percentage: Int
+)
