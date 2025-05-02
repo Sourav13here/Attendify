@@ -36,14 +36,7 @@ fun AppScaffold(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(title, style = titleTextStyle)
-                    }
-                },
+                title = { Text(title, style = titleTextStyle) },
                 navigationIcon = {
                     when {
                         showBackButton -> {
