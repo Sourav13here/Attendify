@@ -39,7 +39,7 @@ import com.example.attendify.ui.student.StudentDashboardViewModel
 
 @Composable
 fun CalendarView(
-    attendanceMap: Map<String, Boolean>,
+    attendanceMap: Map<String, Int>,
     initialDate: LocalDate,
     viewmodel: StudentDashboardViewModel
 ) {
@@ -104,20 +104,26 @@ fun CalendarView(
         daysGrid.forEach { week ->
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 week.forEach { day ->
+                    val fullDate = if (day.isNotEmpty()) {
+                        LocalDate.of(currentDate.year, currentDate.month, day.toInt()).toString()
+                    } else ""
+
                     val isToday = day == LocalDate.now().dayOfMonth.toString() &&
                             currentDate.month == LocalDate.now().month &&
                             currentDate.year == LocalDate.now().year
+
                     Box(
                         modifier = Modifier
                             .size(32.dp)
                             .background(
-                                color = when (attendanceMap[day]) {
-                                    true -> Color.Green
-                                    false -> Color.Red
+                                color = when (attendanceMap[fullDate]) {
+                                    1 -> Color.Green
+                                    0 -> Color.Red
                                     else -> Color.Transparent
                                 },
                                 shape = RoundedCornerShape(4.dp)
                             )
+
                             .then(
                                 if (isToday) Modifier
                                     .padding(2.dp)

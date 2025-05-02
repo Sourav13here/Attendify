@@ -1,14 +1,18 @@
 package com.example.attendify.data.repository
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.example.attendify.data.model.Attendance
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Subject
 import com.example.attendify.data.model.Teacher
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import kotlinx.coroutines.tasks.await
 
 class FirestoreRepository @Inject constructor(
     val db: FirebaseFirestore
@@ -224,7 +228,6 @@ class FirestoreRepository @Inject constructor(
         return attendanceMap
     }
 
-
     suspend fun deleteUser(uid: String, collection: String) {
         db.collection(collection).document(uid).delete().await()
     }
@@ -279,44 +282,51 @@ class FirestoreRepository @Inject constructor(
                 .document(branch)
                 .collection(semester)
                 .document(subjectName)
+                .collection("students")
                 .get()
                 .await()
 
-            // Return total number of classes
-            snapshot.getLong("totalClasses")?.toInt() ?: 0
+            if (snapshot.documents.isNotEmpty()) {
+                val attendance = snapshot.documents[0].toObject(Attendance::class.java)
+                attendance?.date?.size ?: 0
+            } else {
+                0
+            }
         } catch (e: Exception) {
+            e.printStackTrace()
             0
         }
     }
 
 
     suspend fun getAllAttendanceForStudent1(
-        subjectCode: String,
+        subjectName: String,
         branch: String,
         semester: String,
-        studentId: String
-    ): Map<String, Boolean> {
-        val attendanceMap = mutableMapOf<String, Boolean>()
-        val snapshots = db.collection("attendance")
-            .document(subjectCode)
-            .collection("dates")
-            .get()
-            .await()
-
-        for (doc in snapshots.documents) {
-            val date = doc.id
-            val studentSnapshot = doc.reference
+        studentEmail: String
+    ): Map<String, Int> {
+        return try {
+            val db = FirebaseFirestore.getInstance()
+            val documentSnapshot = db.collection("Attendance")
+                .document(branch)
+                .collection(semester)
+                .document(subjectName)
                 .collection("students")
-                .document(studentId)
+                .document(studentEmail)
                 .get()
                 .await()
 
-            if (studentSnapshot.exists()) {
-                val isPresent = studentSnapshot.getBoolean("isPresent") ?: false
-                attendanceMap[date] = isPresent
-            }
+            val dateMap = documentSnapshot.get("date") as? Map<*, *>
+            dateMap?.mapNotNull { (key, value) ->
+                val date = key as? String
+                val status = (value as? Long)?.toInt()
+                if (date != null && status != null) date to status else null
+            }?.toMap() ?: emptyMap()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyMap()
         }
-        return attendanceMap
     }
 
     suspend fun getAttendancePercentages(
@@ -347,5 +357,6 @@ class FirestoreRepository @Inject constructor(
 
         return map
     }
+
 
 }
