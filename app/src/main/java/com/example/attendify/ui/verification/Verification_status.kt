@@ -2,25 +2,33 @@ package com.example.attendify.ui.verification
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
+import androidx.compose.material3.DividerDefaults.color
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.attendify.R
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomIconButton
+import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.CoroutineScope
@@ -91,31 +99,14 @@ fun VerificationStatus(
         }
     }
 
-    if (showLogOutDialog) {
-        LogoutConfirmationDialog(
-            onConfirm = {
-                CoroutineScope(Dispatchers.Main).launch {
-                    viewmodel.signOut()
-                    navController.navigate(NavRoutes.LoginPage.route) {
-                        popUpTo(NavRoutes.VerificationStatus.route) { inclusive = true }
-                    }
-                }
-                showLogOutDialog = false
-            },
-            onDismiss = {
-                showLogOutDialog = false
-            }
-        )
-    }
-
     AppScaffold(
         title = "Verification Status",
         navController = navController,
         titleTextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
         actions = {
-            CustomIconButton(
-                imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                onClick = { showLogOutDialog = true }
+            LogoutButton(
+                navController = navController,
+                popUpToRoute = NavRoutes.VerificationStatus.route
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
