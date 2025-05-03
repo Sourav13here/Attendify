@@ -2,8 +2,10 @@ package com.example.attendify.ui.verification
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,16 +31,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -137,7 +141,7 @@ fun VerificationStatus(
                 Card(
                     modifier = Modifier
                         .padding(16.dp)
-                        .fillMaxWidth(0.9f),
+                        .fillMaxWidth(0.8f),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
                 ) {
                     Column(
@@ -146,104 +150,219 @@ fun VerificationStatus(
                             .padding(16.dp),
                         horizontalAlignment = Alignment.Start
                     ) {
-                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            Text("YOUR DETAILS", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("YOUR DETAILS", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
 
                         when (data) {
                             is UserData.StudentData -> {
-                                Text("Name: ${data.student.name}", fontSize = 16.sp)
                                 Text(
-                                    text = "Email: ${data.student.email}",
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Name: ")
+                                        }
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(data.student.name)
+                                        }
+                                    },
+                                    fontSize = 16.sp
+                                )
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Email: ")
+                                        }
+                                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                                            append(data.student.email)
+                                        }
+                                    },
                                     fontSize = 16.sp,
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
                                 )
-                                Text("Branch: ${data.student.branch}", fontSize = 16.sp)
-                                Text("Semester: ${data.student.semester}", fontSize = 16.sp)
-                                Text("Roll No: ${data.student.rollNumber}", fontSize = 16.sp)
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Branch: ")
+                                        }
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(data.student.branch)
+                                        }
+                                    },
+                                    fontSize = 16.sp
+                                )
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Semester: ")
+                                        }
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(data.student.semester)
+                                        }
+                                    },
+                                    fontSize = 16.sp
+                                )
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Roll NO: ")
+                                        }
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(data.student.rollNumber)
+                                        }
+                                    },
+                                    fontSize = 16.sp
+                                )
                             }
 
                             is UserData.TeacherData -> {
-                                Text("Name: ${data.teacher.name}", fontSize = 16.sp)
                                 Text(
-                                    text = "Email: ${data.teacher.email}",
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Name: ")
+                                        }
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(data.teacher.name)
+                                        }
+                                    },
+                                    fontSize = 16.sp
+                                )
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Email: ")
+                                        }
+                                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                                            append(data.teacher.email)
+                                        }
+                                    },
                                     fontSize = 16.sp,
                                     maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
                                 )
-                                Text("Branch: ${data.teacher.branch}", fontSize = 16.sp)
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("Branch: ")
+                                        }
+                                        withStyle(style = SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(data.teacher.branch)
+                                        }
+                                    },
+                                    fontSize = 16.sp
+                                )
+
                             }
                         }
                     }
                 }
             } ?: Text("Loading your details...", fontSize = 16.sp)
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Always reserve a spot
+                if (showEmailNotVerifiedBox) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f)
+                            .height(IntrinsicSize.Min), // adapt to content height
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3)),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(2.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "Email not verified!!",
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = "Please check your inbox and verify your email.",
+                                color = Color.DarkGray,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                } else {
+                    // Invisible empty placeholder
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f)
+                            .height(90.dp)
+                    ) // Same height roughly as your Card (adjust)
+                } // Spacer outside is fine
 
-            if (showEmailNotVerifiedBox) {
                 Card(
                     modifier = Modifier.fillMaxWidth(0.85f),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3)),
-                    shape = RoundedCornerShape(12.dp)
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(4.dp) // Optional nice shadow
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .padding(24.dp), // More breathing room
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp) // Good spacing between items
                     ) {
-                        Text("Email not verified!!", color = Color.Black,fontWeight = FontWeight.Bold)
-                        Text("Please check your inbox and verify your email.", color = Color.Black,fontSize = 13.sp)
-                    }
-                }
-            }
+                        Text(
+                            text = "Your account is not verified yet.",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Center
+                        )
 
-            Spacer(modifier = Modifier.height(40.dp))
+                        Text(
+                            text = "Please wait for the admin to verify your account.",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray,
+                            textAlign = TextAlign.Center
+                        )
 
-            Card(
-                modifier = Modifier.fillMaxWidth(0.85f),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFEFEFEF)),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Your account is not verified yet.")
-                    Text(
-                        "Please wait for the admin to verify your account.",
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Button(
-                        onClick = {
-                            Log.e("verification", "clicked")
-                            viewmodel.refreshData()
-                            viewmodel.showSnackbar("Refreshing your status")
-                        },
-                        enabled = !isLoading,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isLoading) Color.Gray else Color(0xFFE57373)
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                color = Color.Black,
-                                modifier = Modifier.size(18.dp),
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Refresh")
+                        Button(
+                            onClick = {
+                                Log.e("verification", "clicked")
+                                viewmodel.refreshData()
+                                viewmodel.showSnackbar("Refreshing your status")
+                            },
+                            enabled = !isLoading,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isLoading) Color.Gray else Color(0xFFE57373)
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = Color.Black,
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(Icons.Filled.Refresh, contentDescription = "Refresh")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Refresh", color = Color.White)
+                            }
                         }
                     }
+
                 }
             }
         }
