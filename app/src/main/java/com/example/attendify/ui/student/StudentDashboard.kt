@@ -4,39 +4,39 @@ package com.example.attendify.ui.student
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
-import com.example.attendify.common.composable.CustomIconButton
+import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.navigation.NavRoutes
-import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
-    var showLogOutDialog by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         val userId = viewModel.authRepo.getCurrentUser()?.uid
         if (userId == null) {
@@ -46,23 +46,6 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
         }
     }
 
-    if (showLogOutDialog) {
-        LogoutConfirmationDialog(
-            onConfirm = {
-                CoroutineScope(Dispatchers.Main).launch {
-                    viewModel.signOut()
-                    navController.navigate(NavRoutes.LoginPage.route) {
-                        popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
-                    }
-                }
-                showLogOutDialog = false
-            },
-            onDismiss = {
-                showLogOutDialog = false
-            }
-        )
-    }
-
     AppScaffold(
         title = "STUDENT DASHBOARD",
         navController = navController,
@@ -70,15 +53,9 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             fontWeight = FontWeight.Bold
         ),
         actions = {
-            CustomIconButton(
-                modifier = Modifier
-                    .padding(2.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFE57373), shape = CircleShape),
-                imageVector = Icons.AutoMirrored.Filled.Logout,
-                onClick = {
-                    showLogOutDialog = true
-                }
+            LogoutButton(
+                navController = navController,
+                popUpToRoute = NavRoutes.StudentDashboard.route
             )
         }
     ) { padding ->
@@ -148,40 +125,40 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 }
 
 
-    @Composable
-    fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
-        val color = when {
-            percentage >= 75 -> Color.Green
-            percentage in 40..74 -> Color.Yellow
-            percentage in 1..39 -> Color.Red
-            else -> Color.Black
+@Composable
+fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
+    val color = when {
+        percentage >= 75 -> Color.Green
+        percentage in 40..74 -> Color.Yellow
+        percentage in 1..39 -> Color.Red
+        else -> Color.Black
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
+            .background(color = Color.White, RoundedCornerShape(16.dp))
+            .clickable { onClick() }
+            .padding(12.dp),
+
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(subject, fontWeight = FontWeight.Bold)
+            Text(title, fontSize = 14.sp)
         }
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
-                .background(color = Color.White, RoundedCornerShape(16.dp))
-                .clickable { onClick() }
-                .padding(12.dp),
+                .size(30.dp)
+                .background(color, shape = CircleShape),
 
-            verticalAlignment = Alignment.CenterVertically
+            contentAlignment = Alignment.Center
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(subject, fontWeight = FontWeight.Bold)
-                Text(title, fontSize = 14.sp)
-            }
-            Box(
-                modifier = Modifier
-                    .size(30.dp)
-                    .background(color, shape = CircleShape),
-
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
-            }
+            Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
         }
     }
+}
 
 
 //@Preview(showSystemUi = true, showBackground = true)

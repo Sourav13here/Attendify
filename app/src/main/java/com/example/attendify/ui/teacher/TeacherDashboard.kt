@@ -10,13 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -41,15 +36,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
-import com.example.attendify.common.composable.CustomIconButton
+import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.data.model.Subject
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.teacher.components.AddSubjectPopup
 import com.example.attendify.ui.teacher.components.VerifyFloatingButton
-import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -58,7 +49,6 @@ fun TeacherDashboard(
     viewModel: TeacherDashboardViewModel = hiltViewModel()
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var showLogOutDialog by remember { mutableStateOf(false) }
     val subjects by viewModel.subjects.collectAsState()
     val teacher = viewModel.teacher.value
     val context = LocalContext.current
@@ -86,41 +76,16 @@ fun TeacherDashboard(
         )
     }
 
-    if (showLogOutDialog) {
-        LogoutConfirmationDialog(
-            onConfirm = {
-                CoroutineScope(Dispatchers.Main).launch {
-                    viewModel.signOut()
-                    navController.navigate(NavRoutes.LoginPage.route) {
-                        popUpTo(NavRoutes.TeacherDashboard.route) { inclusive = true }
-                    }
-                }
-                showLogOutDialog = false
-            },
-            onDismiss = { showLogOutDialog = false }
-        )
-    }
-
     Box(modifier = Modifier.fillMaxSize()) {
         AppScaffold(
             title = "Teacher Dashboard",
             navController = navController,
             titleTextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             actions = {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .size(32.dp)
-                        .background(Color(0xFFE57373), shape = CircleShape)
-                ) {
-                    CustomIconButton(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .clip(CircleShape),
-                        imageVector = Icons.AutoMirrored.Filled.Logout,
-                        onClick = { showLogOutDialog = true }
-                    )
-                }
+                LogoutButton(
+                    navController = navController,
+                    popUpToRoute = NavRoutes.TeacherDashboard.route
+                )
             }
         ) { paddingValues ->
             Column(
@@ -172,7 +137,10 @@ fun TeacherDashboard(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         if (subjects.isEmpty()) {
-                            Text("No subjects added yet.", style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                "No subjects added yet.",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         } else {
                             subjects.forEach { subject ->
                                 if (teacher != null) {
