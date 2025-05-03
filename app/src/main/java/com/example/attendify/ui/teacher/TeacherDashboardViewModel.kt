@@ -28,8 +28,8 @@ class TeacherDashboardViewModel @Inject constructor(
     private val _subjects = MutableStateFlow<List<Subject>>(emptyList())
     val subjects: StateFlow<List<Subject>> = _subjects
 
-    private val _teacher = mutableStateOf<Teacher?>(null)
-    val teacher = _teacher
+    private val _teacher = MutableStateFlow<Teacher?>(null)
+    val teacher: StateFlow<Teacher?> = _teacher
 
     private val _students = MutableStateFlow<List<Student>>(emptyList())
     val students: StateFlow<List<Student>> = _students
@@ -44,6 +44,7 @@ class TeacherDashboardViewModel @Inject constructor(
     val studentAttendanceInfo: StateFlow<Map<String, Int>> = _studentAttendanceInfo
 
     init {
+        Log.e("LogTeacher", "init")
         fetchTeacherData()
     }
 
@@ -105,7 +106,7 @@ class TeacherDashboardViewModel @Inject constructor(
     }
 
 
-    private fun fetchTeacherData() {
+    fun fetchTeacherData() {
         val userId = authRepo.getCurrentUser()?.uid ?: return
         viewModelScope.launch {
             try {
