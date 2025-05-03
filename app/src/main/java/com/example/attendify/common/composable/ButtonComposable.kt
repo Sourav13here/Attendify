@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -53,7 +54,7 @@ fun CustomButton(
         modifier = modifier.customButton(),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFFF38C8F),
-            contentColor = Color.Black
+            contentColor = Color.White
         ),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -138,6 +139,7 @@ fun LogoutButton(
             .clip(CircleShape)
             .background(colorResource(id = R.color.Container_Color))
             .border(1.dp, Color.Black, CircleShape)
+            .size(32.dp)
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.Logout,
