@@ -64,7 +64,7 @@ class StudentDashboardViewModel @Inject constructor(
 //        }
 //    }
 
-    private fun fetchStudentData() {
+     fun fetchStudentData() {
         val userId = authRepo.getCurrentUser()?.uid
         Log.d("StudentDashboardVM", "UserID: $userId")
         if (userId == null) return
@@ -86,12 +86,13 @@ class StudentDashboardViewModel @Inject constructor(
                 _subjects.value = subjectsData
 
                 val attendanceList = subjectsData.map { subject ->
-                    val percentage = firestoreRepo.getAttendanceForStudent(
-                        studentId = student.rollNumber,
-                        subjectCode = subject.subjectCode
+                    val percentages = firestoreRepo.getAttendancePercentages(
+                        subjectName = subject.subjectName,
+                        branch = student.branch ,
+                        semester = student.semester
                     )
-                    subject to percentage // Pair<Subject, Int>
-                }
+                    val percentage = percentages[student.email] ?: 0
+                    subject to percentage                }
                 _subjectAttendancePairs.value = attendanceList
 
             } catch (e: Exception) {
@@ -156,6 +157,8 @@ class StudentDashboardViewModel @Inject constructor(
 
 
 
+
+
     fun getAttendancePercentage(): Int {
         return if (_totalClasses.value > 0) {
             (_attendedClasses.value * 100) / _totalClasses.value
@@ -163,6 +166,8 @@ class StudentDashboardViewModel @Inject constructor(
             0
         }
     }
+
+
 
 
 

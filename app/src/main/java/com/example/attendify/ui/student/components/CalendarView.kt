@@ -51,6 +51,7 @@ fun CalendarView(
     val currentMonth = currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val currentYear = currentDate.year
 
+
     Column(
         modifier = Modifier
             .fillMaxWidth(0.9f)
@@ -138,7 +139,7 @@ fun CalendarView(
                                 shape = RoundedCornerShape(6.dp)
                             )
                             .clickable(
-                                enabled = fullDate.isNotEmpty() && attendanceMap[fullDate] == null // Allow clicking only if not in Firestore
+                                enabled = fullDate.isNotEmpty() && localAttendanceMap[fullDate] != null || (attendanceMap[fullDate] == null && localAttendanceMap[fullDate] == null)
                             ) {
 
                                  val currentStatus = localAttendanceMap[fullDate]
