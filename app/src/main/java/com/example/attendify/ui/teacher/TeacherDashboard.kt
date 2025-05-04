@@ -1,5 +1,6 @@
 package com.example.attendify.ui.teacher
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,28 +51,30 @@ fun TeacherDashboard(
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val subjects by viewModel.subjects.collectAsState()
-    val teacher = viewModel.teacher.value
+    val teacher by viewModel.teacher.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.loadSubjects(teacher?.email ?: "")
+        viewModel.fetchTeacherData()
     }
 
     if (showDialog) {
         AddSubjectPopup(
             onDismiss = { showDialog = false },
             onSubmit = { code, name, branch, semester ->
-                viewModel.addSubject(
-                    teacherEmail = teacher!!.email,
-                    subject = Subject(
-                        subjectCode = code,
-                        subjectName = name,
-                        createdBy = teacher?.email ?: "",
-                        branch = branch,
-                        semester = semester
-                    ),
-                    context = context
-                )
+                teacher?.email?.let { email ->
+                    viewModel.addSubject(
+                        teacherEmail = email,
+                        subject = Subject(
+                            subjectCode = code,
+                            subjectName = name,
+                            createdBy = email,
+                            branch = branch,
+                            semester = semester
+                        ),
+                        context = context
+                    )
+                }
             }
         )
     }
@@ -105,7 +108,7 @@ fun TeacherDashboard(
 
                 if (teacher != null) {
                     Text(
-                        text = "Welcome, " + teacher.name,
+                        text = "Welcome, " + teacher!!.name,
                         modifier = Modifier
                             .padding(8.dp)
                             .background(Color.LightGray, RoundedCornerShape(8.dp))
@@ -151,7 +154,7 @@ fun TeacherDashboard(
                                         subjectSem = subject.semester,
                                         onClick = {
                                             navController.navigate(
-                                                "${NavRoutes.AttendanceSheet.route}/${subject.subjectCode}/${subject.subjectName}/${subject.branch}/${subject.semester}/${teacher.email}"
+                                                "${NavRoutes.AttendanceSheet.route}/${subject.subjectCode}/${subject.subjectName}/${subject.branch}/${subject.semester}/${teacher!!.email}"
                                             )
                                         }
                                     )
