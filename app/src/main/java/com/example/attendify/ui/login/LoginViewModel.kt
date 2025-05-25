@@ -6,6 +6,7 @@ import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Teacher
 import com.example.attendify.data.repository.AuthRepository
 import com.example.attendify.data.repository.FirestoreRepository
+import com.google.firebase.auth.FirebaseAuthException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -67,7 +68,18 @@ class LoginViewModel @Inject constructor(
                     checkUserAndNavigate()
                 },
                 onFailure = { e ->
-                    _loginError.value = e.message ?: "Login failed"
+                    val message = when ((e as? FirebaseAuthException)?.errorCode) {
+                        "ERROR_USER_NOT_FOUND" -> "No account found with this email"
+                        "ERROR_WRONG_PASSWORD" -> "Incorrect password"
+                        "ERROR_INVALID_EMAIL" -> "The email address is badly formatted"
+                        "ERROR_USER_DISABLED" -> "This account has been disabled"
+                        "ERROR_TOO_MANY_REQUESTS" -> "Too many attempts. Try again later"
+                        "ERROR_CREDENTIAL_ALREADY_IN_USE" -> "This credential is already linked to another account"
+                        "ERROR_INVALID_CREDENTIAL" -> "Invalid credentials. Please try again"
+                        "ERROR_OPERATION_NOT_ALLOWED" -> "This operation is not allowed. Please contact support"
+                        else -> e.message ?: "Login failed. Please try again"
+                    }
+                    _loginError.value = message
                 }
             )
         }

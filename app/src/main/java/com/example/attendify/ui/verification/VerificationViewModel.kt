@@ -27,7 +27,8 @@ class VerificationViewModel @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
     private val auth: FirebaseAuth
 ) : ViewModel() {
-
+    private var currentBranch: String = ""
+    private var currentSemester: String = ""
 
     private val _userData = MutableStateFlow<UserData?>(null)
     val userData: StateFlow<UserData?> = _userData.asStateFlow()
@@ -141,6 +142,9 @@ class VerificationViewModel @Inject constructor(
     }
 
     fun fetchUnverifiedUsers(accountType: String, branch: String, semester: String = "") {
+        currentBranch = branch
+        currentSemester = semester
+
         if (accountType.isBlank()) {
             Log.w("VerificationViewModel", "fetchUnverifiedUsers called with empty accountType")
             return
@@ -170,7 +174,7 @@ class VerificationViewModel @Inject constructor(
                 if (accountType == "student") "Student" else "Teacher",
                 true
             )
-            fetchUnverifiedUsers(accountType, "", "") // re-fetch
+            fetchUnverifiedUsers(accountType, currentBranch, currentSemester) // re-fetch
         }
     }
 
@@ -180,7 +184,7 @@ class VerificationViewModel @Inject constructor(
                 uid,
                 if (accountType == "student") "Student" else "Teacher"
             )
-            fetchUnverifiedUsers(accountType, "", "") // re-fetch
+            fetchUnverifiedUsers(accountType, currentBranch, currentSemester) // re-fetch
         }
     }
 

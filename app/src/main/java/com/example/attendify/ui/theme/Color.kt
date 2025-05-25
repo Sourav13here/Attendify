@@ -2,12 +2,12 @@ package com.example.attendify.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val ContainerColor = Color(0xFFF38C8F)
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
-val White= Color(0xFFFFFFFF)
-val Whitty=Color(0xFFD9D9DC)
-val Bvec= Color(0xFFFC578B)
+val White = Color(0xFFFFFFFF)
+val Whitty = Color(0xFFD9D9DC)
 
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)

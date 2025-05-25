@@ -1,5 +1,8 @@
 package com.example.attendify.ui.login.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -33,8 +36,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
     val navigateToTeacher by viewModel.navigateToTeacherDashboard.collectAsState()
     val navigateToStatus by viewModel.navigateToStatus.collectAsState()
 
-
-    // Handle navigation
+    // Navigation handling
     LaunchedEffect(navigateToStudent) {
         if (navigateToStudent) {
             navController.navigate(NavRoutes.StudentDashboard.route) {
@@ -60,11 +62,10 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
         }
     }
 
-
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .offset(y = (-50).dp)
+            .offset(y = (-90).dp)
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, Color.Black, RoundedCornerShape(16.dp)),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
@@ -75,6 +76,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Email field
             CustomOutlinedTextField(
                 value = email,
                 onValueChange = {
@@ -87,6 +89,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            // Password field
             CustomOutlinedTextField(
                 value = password,
                 onValueChange = {
@@ -98,30 +101,56 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
                 modifier = Modifier.customOutlinedTextField(),
             )
 
+            // Forgot Password aligned to right
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp, bottom = 6.dp, end = 6.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                CustomTextButton(
+                    text = "Forgot Password?",
+                    action = { showForgotPasswordDialog = true }
+                )
+            }
+
+            // Error message in fixed height box
+            // Error message with reserved height and smooth fade-in
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(24.dp), // Reserve space
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = loginError != null,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Text(
+                        text = loginError ?: "",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+
             Spacer(modifier = Modifier.height(10.dp))
 
-            CustomTextButton(
-                text = "Forgot Password?",
-                action = { showForgotPasswordDialog = true }
-            )
+            // Login button (static position)
+            CustomButton(text = "Login", action = {
+                viewModel.login(email.trim(), password)
+            })
 
+            // Forgot password dialog
             if (showForgotPasswordDialog) {
                 ForgetPasswordDialog(
                     onDismiss = { showForgotPasswordDialog = false },
                     viewModel = viewModel
                 )
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            if (loginError != null) {
-                Text(loginError!!, color = Color.Red, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-
-            CustomButton(text = "Login", action = {
-                viewModel.login(email.trim(), password)
-            })
         }
     }
 }

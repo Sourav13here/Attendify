@@ -7,18 +7,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -28,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,7 +39,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -53,13 +61,13 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
     var selectedTab by remember { mutableStateOf(0) } // 0 for students, 1 for teachers
     var selectedBranch by remember { mutableStateOf("Select Branch") }
     var selectedSemester by remember { mutableStateOf("Select Semester") }
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val branches = listOf("CSE", "ETE", "ME", "CE")
     val semesters = listOf("1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th")
 
     LaunchedEffect(selectedTab, selectedBranch, selectedSemester) {
-        if (selectedBranch != "Select Branch" &&
-            (selectedTab == 1 || selectedSemester != "Select Semester")) {
+        if (selectedBranch != "Select Branch" && (selectedTab == 1 || selectedSemester != "Select Semester")) {
 
             if (selectedTab == 0) {
                 viewModel.fetchUnverifiedUsers("student", selectedBranch, selectedSemester)
@@ -81,9 +89,7 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
         contentDescriptionLogo = "App logo",
         showBackButton = true,
         contentDescriptionBackButton = "Back button",
-        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
-            fontWeight = FontWeight.Bold
-        )
+        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
     ) { padding ->
         Column(
             modifier = Modifier
@@ -91,65 +97,52 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 .background(Color.White)
                 .fillMaxSize()
         ) {
-//            Tab Selector
             Box(
                 modifier = Modifier
                     .padding(horizontal = 32.dp, vertical = 12.dp)
                     .width(250.dp)
                     .align(Alignment.CenterHorizontally)
             ) {
+//                Selection Tab of Teacher and Student where 0 --> Student & 1 --> Teacher
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(36.dp)
-                        .background(Color(0xFFEC8484), RoundedCornerShape(20.dp)),
+                        .height(40.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Color(0xFFEC8484)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { selectedTab = 0 },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "Students",
-                            color = Color.Black,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 14.sp
-                        )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(24.dp)
-                            .align(Alignment.CenterVertically)
-                            .background(Color.Black)
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clickable { selectedTab = 1 },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            "Teachers",
-                            color = Color.Black,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 14.sp
+                    listOf("Students", "Teachers").forEachIndexed { index, label ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { selectedTab = index },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                label,
+                                color = if (selectedTab == index) Color.White else Color.Black,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            )
+                        }
+                        if (index == 0) Box(
+                            modifier = Modifier
+                                .width(1.dp)
+                                .height(24.dp)
+                                .background(Color.Black)
                         )
                     }
                 }
             }
-//          Main Content (Dropdowns and List)
+//            UNVERFIED DATA UPDATION BOX
             Box(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
                     .weight(1f)
-                    .border(1.dp, Color.Black)
-                    .padding(8.dp)
+                    .border(1.dp, Color.Black, RoundedCornerShape(12.dp))
+                    .padding(12.dp)
             ) {
                 Column {
                     Box(
@@ -160,300 +153,268 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                             .background(Color.LightGray)
                             .padding(horizontal = 24.dp, vertical = 6.dp)
                     ) {
-                        Text("Unverified", color = Color.Black)
+                        Text("Unverified", color = Color.Black, fontWeight = FontWeight.Medium)
                     }
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                    // Select Branch Dropdown
-                    DropdownSelector(
-                        label = selectedBranch,
+                    DropdownSelector(label = selectedBranch,
                         items = branches,
-                        onItemSelected = { selectedBranch = it }
-                    )
+                        onItemSelected = { selectedBranch = it })
 
-                    // Select Semester Dropdown (Only for Students)
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     if (selectedTab == 0) {
-                        DropdownSelector(
-                            label = selectedSemester,
+                        DropdownSelector(label = selectedSemester,
                             items = semesters,
-                            onItemSelected = { selectedSemester = it }
-                        )
+                            onItemSelected = { selectedSemester = it })
                     }
 
+
+                    //----------------------------Main content of the verification page-----------------------------------------------
                     if (selectedBranch == "Select Branch" || (selectedTab == 0 && selectedSemester == "Select Semester")) {
-                        Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center,) {
-                            Text("Please select a branch${if (selectedTab == 0) " and semester" else ""} to view users.")
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                "Please select a branch${if (selectedTab == 0) " and semester" else ""} to view users.",
+                                textAlign = TextAlign.Center,
+                                color = Color.Gray
+                            )
                         }
-                    }
-                    else {
-                        if ((selectedTab == 0 && students.isEmpty()) || (selectedTab == 1 && teachers.isEmpty())) {
-                            // Show message when list is empty
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(20.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("No unverified users found.")
-                            }
-                        } else {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(vertical = 6.dp)
-                            ) {
-                                if (selectedTab == 0) {
-                                    items(students) { student ->
-                                        StudentVerificationItem(
-                                            student = student,
-                                            onApprove = { viewModel.approveUser(student.uid, "student") },
-                                            onReject = { viewModel.rejectUser(student.uid, "student") }
-                                        )
+                    } else if ((selectedTab == 0 && students.isEmpty()) || (selectedTab == 1 && teachers.isEmpty())) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                        ) {
+                            Text("No unverified users found.")
+                        }
+                    } else if (isLoading) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = Color.Black, strokeWidth = 2.dp)
+                        }
+                    } else {
+                        LazyColumn(modifier = Modifier.padding(vertical = 6.dp)) {
+                            val list = if (selectedTab == 0) students else teachers
+
+                            items(list) { user ->
+                                when (user) {
+                                    is Student -> {
+                                        UserVerificationItem(name = user.name,
+                                            email = user.email,
+                                            rollNumber = user.rollNumber,
+                                            onApprove = {
+                                                viewModel.approveUser(
+                                                    user.uid, "student"
+                                                )
+                                            },
+                                            onReject = {
+                                                viewModel.rejectUser(
+                                                    user.uid,
+                                                    "student"
+                                                )
+                                            })
                                     }
-                                } else {
-                                    items(teachers) { teacher ->
-                                        TeacherVerificationItem(
-                                            teacher = teacher,
-                                            onApprove = { viewModel.approveUser(teacher.uid, "teacher") },
-                                            onReject = { viewModel.rejectUser(teacher.uid, "teacher") }
-                                        )
+
+                                    is Teacher -> {
+                                        UserVerificationItem(name = user.name,
+                                            email = user.email,
+                                            rollNumber = null,
+                                            onApprove = {
+                                                viewModel.approveUser(
+                                                    user.uid, "teacher"
+                                                )
+                                            },
+                                            onReject = {
+                                                viewModel.rejectUser(
+                                                    user.uid,
+                                                    "teacher"
+                                                )
+                                            })
                                     }
                                 }
                             }
                         }
-                    }
 
+                    }
                 }
             }
-//            Done Button
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CustomButton(
-                    text = "Verify",
-                    modifier = Modifier.width(160.dp),
-                    action = {navController.navigate(NavRoutes.TeacherDashboard.route)}
-                )
+                CustomButton(text = "DONE",
+                    modifier = Modifier.fillMaxWidth(0.5f),
+                    action = { navController.navigate(NavRoutes.TeacherDashboard.route) })
             }
         }
     }
 }
 
 @Composable
-fun DropdownSelector(label: String, items: List<String>, onItemSelected: (String) -> Unit) {
-    var isDropdownExpanded by remember { mutableStateOf(false) }
+fun DropdownSelector(
+    label: String, items: List<String>, onItemSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .padding(vertical = 6.dp)
-            .fillMaxWidth()
-            .height(42.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFEC8484))
-            .clickable { isDropdownExpanded = true },
-        contentAlignment = Alignment.CenterStart
-    ) {
+    Box(modifier = Modifier
+        .clip(RoundedCornerShape(8.dp))
+        .background(Color(0xFFE0E0E0))
+        .clickable { expanded = true }
+        .padding(horizontal = 12.dp, vertical = 10.dp)) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(label, color = Color.Black, fontSize = 14.sp)
+            Text(
+                text = label, modifier = Modifier.weight(1f), maxLines = 1
+            )
             Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = "Dropdown",
-                tint = Color.Black
+                imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                contentDescription = null
             )
         }
-    }
 
-    DropdownMenu(expanded = isDropdownExpanded, onDismissRequest = { isDropdownExpanded = false }) {
-        items.forEach { item ->
-            DropdownMenuItem(text = { Text(item) }, onClick = {
-                onItemSelected(item)
-                isDropdownExpanded = false
-            })
-        }
-    }
-}
-
-@Composable
-fun StudentVerificationItem(student: Student, onApprove: () -> Unit, onReject: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .border(1.dp, Color.Black, RoundedCornerShape(4.dp))
-            .padding(3.dp)
-            .background(Color(0xFFD9D9D9))
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.8f)
         ) {
-            // Student Info Section
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = student.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Text(
-                    text = "Roll No: ${student.rollNumber}",
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
-                )
-
-                Text(
-                    text = "Email: ${student.email}",
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
-                )
-            }
-
-            // Approve/Reject Buttons Section
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                // Approve Button
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(
-                                Color(0xFF4CAF50), // Green color for approve
-                                CircleShape
-                            )
-                            .clickable { onApprove() }
-                    )
-                    Text(
-                        text = "Approve",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-
-                // Reject Button
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(
-                                Color(0xFFEC8484), // Light red/pink color for reject
-                                CircleShape
-                            )
-                            .clickable { onReject() }
-                    )
-                    Text(
-                        text = "Reject",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
+            items.forEach { item ->
+                DropdownMenuItem(text = { Text(item) }, onClick = {
+                    onItemSelected(item)
+                    expanded = false
+                })
             }
         }
     }
 }
 
 @Composable
-fun TeacherVerificationItem(
-    teacher: Teacher,
-    onApprove: () -> Unit,
-    onReject: () -> Unit
+fun UserVerificationItem(
+    name: String, email: String, rollNumber: String? = null, // Optional for Teacher
+    onApprove: () -> Unit, onReject: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
+            .padding(vertical = 10.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(4.dp))
-            .padding(3.dp)
             .background(Color(0xFFD9D9D9))
+            .padding(6.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Student Info Section
+            // User Info
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = teacher.name,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    text = name, fontSize = 14.sp, fontWeight = FontWeight.Medium
                 )
 
+                rollNumber?.let {
+                    Text(
+                        text = "Roll No: $it", fontSize = 14.sp, color = Color.DarkGray
+                    )
+                }
+
                 Text(
-                    text = "Email: ${teacher.email}",
-                    fontSize = 14.sp,
-                    color = Color.DarkGray
+                    buildAnnotatedString {
+                        append("Email: ")
+
+                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                            append(email)
+                        }
+                    }, fontSize = 14.sp, color = Color.DarkGray
                 )
 
             }
 
-            // Approve/Reject Buttons Section
+            // Approve/Reject buttons
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Approve Button
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(
-                                Color(0xFF4CAF50), // Green color for approve
-                                CircleShape
-                            )
-                            .clickable { onApprove() }
-                    )
-                    Text(
-                        text = "Approve",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-
-                // Reject Button
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .background(
-                                Color(0xFFEC8484), // Light red/pink color for reject
-                                CircleShape
-                            )
-                            .clickable { onReject() }
-                    )
-                    Text(
-                        text = "Reject",
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
+                ApprovalButton(text = "Approve", color = Color(0xFF187C1A), onClick = {
+                    onApprove()
+                })
+                ApprovalButton(text = "Reject", color = Color(0xFFCB0D0D), onClick = { onReject() })
             }
         }
     }
 }
 
-//@Preview(showSystemUi = true)
-//@Composable
-//fun VerificationScreenPreview() {
-//    AttendifyTheme {
-//        Verification_Page(navController = rememberNavController())
-//    }
-//}
+@Composable
+private fun ApprovalButton(text: String, color: Color, onClick: () -> Unit) {
+    var isClicked by remember { mutableStateOf(false) }
+
+
+
+    LaunchedEffect(isClicked) {
+        if (isClicked) {
+            kotlinx.coroutines.delay(300) // Wait for 500ms
+            isClicked = false // Reset the state after the delay
+        }
+    }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(modifier = Modifier
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(color.copy(0.5f))
+            .clickable {
+                isClicked = true
+                onClick()
+            }
+            .border(2.dp, Color.White, CircleShape)) {
+            if (isClicked) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxSize(0.6f)
+                        .background(color, CircleShape) // Solid black circle inside
+                )
+            }
+        }
+        Text(
+            text = text, fontSize = 12.sp, modifier = Modifier.padding(top = 2.dp)
+        )
+    }
+}
+
+@Composable
+fun SpecialMessage(
+    message: String, modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .padding(16.dp) // Add padding around the Box
+            .fillMaxWidth(0.8f) // Adjust width
+            .wrapContentSize(Alignment.Center) // Center the content in the Box
+    ) {
+        // Ellipse container with spiky border
+        Box(
+            modifier = Modifier
+                .background(
+                    Color(0xFFF5F5F5), shape = RoundedCornerShape(50) // Elliptical background
+                )
+                .border(2.dp, Color.Black, shape = RoundedCornerShape(50)) // Apply spiky border
+                .padding(20.dp) // Padding inside the box
+        ) {
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF333333),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
