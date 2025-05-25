@@ -88,7 +88,7 @@ fun Login(navController: NavController, viewModel: LoginViewModel) {
                     )
                 }
             }
-
+            Spacer(modifier = Modifier.height(40.dp))
             UserLoginInfoCard(viewModel, navController)
         }
     }
