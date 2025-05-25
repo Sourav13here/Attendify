@@ -34,64 +34,62 @@ fun Login(navController: NavController, viewModel: LoginViewModel) {
             fontWeight = FontWeight.Bold
         ),
     ) { padding ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Logo Section
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.35f) // Reduced height to give space for card
+                    .background(Color(0xFF817777)),
+                contentAlignment = Alignment.TopCenter
             ) {
-                Box(
+                Image(
+                    painter = painterResource(id = R.drawable.college_logo),
+                    contentDescription = "App Logo",
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(0.45f)
-                        .background(Color(0xFF817777)),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Image(
-                            painter = painterResource(id = R.drawable.college_logo),
-                            contentDescription = "App Logo",
-                            modifier = Modifier
-                                .padding(top = 30.dp)
-                                .size(100.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color.White)
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                // Sign up section
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFFE6B89C))
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("Don't have an account?", fontSize = 14.sp)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    CustomButton(
-                        text = "Sign Up",
-                        action = {
-                            navController.navigate(NavRoutes.SignUpPage.route) {
-                                launchSingleTop = true
-                            }
-                        },
-                        isLoadingIcon = false
-                    )
-                }
+                        .padding(top = 30.dp)
+                        .size(100.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.White)
+                )
             }
-            Spacer(modifier = Modifier.height(40.dp))
+
+            Spacer(modifier = Modifier.height(16.dp)) // Space between logo and login card
+
+            // Login Card
             UserLoginInfoCard(viewModel, navController)
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Sign up section
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFE6B89C))
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Don't have an account?", fontSize = 14.sp)
+                Spacer(modifier = Modifier.width(4.dp))
+                CustomButton(
+                    text = "Sign Up",
+                    action = {
+                        navController.navigate(NavRoutes.SignUpPage.route) {
+                            launchSingleTop = true
+                        }
+                    },
+                    isLoadingIcon = false
+                )
+            }
         }
     }
+
 }
 
 

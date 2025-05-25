@@ -1,5 +1,6 @@
 package com.example.attendify.ui.login.components
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -64,7 +65,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .offset(y = (-50).dp)
+            .offset(y = (-90).dp)
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, Color.Black, RoundedCornerShape(16.dp)),
         colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
@@ -100,10 +101,19 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            CustomTextButton(
-                text = "Forgot Password?",
-                action = { showForgotPasswordDialog = true }
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = (-20).dp)
+                    .padding(end = 10.dp), // Optional padding from the right edge
+                horizontalArrangement = Arrangement.End
+            ) {
+                CustomTextButton(
+                    text = "Forgot Password?",
+                    action = { showForgotPasswordDialog = true }
+                )
+            }
+
 
             if (showForgotPasswordDialog) {
                 ForgetPasswordDialog(
@@ -114,9 +124,11 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            if (loginError != null) {
-                Text(loginError!!, color = Color.Red, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(10.dp))
+            AnimatedVisibility(visible = loginError != null) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(loginError ?: "", color = Color.Red, fontSize = 14.sp)
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
             }
 
             CustomButton(text = "Login", action = {
