@@ -18,7 +18,7 @@ fun LogoutConfirmationDialog(
         text = { Text("Are you sure you want to log out?") },
         confirmButton = {
             CustomButton(
-                text = "Yes",
+                text = "Logout",
                 action = onConfirm
             )
         },

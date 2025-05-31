@@ -128,10 +128,10 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 @Composable
 fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
     val color = when {
-        percentage >= 75 -> Color.Green
-        percentage in 40..74 -> Color.Yellow
-        percentage in 1..39 -> Color.Red
-        else -> Color.Black
+        percentage >= 75 -> Color(0xFF4CAF50) // Material Green
+        percentage in 40..74 -> Color(0xFFFFC107) // Material Amber
+        percentage in 1..39 -> Color(0xFFF44336) // Material Red
+        else -> Color.Gray
     }
     Row(
         modifier = Modifier
@@ -155,7 +155,7 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
 
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "$percentage", color = Color.White, fontSize = 12.sp)
+            Text(text = "$percentage", color = Color.White, fontSize = 12.sp,fontWeight = FontWeight.Bold)
         }
     }
 }

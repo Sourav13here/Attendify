@@ -1,15 +1,14 @@
 package com.example.attendify.common.composable
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -36,6 +35,7 @@ fun AppScaffold(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
+
                 title = { Text(title, style = titleTextStyle) },
                 navigationIcon = {
                     when {
@@ -50,7 +50,7 @@ fun AppScaffold(
                         showLogo -> {
                             CustomIconButton(
                                 modifier = Modifier.customIconButton(),
-                                painter = painterResource(R.drawable.college_logo),
+                                painter = painterResource(R.drawable.app_logo),
                                 contentDescription = contentDescriptionLogo.toString(),
                                 onClick = {},
                                 size = 36.dp
@@ -58,7 +58,11 @@ fun AppScaffold(
                         }
                     }
                 },
-                actions = actions
+                actions = actions,
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.White, // 👈 background behind the title
+                    titleContentColor = Color.Black // optional: title text color
+                )
             )
         },
         content = content

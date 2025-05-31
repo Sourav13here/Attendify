@@ -20,7 +20,7 @@ import com.example.attendify.common.composable.CustomExposedDropdown
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.ext.customOutlinedTextField
 import com.example.attendify.navigation.NavRoutes
-import com.example.attendify.ui.theme.PurpleLight
+import com.example.attendify.ui.theme.BackgroundColor
 import com.example.attendify.utils.Constants
 
 @Composable
@@ -84,7 +84,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(PurpleLight, RoundedCornerShape(8.dp))
+                        .background(BackgroundColor, RoundedCornerShape(8.dp))
                         .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {

@@ -48,6 +48,7 @@ fun ForgetPasswordDialog(
         }
     ) {
         Surface(
+            color = Color.White,
             shape = MaterialTheme.shapes.medium,
             tonalElevation = 12.dp
         ) {

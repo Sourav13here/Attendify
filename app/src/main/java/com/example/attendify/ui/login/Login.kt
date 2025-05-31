@@ -24,72 +24,85 @@ import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.login.components.UserLoginInfoCard
 import com.example.attendify.ui.theme.AttendifyTheme
+import com.example.attendify.ui.theme.BackgroundColor
+import com.example.attendify.ui.theme.CharcoalBlue
+import com.example.attendify.ui.theme.PrimaryColor
+import com.example.attendify.ui.theme.SecondaryColor
+import com.example.attendify.ui.theme.SurfaceColor
 
 @Composable
 fun Login(navController: NavController, viewModel: LoginViewModel) {
     AppScaffold(
         title = "Login",
         navController = navController,
-        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
-            fontWeight = FontWeight.Bold
+        titleTextStyle = MaterialTheme.typography.headlineLarge.copy(
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
         ),
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(padding)
+                .background(BackgroundColor)
         ) {
-            // Logo Section
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.35f) // Reduced height to give space for card
-                    .background(Color(0xFF817777)),
-                contentAlignment = Alignment.TopCenter
+                    .fillMaxSize()
+                    .padding(bottom = 60.dp), // reserve space for fixed bottom bar
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.college_logo),
-                    contentDescription = "App Logo",
+                // Logo Section
+                Box(
                     modifier = Modifier
-                        .padding(top = 30.dp)
-                        .size(100.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White)
-                )
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.45f)
+                        .background(SurfaceColor),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.app_logo),
+                        contentDescription = "App Logo",
+                        modifier = Modifier
+                            .padding(top = 30.dp)
+                            .size(100.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                UserLoginInfoCard(viewModel, navController)
             }
 
-            Spacer(modifier = Modifier.height(16.dp)) // Space between logo and login card
-
-            // Login Card
-            UserLoginInfoCard(viewModel, navController)
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Sign up section
-            Row(
+            // 🔽 Bottom fixed Sign-Up Section
+            Box(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
-                    .background(Color(0xFFE6B89C))
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .background(CharcoalBlue)
+                    .padding(16.dp)
             ) {
-                Text("Don't have an account?", fontSize = 14.sp)
-                Spacer(modifier = Modifier.width(4.dp))
-                CustomButton(
-                    text = "Sign Up",
-                    action = {
-                        navController.navigate(NavRoutes.SignUpPage.route) {
-                            launchSingleTop = true
-                        }
-                    },
-                    isLoadingIcon = false
-                )
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Don't have an account?", fontSize = 14.sp, color = Color.White)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    CustomButton(
+                        text = "Sign Up",
+                        action = {
+                            navController.navigate(NavRoutes.SignUpPage.route) {
+                                launchSingleTop = true
+                            }
+                        },
+                        isLoadingIcon = false
+                    )
+                }
             }
         }
     }
-
 }
 
 
