@@ -42,11 +42,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
 
     var showLogOutDialog by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
+
 
 
     LaunchedEffect(Unit) {
@@ -117,35 +122,44 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             Spacer(modifier = Modifier.height(16.dp))
 
 
+            SwipeRefresh(
+                state = swipeRefreshState,
+                onRefresh = {
+                    viewModel.fetchStudentData()
+                }
+            )
 
-            LazyColumn(
-                modifier = Modifier
-                    .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.9f)
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                if (subjectsWithAttendance.isEmpty()) {
-                    item {
-                        Spacer(modifier = Modifier.height(100.dp))
-                        CircularProgressIndicator()
-                        Spacer(modifier = Modifier.height(100.dp))
-                    }
-                } else {
-                    items(subjectsWithAttendance) { (subject, percentage) ->
-                        AttendanceCard(
-                            subject = subject.subjectName,
-                            title = subject.subjectCode,
-                            percentage = percentage,
-                            onClick = {
-                                student?.let {
-                                    navController.navigate(
-                                        "attendance_student/${subject.subjectName}/${subject.subjectCode}/${it.branch}/${it.semester}/${it.email}"
-                                    )
+            {
+
+                LazyColumn(
+                    modifier = Modifier
+                        .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.9f)
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    if (subjectsWithAttendance.isEmpty()) {
+                        item {
+                            Spacer(modifier = Modifier.height(100.dp))
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(100.dp))
+                        }
+                    } else {
+                        items(subjectsWithAttendance) { (subject, percentage) ->
+                            AttendanceCard(
+                                subject = subject.subjectName,
+                                title = subject.subjectCode,
+                                percentage = percentage,
+                                onClick = {
+                                    student?.let {
+                                        navController.navigate(
+                                            "attendance_student/${subject.subjectName}/${subject.subjectCode}/${it.branch}/${it.semester}/${it.email}"
+                                        )
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
@@ -159,7 +173,7 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
     val color = when {
         percentage >= 75 -> Color(0xFF4CAF50) // Material Green
         percentage in 40..74 -> Color(0xFFFFC107) // Material Amber
-        percentage in 1..39 -> Color(0xFFF44336) // Material Red
+        percentage in 0..39 -> Color(0xFFF44336) // Material Red
         else -> Color.Gray
 
     }
@@ -212,4 +226,3 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
 //        viewmodel = mockViewModel
 //    )
 //}
-

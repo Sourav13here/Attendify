@@ -1,22 +1,54 @@
 package com.example.attendify.data.repository
 
 import android.util.Log
-import com.google.android.gms.tasks.Task
 import com.example.attendify.data.model.Attendance
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Subject
 import com.example.attendify.data.model.Teacher
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlinx.coroutines.tasks.await
 
 class FirestoreRepository @Inject constructor(
     val db: FirebaseFirestore
 ) {
+
+    suspend fun deleteSubject(subjectId: String) {
+        db.collection("Subjects").document(subjectId).delete().await()
+    }
+
+    suspend fun generateAttendanceReport(
+        branch: String,
+        semester: String,
+        subjectName: String
+    ): Map<String, Int> {
+        val report = mutableMapOf<String, Int>()
+
+        try {
+            val studentsSnapshot = db.collection("Attendance")
+                .document(branch)
+                .collection(semester)
+                .document(subjectName)
+                .collection("students")
+                .get()
+                .await()
+
+            for (doc in studentsSnapshot.documents) {
+                val attendance = doc.toObject(Attendance::class.java) ?: continue
+                val dateRecords = attendance.date
+                val totalClasses = dateRecords.size
+                val presentCount = dateRecords.values.count { it == 1 }  // 1 means present
+
+                val percentage = if (totalClasses > 0) (presentCount * 100) / totalClasses else 0
+                report[attendance.studentEmail] = percentage
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return report
+    }
+
     fun storeUserData(
         uid: String,
         username: String,

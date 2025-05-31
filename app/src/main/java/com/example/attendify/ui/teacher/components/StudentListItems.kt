@@ -1,38 +1,23 @@
 package com.example.attendify.ui.teacher.components
 
-import android.widget.Space
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.attendify.data.model.Student
 import com.example.attendify.ui.teacher.TeacherDashboardViewModel
-import java.util.Locale
+import com.example.attendify.ui.theme.DarkGreen
+import com.example.attendify.ui.theme.DarkRed
 
 @Composable
 fun StudentListItems(
@@ -43,21 +28,19 @@ fun StudentListItems(
     viewModel: TeacherDashboardViewModel
 ) {
     var showFullNameDialog by remember { mutableStateOf(false) }
-
-    var isPresent by remember { mutableIntStateOf(-1) }
-    val attendanceStatus by viewModel.attendanceStatusByEmail.collectAsState()
-    val status = attendanceStatus[student.email]
-    val studentPercentages by viewModel.studentAttendanceInfo.collectAsState()
-    val percent = studentPercentages[student.email] ?: 0
     var showFullRollDialog by remember { mutableStateOf(false) }
+    var isPresent by remember { mutableIntStateOf(-1) }
+
+    val attendanceStatus by viewModel.attendanceStatusByEmail.collectAsState()
+    val studentPercentages by viewModel.studentAttendanceInfo.collectAsState()
+
+    val status = attendanceStatus[student.email]
+    val percent = studentPercentages[student.email] ?: 0
 
     LaunchedEffect(status) {
-        if (status != null) {
-            isPresent = status
-        } else {
-            isPresent = -1
-        }
+        isPresent = status ?: -1
     }
+
     LaunchedEffect(studentPercentages) {
         viewModel.loadAttendancePercentages(
             subjectName = subjectName,
@@ -75,6 +58,7 @@ fun StudentListItems(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        // Roll Number
         Text(
             text = student.rollNumber,
             maxLines = 1,
@@ -86,6 +70,7 @@ fun StudentListItems(
                 .clickable { showFullRollDialog = true }
         )
 
+        // Full Roll Dialog
         if (showFullRollDialog) {
             AlertDialog(
                 onDismissRequest = { showFullRollDialog = false },
@@ -99,8 +84,7 @@ fun StudentListItems(
             )
         }
 
-
-
+        // Name
         Text(
             text = student.name.uppercase(),
             style = MaterialTheme.typography.bodyLarge,
@@ -118,27 +102,55 @@ fun StudentListItems(
             modifier = Modifier
                 .weight(0.1f)
                 .aspectRatio(1f)
-                .background(if (isPresent == 1 || status == 1) Color.Green else Color(0xFFC8E6C9))
-                .clickable() {
-                    isPresent = 1
-                    onAttendanceMarked(1)
-                }
-        )
+                .background(if (isPresent == 1) DarkGreen else Color(0xFFC8E6C9))
+                .clickable {
+                    if (isPresent == 1) {
+                        isPresent = -1
+                        onAttendanceMarked(-1)
+                    } else {
+                        isPresent = 1
+                        onAttendanceMarked(1)
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (isPresent == 1) {
+                Icon(
+                    imageVector = Icons.Filled.Check,
+                    contentDescription = "Present",
+                    tint = Color.White
+                )
+            }
+        }
 
         // Absent Button
         Box(
             modifier = Modifier
                 .weight(0.1f)
                 .aspectRatio(1f)
-                .background(if (isPresent == 0 || status == 0) Color.Red else Color(0xFFFFCDD2))
-                .clickable() {
-                    isPresent = 0
-                    onAttendanceMarked(0)
-                }
-        )
-
+                .background(if (isPresent == 0) DarkRed else Color(0xFFFFCDD2))
+                .clickable {
+                    if (isPresent == 0) {
+                        isPresent = -1
+                        onAttendanceMarked(-1)
+                    } else {
+                        isPresent = 0
+                        onAttendanceMarked(0)
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (isPresent == 0) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Absent",
+                    tint = Color.White
+                )
+            }
+        }
     }
 
+    // Full Name Dialog
     if (showFullNameDialog) {
         AlertDialog(
             onDismissRequest = { showFullNameDialog = false },

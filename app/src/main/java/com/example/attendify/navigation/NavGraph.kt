@@ -132,6 +132,7 @@ fun NavGraph(navController: NavHostController) {
             val teacherEmail = backStackEntry.arguments?.getString("teacherEmail") ?: ""
             AttendanceSheet(
                 navController = navController,
+                subjectCode = subjectCode,
                 subjectName = subjectName,
                 branch = branch,
                 semester = semester,

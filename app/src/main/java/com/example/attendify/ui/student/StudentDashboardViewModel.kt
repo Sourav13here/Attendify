@@ -36,6 +36,11 @@ class StudentDashboardViewModel @Inject constructor(
     private val _absentDates = MutableStateFlow<List<String>>(emptyList())
     val absentDates: StateFlow<List<String>> = _absentDates
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+
+
     init {
         fetchStudentData()
     }
@@ -64,17 +69,21 @@ class StudentDashboardViewModel @Inject constructor(
 //        }
 //    }
 
-     fun fetchStudentData() {
+    fun fetchStudentData() {
         val userId = authRepo.getCurrentUser()?.uid
         Log.d("StudentDashboardVM", "UserID: $userId")
         if (userId == null) return
         viewModelScope.launch {
+            _isLoading.value = true
             try {
                 val studentData = firestoreRepo.getStudentDetails(userId)
                 _student.value = studentData
                 fetchSubjectsForStudent(studentData)
             } catch (e: Exception) {
                 e.printStackTrace()
+            }
+            finally {
+                _isLoading.value = false  // Done refreshing
             }
         }
     }
@@ -92,7 +101,8 @@ class StudentDashboardViewModel @Inject constructor(
                         semester = student.semester
                     )
                     val percentage = percentages[student.email] ?: 0
-                    subject to percentage                }
+                    subject to percentage
+                }
                 _subjectAttendancePairs.value = attendanceList
 
             } catch (e: Exception) {
