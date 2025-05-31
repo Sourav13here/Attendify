@@ -4,19 +4,25 @@ import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -29,13 +35,16 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -54,10 +63,12 @@ import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.CardColour
 import com.example.attendify.ui.theme.CharcoalBlue
 import com.example.attendify.ui.theme.CorrectColor
-import com.example.attendify.ui.theme.ErrorColor
 import com.example.attendify.ui.theme.PrimaryColor
 import com.example.attendify.ui.theme.PrimaryVariant
 import com.example.attendify.ui.theme.SecondaryColor
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun VerificationStatus(
@@ -69,6 +80,9 @@ fun VerificationStatus(
     semester: String?,
     roll: String?
 ) {
+    var isResendDisabled by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+
     val isLoading by viewmodel.isLoading.collectAsState()
     val context = LocalContext.current
     val navigateToStudentDashboard by viewmodel.navigateToStudentDashboard.collectAsState()
@@ -145,7 +159,6 @@ fun VerificationStatus(
             userData?.let { data ->
                 Card(
                     modifier = Modifier
-                        .padding(16.dp)
                         .fillMaxWidth(0.85f),
                     colors = CardDefaults.cardColors(containerColor = CardColour),
                     border = BorderStroke(2.dp, CharcoalBlue),
@@ -153,14 +166,16 @@ fun VerificationStatus(
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         Text(
-                            "Your Details",
-                            fontSize = 20.sp,
+                            "YOUR DETAILS",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(top =16.dp)
                         )
+                        Spacer(modifier = Modifier.heightIn(min=8.dp, max=16.dp))
 
                         val details = when (data) {
                             is UserData.StudentData -> listOf(
@@ -188,7 +203,7 @@ fun VerificationStatus(
                                         }
                                         withStyle(
                                             SpanStyle(
-                                                color = Color(0xFF1A73E8),
+                                                color = SecondaryColor,
                                                 fontWeight = FontWeight.Medium,
                                                 textDecoration = TextDecoration.Underline
                                             )
@@ -196,7 +211,7 @@ fun VerificationStatus(
                                             append(value)
                                         }
                                     },
-                                    fontSize = 16.sp,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier
                                         .padding(vertical = 2.dp)
                                         .clickable {
@@ -225,7 +240,7 @@ fun VerificationStatus(
                                             append(value)
                                         }
                                     },
-                                    fontSize = 16.sp,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(vertical = 2.dp)
                                 )
                             }
@@ -234,7 +249,7 @@ fun VerificationStatus(
                 }
             } ?: Text("Loading your details...", fontSize = 16.sp)
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.heightIn(min= 24.dp, max = 32.dp))
 
             // Email Not Verified Box
             if (showEmailNotVerifiedBox) {
@@ -253,33 +268,74 @@ fun VerificationStatus(
                                     .show()
                             }
                         },
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White.copy(alpha = 0.92f) // semi-transparent
+                    ),
                     shape = RoundedCornerShape(12.dp),
                     elevation = CardDefaults.cardElevation(2.dp),
                     border = BorderStroke(
                         1.dp,
-                        brush = Brush.radialGradient(
-                            colors = listOf(ErrorColor, Color.White),
+                        Brush.radialGradient(
+                            colors = listOf(SecondaryColor, Color.White),
                             radius = 700f
                         )
                     )
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            "Email not verified!",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
-                        )
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            "Please check your inbox and verify your email.",
-                            fontSize = 14.sp,
-                            color = Color.DarkGray
-                        )
+                        Column {
+                            Text(
+                                "EMAIL NOT VERIFIED!",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = Color.Black
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                "Check your inbox for verification link",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.DarkGray
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Default.Email,
+                                contentDescription = "Resend verification email",
+                                tint = if (isResendDisabled) Color.Gray else SecondaryColor,
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .alpha(if (isResendDisabled) 0.4f else 1f)
+                                    .clickable(
+                                        enabled = !isResendDisabled,
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        FirebaseAuth.getInstance().currentUser?.sendEmailVerification()
+                                        Toast.makeText(
+                                            context,
+                                            "Verification email resent",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        isResendDisabled = true
+
+                                        // Re-enable after delay
+                                        coroutineScope.launch {
+                                            delay(5000L) // 5 seconds
+                                            isResendDisabled = false
+                                        }
+                                    }
+                            )
+                            Text(
+                                text = "Resend",
+                                color = if (isResendDisabled) Color.Gray else SecondaryColor,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+
                     }
                 }
             } else {
@@ -289,36 +345,45 @@ fun VerificationStatus(
                     colors = CardDefaults.cardColors(containerColor = Color(0xFFE6FFEA)), // soft green
                     shape = RoundedCornerShape(12.dp),
                     elevation = CardDefaults.cardElevation(2.dp),
-                    border = BorderStroke(1.dp, brush = Brush.radialGradient(
-                        colors = listOf(CorrectColor, Color.White),
-                        radius = 700f
-                    )) // green border
+                    border = BorderStroke(
+                        2.dp, brush = Brush.radialGradient(
+                            colors = listOf(CorrectColor, Color.White),
+                            radius = 700f
+                        )
+                    ) // green border
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+
                     ) {
-                        Text(
-                            "Email verified!",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = CorrectColor // dark green
-                        )
+                        Row(Modifier.fillMaxWidth(),verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(
+                                "EMAIL VERIFIED",
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                                color = CorrectColor // dark green
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                tint = CorrectColor,
+                                contentDescription = "Verification Done")
+
+                        }
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            "Thank you for verifying your email. You're good to go!",
-                            fontSize = 14.sp,
-                            color = Color.DarkGray
+                            "One step closer to your dashboard",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.DarkGray,
+                            textAlign = TextAlign.Left
                         )
                     }
                 }
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.fillMaxHeight(0.18f))
 
             // Not Verified Box
             Card(
-                modifier = Modifier.fillMaxWidth(0.85f),
+                modifier = Modifier.fillMaxWidth(0.85f).padding(start = 16.dp,end = 16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FA)),
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(4.dp),
@@ -336,8 +401,7 @@ fun VerificationStatus(
                 ) {
                     Text(
                         "Your account is not verified yet.",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                         textAlign = TextAlign.Center
                     )
                     Text(
