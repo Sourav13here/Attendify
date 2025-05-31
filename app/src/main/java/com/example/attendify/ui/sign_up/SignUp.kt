@@ -1,30 +1,14 @@
 package com.example.attendify.ui.sign_up
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.outlined.Person2
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,7 +24,8 @@ import com.example.attendify.common.composable.CustomExposedDropdown
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.ext.customOutlinedTextField
 import com.example.attendify.navigation.NavRoutes
-import com.example.attendify.ui.theme.PurpleLight
+import com.example.attendify.ui.theme.BackgroundColor
+import com.example.attendify.ui.theme.SecondaryColor
 import com.example.attendify.utils.Constants
 
 @Composable
@@ -73,191 +58,162 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
         }
     }
 
-
-
     AppScaffold(
         title = "SIGN UP",
         navController = navController,
         showBackButton = true,
-        contentDescriptionBackButton = "back button",
-        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
-            fontWeight = FontWeight.Bold
-        )
+        contentDescriptionBackButton = "Back",
+        titleTextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
     ) { padding ->
-        Column(
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(bottom = 20.dp)
         ) {
-            Text(
-                text = "Please fill all the details",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+            val maxWidth = maxWidth
 
-            Box(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = PurpleLight, shape = RoundedCornerShape(8.dp))
-                    .padding(16.dp)
+                    .fillMaxSize()
+                    .widthIn(max = 420.dp)
+                    .align(Alignment.TopCenter)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Top content
                 Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    CustomOutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = "Full Name",
-                        modifier = Modifier.customOutlinedTextField()
+                    Text(
+                        text = "Enter details",
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
                     )
-                    CustomOutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = "Email",
-                        modifier = Modifier.customOutlinedTextField()
-                    )
-                    CustomOutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = "Password",
-                        isPasswordField = true,
-                        modifier = Modifier.customOutlinedTextField()
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Text("Select Account Type", color = Color.Black)
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(40.dp)
-                            .background(Color.LightGray, shape = RoundedCornerShape(8.dp))
+                            .background(BackgroundColor, RoundedCornerShape(8.dp))
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Row(
+                        CustomOutlinedTextField(
+                            value = username,
+                            onValueChange = { username = it },
+                            label = "Full Name",
                             modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                            leadingIcon = Icons.Outlined.Person2
+                        )
+                        CustomOutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = "Email",
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.Email
+                        )
+                        CustomOutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = "Password",
+                            isPasswordField = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.Password
+                        )
+
+                        Spacer(Modifier.heightIn(min = 50.dp, max = 160.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White, RoundedCornerShape(6.dp))
+                                .padding(10.dp)
                         ) {
                             Row(
-                                modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                RadioButton(
-                                    selected = accountType == "student",
-                                    onClick = { accountType = "student" })
-                                Text("Student", color = Color.Black)
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .width(1.dp)
-                                    .fillMaxHeight()
-                                    .background(Color.Black)
-                            )
-
-                            Row(
-                                modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                RadioButton(
-                                    selected = accountType == "teacher",
-                                    onClick = { accountType = "teacher" })
-                                Text("Teacher", color = Color.Black)
-                            }
-                        }
-                    }
-
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(modifier = Modifier.fillMaxWidth()) {
-                                CustomExposedDropdown(
-                                    label = "Branch",
-                                    options = Constants.BRANCHES,
-                                    selectedOption = branch,
-                                    onOptionSelected = { branch = it },
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                if (accountType == "student") {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    CustomExposedDropdown(
-                                        label = "Semester",
-                                        options = Constants.SEMESTERS,
-                                        selectedOption = semester,
-                                        onOptionSelected = { semester = it },
-                                        modifier = Modifier.weight(1f)
-                                    )
+                                listOf("Student", "Teacher").forEach { type ->
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        RadioButton(
+                                            selected = accountType == type.lowercase(),
+                                            onClick = { accountType = type.lowercase() }
+                                        )
+                                        Text(type, style = MaterialTheme.typography.bodySmall)
+                                    }
                                 }
                             }
+                        }
 
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            CustomExposedDropdown(
+                                label = "Branch",
+                                options = Constants.BRANCHES,
+                                selectedOption = branch,
+                                onOptionSelected = { branch = it },
+                                modifier = Modifier.weight(1f)
+                            )
                             if (accountType == "student") {
-                                Spacer(modifier = Modifier.height(8.dp))
-                                CustomOutlinedTextField(
-                                    value = rollno,
-                                    onValueChange = { rollno = it },
-                                    label = "Enter your ROLL NO.",
-                                    modifier = Modifier.fillMaxWidth()
+                                CustomExposedDropdown(
+                                    label = "Semester",
+                                    options = Constants.SEMESTERS,
+                                    selectedOption = semester,
+                                    onOptionSelected = { semester = it },
+                                    modifier = Modifier.weight(1f)
                                 )
                             }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CustomButton(text = "Register", action = {
-                        viewModel.createAccount(
-                            context,
-                            username,
-                            email,
-                            password,
-                            accountType,
-                            branch,
-                            semester,
-                            rollno
-                        )
-                    })
+                        if (accountType == "student") {
+                            CustomOutlinedTextField(
+                                value = rollno,
+                                onValueChange = { rollno = it },
+                                label = "Roll No.",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CustomButton(
+                                text = "Register",
+                                action = {
+                                    viewModel.createAccount(
+                                        context,
+                                        username,
+                                        email,
+                                        password,
+                                        accountType,
+                                        branch,
+                                        semester,
+                                        rollno
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
-            }
-            Spacer(modifier = Modifier.height(36.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFE6B89C))
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Already have an account?", fontSize = 14.sp)
-                Spacer(modifier = Modifier.width(4.dp))
-                CustomButton(
-                    text = "Login",
-                    action = {
+
+                // Bottom static button
+                TextButton(
+                    onClick = {
                         navController.navigate(NavRoutes.LoginPage.route) {
                             popUpTo(NavRoutes.LoginPage.route) { inclusive = true }
                         }
-                    },
-                    isLoadingIcon = false
-                )
+                    }
+                ) {
+                    Text("Already have an account? Login", fontSize = 13.sp)
+                }
             }
         }
     }
 }
-
-//@Preview(showSystemUi = true)
-//@Composable
-//fun Show_3() {
-//    AttendifyTheme {
-//        SignUp(rememberNavController())
-//    }
-//}
