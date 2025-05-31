@@ -3,6 +3,10 @@ package com.example.attendify.ui.sign_up
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.outlined.Person2
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -101,20 +105,23 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                             value = username,
                             onValueChange = { username = it },
                             label = "Full Name",
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.Person2
                         )
                         CustomOutlinedTextField(
                             value = email,
                             onValueChange = { email = it },
                             label = "Email",
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.Email
                         )
                         CustomOutlinedTextField(
                             value = password,
                             onValueChange = { password = it },
                             label = "Password",
                             isPasswordField = true,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.Password
                         )
 
                         Spacer(Modifier.heightIn(min = 50.dp, max = 160.dp))

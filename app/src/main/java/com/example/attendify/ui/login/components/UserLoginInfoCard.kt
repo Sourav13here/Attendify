@@ -7,6 +7,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.sharp.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -86,7 +92,8 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
                     viewModel.clearLoginError()
                 },
                 label = "Email",
-                modifier = Modifier.customOutlinedTextField()
+                modifier = Modifier.customOutlinedTextField(),
+                leadingIcon =Icons.Outlined.Email
             )
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -101,6 +108,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
                 label = "Password",
                 isPasswordField = true,
                 modifier = Modifier.customOutlinedTextField(),
+                leadingIcon = Icons.Outlined.Password
             )
 
             // Forgot Password aligned to right
