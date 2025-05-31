@@ -14,11 +14,11 @@ fun LogoutConfirmationDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Log Out") },
+        title = { Text("LOG OUT") },
         text = { Text("Are you sure you want to log out?") },
         confirmButton = {
             CustomButton(
-                text = "Yes",
+                text = "Logout",
                 action = onConfirm
             )
         },
