@@ -24,6 +24,8 @@ import com.example.attendify.common.composable.CustomTextButton
 import com.example.attendify.common.ext.customOutlinedTextField
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.login.LoginViewModel
+import com.example.attendify.ui.theme.CardColour
+import com.example.attendify.ui.theme.SecondaryColor
 
 @Composable
 fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
@@ -65,15 +67,15 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .offset(y = (-90).dp)
+            .offset(y = (-130).dp)
             .clip(RoundedCornerShape(16.dp))
             .border(1.dp, Color.Black, RoundedCornerShape(16.dp)),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFD3D3D3))
+        colors = CardDefaults.cardColors(containerColor = CardColour)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(15.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Email field
@@ -87,7 +89,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
                 modifier = Modifier.customOutlinedTextField()
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             // Password field
             CustomOutlinedTextField(
@@ -105,7 +107,8 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 4.dp, bottom = 6.dp, end = 6.dp),
+                    .offset(y=(-10).dp)
+                    .padding(top = 0.dp, bottom = 2.dp, end = 6.dp), // moved slightly up
                 horizontalArrangement = Arrangement.End
             ) {
                 CustomTextButton(

@@ -39,6 +39,8 @@ import com.example.attendify.R
 import com.example.attendify.common.ext.customButton
 import com.example.attendify.common.viewmodel.CommonViewmodel
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.theme.PrimaryColor
+import com.example.attendify.ui.theme.TextOnPrimary
 import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.launch
 
@@ -53,8 +55,8 @@ fun CustomButton(
         onClick = action,
         modifier = modifier.customButton(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFF38C8F),
-            contentColor = Color.White
+            containerColor = PrimaryColor,
+            contentColor = TextOnPrimary
         ),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -137,7 +139,7 @@ fun LogoutButton(
         onClick = { showLogOutDialog = true },
         modifier = Modifier
             .clip(CircleShape)
-            .background(colorResource(id = R.color.Container_Color))
+            .background(PrimaryColor)
             .border(1.dp, Color.Black, CircleShape)
             .size(32.dp)
     ) {

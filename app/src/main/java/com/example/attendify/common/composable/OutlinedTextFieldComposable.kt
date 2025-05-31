@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +26,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import com.example.attendify.ui.theme.BorderColor
+import com.example.attendify.ui.theme.CharcoalBlue
+import com.example.attendify.ui.theme.ErrorColor
 import com.example.attendify.ui.theme.GrayLight
+import com.example.attendify.ui.theme.PrimaryColor
+import com.example.attendify.ui.theme.SecondaryColor
 
 @Composable
 fun CustomOutlinedTextField(
@@ -46,8 +52,19 @@ fun CustomOutlinedTextField(
         value = value,
         modifier = modifier,
         onValueChange = onValueChange,
-        label = { Text(label, color = Color.Black) },
-        placeholder = { Text(placeholder ?: "", color = Color.Black) },
+        label = {
+            Text(
+                label,
+                color = if (error != null) ErrorColor else if (value.isNotEmpty()) PrimaryColor else CharcoalBlue
+            )
+        },
+        placeholder = {
+            Text(
+                placeholder ?: "",
+                color = Color(0xFF293241)
+            )
+        }
+        ,
         singleLine = true,
         enabled = enabled,
         visualTransformation = if (isPasswordField && !showPassword)
@@ -65,32 +82,33 @@ fun CustomOutlinedTextField(
             onNext = { onNext?.invoke() },
             onDone = { onDone?.invoke() }
         ),
+        supportingText = {
+            if (error != null) {
+                Text(error, color = ErrorColor)
+            }
+        },
         trailingIcon = {
             if (isPasswordField) {
-                val image =
-                    if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+                val image = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                 IconButton(onClick = { showPassword = !showPassword }) {
                     Icon(
                         imageVector = image,
                         contentDescription = if (showPassword) "Hide password" else "Show password",
-                        tint = Color.Black
+                        tint = Color(0xFF293241)
                     )
                 }
             }
         },
+
         isError = error != null,  // <-- Shows error state if error is present
-        supportingText = {
-            if (error != null) {
-                Text(error, color = Color.Red)
-            }
-        },
+
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = if (error != null) Color.Red else Color.Black,
-            unfocusedBorderColor = if (error != null) Color.Red else Color.Black,
+            focusedBorderColor = if (error != null) ErrorColor else PrimaryColor,
+            unfocusedBorderColor = if (error != null) ErrorColor else BorderColor,
             cursorColor = Color.Black,
-            focusedContainerColor = GrayLight,
-            unfocusedContainerColor = GrayLight,
-            disabledContainerColor = GrayLight
+            focusedContainerColor = Color(0xFFFFFFFF),
+            unfocusedContainerColor = Color(0xFFFFFFFF),
+            disabledContainerColor = Color(0xFFCBD5E1)
         ),
         shape = RoundedCornerShape(8.dp)
     )
