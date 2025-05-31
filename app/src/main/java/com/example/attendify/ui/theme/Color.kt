@@ -14,11 +14,6 @@ val TextPrimary = Color(0xFF293241)      // Charcoal
 val TextOnPrimary = Color(0xFFFFFFFF)    // White text on Coral
 val ErrorColor = Color(0xFFD32F2F)
 
-// Attendify colours
-val ButtonColor = Color(0xFFEE6C4D )
-val BoardColor = Color(0xFF293241)
-
-
 val CardColour = Color(0xFFDFF9FA)
 val CharcoalBlue = Color(0xFF293241)
 val BorderColor = Color(0xFF3D5A80)

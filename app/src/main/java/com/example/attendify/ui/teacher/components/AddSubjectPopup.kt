@@ -1,5 +1,6 @@
 package com.example.attendify.ui.teacher.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.attendify.utils.Constants
@@ -37,6 +39,7 @@ fun AddSubjectPopup(
     var expandedSemester by remember { mutableStateOf(false) }
 
     AlertDialog(
+        modifier = Modifier.border(2.dp,Color.White),
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(onClick = {
