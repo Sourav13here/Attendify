@@ -41,7 +41,6 @@ import com.example.attendify.common.ext.customButton
 import com.example.attendify.common.viewmodel.CommonViewmodel
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.PrimaryColor
-import com.example.attendify.ui.theme.PrimaryVariant
 import com.example.attendify.ui.theme.TextOnPrimary
 import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
 import kotlinx.coroutines.launch
@@ -78,7 +77,7 @@ fun CustomTextButton(text: String, modifier: Modifier = Modifier, action: () -> 
     TextButton(
         onClick = action
     ) {
-        Text(text = text)
+        Text(text = text, color = Color.Black)
     }
 }
 
@@ -141,8 +140,8 @@ fun LogoutButton(
         onClick = { showLogOutDialog = true },
         modifier = Modifier
             .clip(CircleShape)
-            .background(PrimaryVariant)
-            .border(2.dp, Color(0xFFC66D70), CircleShape)
+            .background(PrimaryColor)
+            .border(1.dp, Color.Black, CircleShape)
             .size(32.dp)
     ) {
         Icon(

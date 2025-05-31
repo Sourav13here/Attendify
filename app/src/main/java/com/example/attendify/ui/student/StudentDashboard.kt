@@ -24,6 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +36,12 @@ import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
@@ -73,7 +81,7 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
     }
 
     AppScaffold(
-        title = "Student Dashboard",
+        title = "STUDENT DASHBOARD",
         navController = navController,
         titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
             fontWeight = FontWeight.Bold
@@ -90,10 +98,14 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .fillMaxWidth(0.9f)
-                .padding(start = 20.dp,end = 20.dp),
+                .fillMaxWidth(0.9f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             val student = viewModel.student.value
@@ -113,7 +125,7 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             LazyColumn(
                 modifier = Modifier
                     .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.95f)
                     .fillMaxHeight(0.9f)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -140,6 +152,7 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
                         )
                     }
                 }
+
             }
         }
     }
@@ -149,12 +162,6 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 @Composable
 fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
     val color = when {
-
-        percentage >= 75 -> Color(0xFF4CAF50)  // Green
-        percentage in 65..74 -> Color(0xFFFFC107)  // Amber/Yellow
-        percentage in 0..64 -> Color(0xFFF44336)  // Red
-        else -> Color.Gray  // Black
-
         percentage >= 75 -> Color(0xFF4CAF50) // Material Green
         percentage in 40..74 -> Color(0xFFFFC107) // Material Amber
         percentage in 1..39 -> Color(0xFFF44336) // Material Red

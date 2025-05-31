@@ -63,7 +63,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
         navController = navController,
         showBackButton = true,
         contentDescriptionBackButton = "Back",
-        titleTextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+        titleTextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
     ) { padding ->
         BoxWithConstraints(
             modifier = Modifier

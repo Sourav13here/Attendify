@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.attendify.common.ext.customIconButton
@@ -36,7 +37,7 @@ fun AppScaffold(
         topBar = {
             CenterAlignedTopAppBar(
 
-                title = { Text(title, style = titleTextStyle) },
+                title = { Text(title, style = titleTextStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
                     when {
                         showBackButton -> {

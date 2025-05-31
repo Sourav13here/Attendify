@@ -2,7 +2,6 @@ package com.example.attendify.ui.teacher.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -18,7 +17,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.attendify.utils.Constants
 
@@ -51,7 +49,7 @@ fun AddSubjectPopup(
                 Text("Cancel")
             }
         },
-        title = { Text("Add Subject",fontWeight = FontWeight.SemiBold) },
+        title = { Text("Add Subject") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
@@ -68,8 +66,7 @@ fun AddSubjectPopup(
 
                 ExposedDropdownMenuBox(
                     expanded = expandedBranch,
-                    onExpandedChange = { expandedBranch = !expandedBranch },
-
+                    onExpandedChange = { expandedBranch = !expandedBranch }
                 ) {
                     OutlinedTextField(
                         value = selectedBranch,
@@ -102,7 +99,6 @@ fun AddSubjectPopup(
                 ExposedDropdownMenuBox(
                     expanded = expandedSemester,
                     onExpandedChange = { expandedSemester = !expandedSemester }
-
                 ) {
                     OutlinedTextField(
                         value = selectedSemester,
@@ -117,8 +113,7 @@ fun AddSubjectPopup(
 
                     DropdownMenu(
                         expanded = expandedSemester,
-                        onDismissRequest = { expandedSemester = false },
-                        modifier = Modifier.heightIn(max = 168.dp)
+                        onDismissRequest = { expandedSemester = false }
                     ) {
                         Constants.SEMESTERS.forEach { semester ->
                             DropdownMenuItem(
