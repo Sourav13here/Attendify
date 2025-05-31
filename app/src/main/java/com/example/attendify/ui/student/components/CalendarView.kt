@@ -51,6 +51,7 @@ fun CalendarView(
     val currentMonth = currentDate.month.name.lowercase().replaceFirstChar { it.uppercase() }
     val currentYear = currentDate.year
 
+
     Column(
         modifier = Modifier
             .fillMaxWidth(0.9f)
@@ -121,6 +122,10 @@ fun CalendarView(
                     } else -1
                     val isToday = fullDate == LocalDate.now().toString()
 
+                    // Check if the date is today or in the future
+                    val dateObj = if (fullDate.isNotEmpty()) LocalDate.parse(fullDate) else null
+                    val isFutureOrToday = dateObj != null && !dateObj.isBefore(LocalDate.now())
+
                     Box(
                         modifier = Modifier
                             .size(32.dp)
@@ -138,30 +143,33 @@ fun CalendarView(
                                 shape = RoundedCornerShape(6.dp)
                             )
                             .clickable(
-                                enabled = fullDate.isNotEmpty() && attendanceMap[fullDate] == null // Allow clicking only if not in Firestore
+                                enabled = fullDate.isNotEmpty() && isFutureOrToday && (localAttendanceMap[fullDate] != null || (attendanceMap[fullDate] == null && localAttendanceMap[fullDate] == null))
                             ) {
 
-                                 val currentStatus = localAttendanceMap[fullDate]
+                                val currentStatus = localAttendanceMap[fullDate]
                                 when (currentStatus) {
                                     1 -> localAttendanceMap[fullDate] = 0  // Present → Absent
                                     0 -> localAttendanceMap.remove(fullDate)  // Absent → Remove entry
                                     else -> localAttendanceMap[fullDate] = 1
                                 }
-                                    Log.d("CalendarClick", "Clicked $fullDate, Now = ${localAttendanceMap[fullDate]}")
+                                Log.d("CalendarClick", "Clicked $fullDate, Now = ${localAttendanceMap[fullDate]}")
 
 
 
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(dayStr, fontSize = 12.sp, color = Color.Black)
+                        Text(
+                            text = dayStr,
+                            fontSize = 12.sp,
+                            color = if (!isFutureOrToday && fullDate.isNotEmpty()) Color(0xFF8D6E63) else Color.Black
+                        )
                     }
                 }
             }
         }
     }
 }
-
 
 
 

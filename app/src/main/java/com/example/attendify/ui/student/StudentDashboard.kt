@@ -24,6 +24,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,16 +36,48 @@ import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.verification.components.LogoutConfirmationDialog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
+
+    var showLogOutDialog by remember { mutableStateOf(false) }
+
+
     LaunchedEffect(Unit) {
-        val userId = viewModel.authRepo.getCurrentUser()?.uid
-        if (userId == null) {
-            navController.navigate(NavRoutes.LoginPage.route) {
-                popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+        viewModel.fetchStudentData()
+    }
+
+
+//    LaunchedEffect(Unit) {
+//        val userId = viewModel.authRepo.getCurrentUser()?.uid
+//        if (userId == null) {
+//            navController.navigate(NavRoutes.LoginPage.route) {
+//                popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+//            }
+//        }
+//    }
+
+    if (showLogOutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewModel.signOut()
+                    navController.navigate(NavRoutes.LoginPage.route) {
+                        popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+                    }
+                }
+                showLogOutDialog = false
+            },
+            onDismiss = {
+                showLogOutDialog = false
             }
-        }
+        )
     }
 
     AppScaffold(
@@ -127,7 +161,9 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
         percentage in 40..74 -> Color(0xFFFFC107) // Material Amber
         percentage in 1..39 -> Color(0xFFF44336) // Material Red
         else -> Color.Gray
+
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,7 +186,15 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
 
             contentAlignment = Alignment.Center
         ) {
+
+            Text(
+                text = "$percentage",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp
+            )
             Text(text = "$percentage", color = Color.White, fontSize = 12.sp,fontWeight = FontWeight.Bold)
+
         }
     }
 }

@@ -78,7 +78,7 @@ fun CustomTextButton(text: String, modifier: Modifier = Modifier, action: () -> 
     TextButton(
         onClick = action
     ) {
-        Text(text = text)
+        Text(text = text, color = Color.Black)
     }
 }
 

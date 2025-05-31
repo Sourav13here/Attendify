@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -58,13 +56,6 @@ fun StudentList(
                 modifier = Modifier.width(120.dp)
             )
 
-            Divider(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(24.dp),
-                color = Color.Black
-            )
-
             Text(
                 text = "Student Name",
                 fontWeight = FontWeight.Bold,
@@ -72,12 +63,7 @@ fun StudentList(
                 modifier = Modifier
                     .width(160.dp)
             )
-            Divider(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(24.dp),
-                color = Color.Black
-            )
+
             Text(
                 text = "P",
                 fontWeight = FontWeight.Bold,
@@ -89,19 +75,6 @@ fun StudentList(
 
             Text(
                 text = "A",
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                modifier = Modifier.width(30.dp),
-                textAlign = TextAlign.Center
-            )
-            Divider(
-                modifier = Modifier
-                    .width(1.dp)
-                    .height(24.dp),
-                color = Color.Black
-            )
-            Text(
-                text = "%",
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 modifier = Modifier.width(30.dp),
@@ -153,7 +126,6 @@ fun StudentList(
                                     )
                                 }
                             },
-                            date = date,
                             subjectName = subjectName,
                             viewModel = viewModel
                         )
