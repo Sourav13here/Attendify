@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -83,7 +84,7 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 
 
     AppScaffold(
-        title = "VERIFICATION",
+        title = "Verification List",
         navController = navController,
         showLogo = false,
         contentDescriptionLogo = "App logo",
@@ -283,7 +284,7 @@ fun DropdownSelector(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth(0.8f)
+            modifier = Modifier.fillMaxWidth(0.8f).heightIn(max = 168.dp)
         ) {
             items.forEach { item ->
                 DropdownMenuItem(text = { Text(item) }, onClick = {
