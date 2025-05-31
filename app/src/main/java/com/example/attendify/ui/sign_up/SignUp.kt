@@ -3,6 +3,10 @@ package com.example.attendify.ui.sign_up
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Password
+import androidx.compose.material.icons.outlined.Person2
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -71,121 +75,135 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
 
             Column(
                 modifier = Modifier
+                    .fillMaxSize()
                     .widthIn(max = 420.dp)
                     .align(Alignment.TopCenter)
                     .padding(horizontal = 12.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Fill in details",
-                    style = MaterialTheme.typography.titleSmall,
-                    textAlign = TextAlign.Center
-                )
-
+                // Top content
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(BackgroundColor, RoundedCornerShape(8.dp))
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    CustomOutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = "Full Name",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    CustomOutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = "Email",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    CustomOutlinedTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        label = "Password",
-                        isPasswordField = true,
-                        modifier = Modifier.fillMaxWidth()
+                    Text(
+                        text = "Enter details",
+                        style = MaterialTheme.typography.titleMedium,
+                        textAlign = TextAlign.Center
                     )
 
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White, RoundedCornerShape(6.dp))
-                            .padding(10.dp)
+                            .background(BackgroundColor, RoundedCornerShape(8.dp))
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Row(
+                        CustomOutlinedTextField(
+                            value = username,
+                            onValueChange = { username = it },
+                            label = "Full Name",
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            verticalAlignment = Alignment.CenterVertically
+                            leadingIcon = Icons.Outlined.Person2
+                        )
+                        CustomOutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = "Email",
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.Email
+                        )
+                        CustomOutlinedTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            label = "Password",
+                            isPasswordField = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            leadingIcon = Icons.Outlined.Password
+                        )
+
+                        Spacer(Modifier.heightIn(min = 50.dp, max = 160.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.White, RoundedCornerShape(6.dp))
+                                .padding(10.dp)
                         ) {
-                            listOf("Student", "Teacher").forEach { type ->
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    RadioButton(
-                                        selected = accountType == type.lowercase(),
-                                        onClick = { accountType = type.lowercase() }
-                                    )
-                                    Text(type, style = MaterialTheme.typography.bodySmall)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                listOf("Student", "Teacher").forEach { type ->
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        RadioButton(
+                                            selected = accountType == type.lowercase(),
+                                            onClick = { accountType = type.lowercase() }
+                                        )
+                                        Text(type, style = MaterialTheme.typography.bodySmall)
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        CustomExposedDropdown(
-                            label = "Branch",
-                            options = Constants.BRANCHES,
-                            selectedOption = branch,
-                            onOptionSelected = { branch = it },
-                            modifier = Modifier.weight(1f)
-                        )
-                        if (accountType == "student") {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             CustomExposedDropdown(
-                                label = "Sem",
-                                options = Constants.SEMESTERS,
-                                selectedOption = semester,
-                                onOptionSelected = { semester = it },
+                                label = "Branch",
+                                options = Constants.BRANCHES,
+                                selectedOption = branch,
+                                onOptionSelected = { branch = it },
                                 modifier = Modifier.weight(1f)
+                            )
+                            if (accountType == "student") {
+                                CustomExposedDropdown(
+                                    label = "Semester",
+                                    options = Constants.SEMESTERS,
+                                    selectedOption = semester,
+                                    onOptionSelected = { semester = it },
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
+
+                        if (accountType == "student") {
+                            CustomOutlinedTextField(
+                                value = rollno,
+                                onValueChange = { rollno = it },
+                                label = "Roll No.",
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            CustomButton(
+                                text = "Register",
+                                action = {
+                                    viewModel.createAccount(
+                                        context,
+                                        username,
+                                        email,
+                                        password,
+                                        accountType,
+                                        branch,
+                                        semester,
+                                        rollno
+                                    )
+                                }
                             )
                         }
                     }
-
-                    if (accountType == "student") {
-                        CustomOutlinedTextField(
-                            value = rollno,
-                            onValueChange = { rollno = it },
-                            label = "Roll No.",
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CustomButton(
-                            text = "Register",
-                            action = {
-                                viewModel.createAccount(
-                                    context,
-                                    username,
-                                    email,
-                                    password,
-                                    accountType,
-                                    branch,
-                                    semester,
-                                    rollno
-                                )
-                            }
-                        )
-                    }
                 }
 
+                // Bottom static button
                 TextButton(
                     onClick = {
                         navController.navigate(NavRoutes.LoginPage.route) {

@@ -21,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,9 +46,13 @@ fun CustomOutlinedTextField(
     isPasswordField: Boolean = false,
     error: String? = null,
     onNext: (() -> Unit)? = null,
-    onDone: (() -> Unit)? = null
+    onDone: (() -> Unit)? = null,
+    leadingIcon: ImageVector? = null // <-- NEW
+
 ) {
     var showPassword by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+    var isFocused by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = value,
@@ -80,11 +86,22 @@ fun CustomOutlinedTextField(
         ),
         keyboardActions = KeyboardActions(
             onNext = { onNext?.invoke() },
-            onDone = { onDone?.invoke() }
+            onDone = { onDone?.invoke()
+                focusManager.clearFocus() // this explicitly closes the keyboard
+
+            }
         ),
         supportingText = {
             if (error != null) {
                 Text(error, color = ErrorColor)
+            }
+        },leadingIcon = {
+            if (leadingIcon != null) {
+                Icon(
+                    imageVector = leadingIcon,
+                    contentDescription = null,
+                    tint = if (isFocused) PrimaryColor else CharcoalBlue // Change color on focus
+                )
             }
         },
         trailingIcon = {
@@ -108,7 +125,11 @@ fun CustomOutlinedTextField(
             cursorColor = Color.Black,
             focusedContainerColor = Color(0xFFFFFFFF),
             unfocusedContainerColor = Color(0xFFFFFFFF),
-            disabledContainerColor = Color(0xFFCBD5E1)
+            disabledContainerColor = Color(0xFFCBD5E1),
+            disabledBorderColor = Color(0xFFA0AEC0), // muted gray-blue
+            disabledTextColor = Color(0xFF7B8794),   // dull text
+            disabledLabelColor = Color(0xFF7B8794),
+            disabledPlaceholderColor = Color(0xFF7B8794),
         ),
         shape = RoundedCornerShape(8.dp)
     )

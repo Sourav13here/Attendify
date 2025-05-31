@@ -2,6 +2,8 @@ package com.example.attendify.ui.login.components
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,7 +60,7 @@ fun ForgetPasswordDialog(
             ) {
                 Text("Reset password", style = MaterialTheme.typography.headlineSmall)
                 Spacer(Modifier.height(8.dp))
-                Text("Password reset link will be sent to your email.")
+                Text("Password reset link to ")
                 Spacer(Modifier.height(8.dp))
                 CustomOutlinedTextField(
                     value = email,
@@ -67,7 +69,8 @@ fun ForgetPasswordDialog(
                         viewModel.clearPasswordResetMessage()
                     },
                     label = "Email",
-                    modifier = Modifier
+                    modifier = Modifier,
+                    leadingIcon = Icons.Outlined.Email
                 )
                 Spacer(Modifier.height(12.dp))
                 if (resetMessage2 != null) {
