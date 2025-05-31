@@ -33,6 +33,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -55,6 +56,8 @@ dependencies {
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.games.activity)
+    implementation(libs.androidx.room.common.jvm)
+    implementation(libs.androidx.room.runtime.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -62,6 +65,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
 
     //added
     implementation(libs.androidx.navigation.compose)
@@ -79,14 +84,22 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    implementation(libs.kotlinx.coroutines.play.services)
 
-    implementation("com.google.android.gms:play-services-base:18.2.0")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
+    implementation(libs.play.services.base)
+    implementation(libs.play.services.auth)
+
+    //Refresh
+    implementation (libs.google.accompanist.swiperefresh)
+
+    implementation (libs.accompanist.swiperefresh.v0280) // or latest
+
+
+
 
 //excel
-    implementation ("org.apache.poi:poi:5.2.3")
-    implementation ("org.apache.poi:poi-ooxml:5.2.3")
+    implementation (libs.poi)
+    implementation (libs.poi.ooxml)
 
 
 }
