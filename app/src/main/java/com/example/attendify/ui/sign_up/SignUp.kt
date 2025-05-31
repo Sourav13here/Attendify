@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Numbers
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material.icons.outlined.Person2
 import androidx.compose.material3.*
@@ -63,7 +64,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
         navController = navController,
         showBackButton = true,
         contentDescriptionBackButton = "Back",
-        titleTextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+        titleTextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
     ) { padding ->
         BoxWithConstraints(
             modifier = Modifier
@@ -176,7 +177,8 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                 value = rollno,
                                 onValueChange = { rollno = it },
                                 label = "Roll No.",
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                leadingIcon = Icons.Outlined.Numbers
                             )
                         }
 

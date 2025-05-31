@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.theme.PrimaryColor
 
 @Composable
 fun VerificationStatus(
@@ -345,7 +346,7 @@ fun VerificationStatus(
                             },
                             enabled = !isLoading,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isLoading) Color.Gray else Color(0xFFE57373)
+                                containerColor = if (isLoading) Color.Gray else PrimaryColor
                             ),
                             shape = RoundedCornerShape(16.dp)
                         ) {
