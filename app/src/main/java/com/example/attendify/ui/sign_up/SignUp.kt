@@ -21,6 +21,7 @@ import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.common.ext.customOutlinedTextField
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.BackgroundColor
+import com.example.attendify.ui.theme.SecondaryColor
 import com.example.attendify.utils.Constants
 
 @Composable
@@ -64,6 +65,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .padding(bottom = 20.dp)
         ) {
             val maxWidth = maxWidth
 
@@ -86,7 +88,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                         .fillMaxWidth()
                         .background(BackgroundColor, RoundedCornerShape(8.dp))
                         .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     CustomOutlinedTextField(
                         value = username,
