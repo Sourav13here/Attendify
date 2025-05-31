@@ -73,7 +73,7 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
     }
 
     AppScaffold(
-        title = "STUDENT DASHBOARD",
+        title = "Student Dashboard",
         navController = navController,
         titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
             fontWeight = FontWeight.Bold
@@ -90,14 +90,10 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .fillMaxWidth(0.9f),
+                .fillMaxWidth(0.9f)
+                .padding(start = 20.dp,end = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
             Spacer(modifier = Modifier.height(16.dp))
 
             val student = viewModel.student.value
@@ -117,7 +113,7 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             LazyColumn(
                 modifier = Modifier
                     .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
-                    .fillMaxWidth(0.95f)
+                    .fillMaxWidth()
                     .fillMaxHeight(0.9f)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -144,7 +140,6 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
                         )
                     }
                 }
-
             }
         }
     }
