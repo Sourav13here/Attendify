@@ -37,13 +37,39 @@ import com.example.attendify.navigation.NavRoutes
 
 @Composable
 fun StudentDashboard(navController: NavController, viewModel: StudentDashboardViewModel) {
+
+    var showLogOutDialog by remember { mutableStateOf(false) }
+
+
     LaunchedEffect(Unit) {
-        val userId = viewModel.authRepo.getCurrentUser()?.uid
-        if (userId == null) {
-            navController.navigate(NavRoutes.LoginPage.route) {
-                popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+        viewModel.fetchStudentData()
+    }
+
+
+//    LaunchedEffect(Unit) {
+//        val userId = viewModel.authRepo.getCurrentUser()?.uid
+//        if (userId == null) {
+//            navController.navigate(NavRoutes.LoginPage.route) {
+//                popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+//            }
+//        }
+//    }
+
+    if (showLogOutDialog) {
+        LogoutConfirmationDialog(
+            onConfirm = {
+                CoroutineScope(Dispatchers.Main).launch {
+                    viewModel.signOut()
+                    navController.navigate(NavRoutes.LoginPage.route) {
+                        popUpTo(NavRoutes.StudentDashboard.route) { inclusive = true }
+                    }
+                }
+                showLogOutDialog = false
+            },
+            onDismiss = {
+                showLogOutDialog = false
             }
-        }
+        )
     }
 
     AppScaffold(
@@ -128,11 +154,19 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 @Composable
 fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
     val color = when {
+
+        percentage >= 75 -> Color(0xFF4CAF50)  // Green
+        percentage in 65..74 -> Color(0xFFFFC107)  // Amber/Yellow
+        percentage in 0..64 -> Color(0xFFF44336)  // Red
+        else -> Color.Gray  // Black
+
         percentage >= 75 -> Color(0xFF4CAF50) // Material Green
         percentage in 40..74 -> Color(0xFFFFC107) // Material Amber
         percentage in 1..39 -> Color(0xFFF44336) // Material Red
         else -> Color.Gray
+
     }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -155,7 +189,15 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
 
             contentAlignment = Alignment.Center
         ) {
+
+            Text(
+                text = "$percentage",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp
+            )
             Text(text = "$percentage", color = Color.White, fontSize = 12.sp,fontWeight = FontWeight.Bold)
+
         }
     }
 }
