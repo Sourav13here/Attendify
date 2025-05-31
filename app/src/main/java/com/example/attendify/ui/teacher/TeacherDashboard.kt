@@ -1,17 +1,22 @@
 package com.example.attendify.ui.teacher
 
+import VerifyFloatingButton
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -19,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,8 +36,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -41,7 +52,10 @@ import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.data.model.Subject
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.teacher.components.AddSubjectPopup
-import com.example.attendify.ui.teacher.components.VerifyFloatingButton
+import com.example.attendify.ui.theme.CharcoalBlue
+import com.example.attendify.ui.theme.PrimaryColor
+import com.example.attendify.ui.theme.SecondaryColor
+import com.example.attendify.ui.theme.TextPrimary
 
 
 @Composable
@@ -95,24 +109,25 @@ fun TeacherDashboard(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .padding(bottom = 80.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(bottom = 80.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (teacher != null) {
                     Text(
-                        text = "Welcome, " + teacher!!.name,
+                        text = buildAnnotatedString {
+                            append("Welcome, ")
+                            withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                                append(teacher!!.name)
+                            }
+                        },
                         modifier = Modifier
                             .padding(8.dp)
-                            .background(Color.LightGray, RoundedCornerShape(8.dp))
-                            .padding(12.dp)
+                            .background(Color.White, RoundedCornerShape(8.dp))
+                            .border(3.dp, CharcoalBlue, RectangleShape)
+                            .padding(12.dp),
                     )
                 } else {
                     CircularProgressIndicator()
@@ -129,14 +144,18 @@ fun TeacherDashboard(
                     )
                 }
 
+                // ✅ Scrollable Subject List Box
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(0.9f)
-                        .background(Color(0xFFD1B2E0), RoundedCornerShape(16.dp))
+                        .height(540.dp)
+                        .background(SecondaryColor.copy(0.4f), RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState()), // Only this part scrolls
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         if (subjects.isEmpty()) {
@@ -165,9 +184,11 @@ fun TeacherDashboard(
                 }
             }
         }
+
         VerifyFloatingButton(navController)
     }
 }
+
 
 @Composable
 fun SubjectCard(
