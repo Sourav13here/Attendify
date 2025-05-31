@@ -13,6 +13,8 @@ val SurfaceColor = Color(0xFFACC3E1)     // Soft Blue
 val TextPrimary = Color(0xFF293241)      // Charcoal
 val TextOnPrimary = Color(0xFFFFFFFF)    // White text on Coral
 val ErrorColor = Color(0xFFD32F2F)
+val CorrectColor = Color(0xD24CAF50)
+
 
 val CardColour = Color(0xFFDFF9FA)
 val CharcoalBlue = Color(0xFF293241)

@@ -1,8 +1,10 @@
 package com.example.attendify.ui.verification
 
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +29,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,6 +43,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +53,8 @@ import com.example.attendify.common.composable.LogoutButton
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.CardColour
 import com.example.attendify.ui.theme.CharcoalBlue
+import com.example.attendify.ui.theme.CorrectColor
+import com.example.attendify.ui.theme.ErrorColor
 import com.example.attendify.ui.theme.PrimaryColor
 import com.example.attendify.ui.theme.PrimaryVariant
 import com.example.attendify.ui.theme.SecondaryColor
@@ -75,6 +81,15 @@ fun VerificationStatus(
     LaunchedEffect(Unit) {
         viewmodel.verifyAndSaveUser(userType, username, branch, semester, roll)
         viewmodel.refreshData()
+    }
+
+    // Dedicated polling effect — only when email not verified
+    LaunchedEffect(viewmodel.showEmailNotVerifiedBox.collectAsState().value) {
+        if (viewmodel.showEmailNotVerifiedBox.value) {
+            viewmodel.startEmailVerificationPolling()
+        } else {
+            viewmodel.stopEmailVerificationPolling()
+        }
     }
 
     LaunchedEffect(snackbarMessage) {
@@ -163,18 +178,57 @@ fun VerificationStatus(
                             )
                         }
 
+
                         details.forEach { (label, value) ->
-                            Text(
-                                buildAnnotatedString {
-                                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                        append("$label: ")
-                                    }
-                                    withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
-                                        append(value)
-                                    }
-                                },
-                                fontSize = 16.sp
-                            )
+                            if (label == "Email") {
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("$label: ")
+                                        }
+                                        withStyle(
+                                            SpanStyle(
+                                                color = Color(0xFF1A73E8),
+                                                fontWeight = FontWeight.Medium,
+                                                textDecoration = TextDecoration.Underline
+                                            )
+                                        ) {
+                                            append(value)
+                                        }
+                                    },
+                                    fontSize = 16.sp,
+                                    modifier = Modifier
+                                        .padding(vertical = 2.dp)
+                                        .clickable {
+                                            val intent = Intent(Intent.ACTION_MAIN).apply {
+                                                addCategory(Intent.CATEGORY_APP_EMAIL)
+                                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                            }
+                                            try {
+                                                context.startActivity(intent)
+                                            } catch (e: Exception) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "No email app found",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        }
+                                )
+                            } else {
+                                Text(
+                                    buildAnnotatedString {
+                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                            append("$label: ")
+                                        }
+                                        withStyle(SpanStyle(fontWeight = FontWeight.Normal)) {
+                                            append(value)
+                                        }
+                                    },
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(vertical = 2.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -186,11 +240,29 @@ fun VerificationStatus(
             if (showEmailNotVerifiedBox) {
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth(0.85f),
+                        .fillMaxWidth(0.85f)
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_MAIN).apply {
+                                addCategory(Intent.CATEGORY_APP_EMAIL)
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            }
+                            try {
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        },
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     shape = RoundedCornerShape(12.dp),
                     elevation = CardDefaults.cardElevation(2.dp),
-                    border = BorderStroke(1.dp, brush = Brush.radialGradient(colors = listOf(SecondaryColor,Color.White),radius = 700f))
+                    border = BorderStroke(
+                        1.dp,
+                        brush = Brush.radialGradient(
+                            colors = listOf(ErrorColor, Color.White),
+                            radius = 700f
+                        )
+                    )
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
@@ -211,11 +283,35 @@ fun VerificationStatus(
                     }
                 }
             } else {
-                Spacer(
+                Card(
                     modifier = Modifier
-                        .fillMaxWidth(0.85f)
-                        .height(90.dp)
-                )
+                        .fillMaxWidth(0.85f),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE6FFEA)), // soft green
+                    shape = RoundedCornerShape(12.dp),
+                    elevation = CardDefaults.cardElevation(2.dp),
+                    border = BorderStroke(1.dp, brush = Brush.radialGradient(
+                        colors = listOf(CorrectColor, Color.White),
+                        radius = 700f
+                    )) // green border
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "Email verified!",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = CorrectColor // dark green
+                        )
+                        Spacer(Modifier.height(6.dp))
+                        Text(
+                            "Thank you for verifying your email. You're good to go!",
+                            fontSize = 14.sp,
+                            color = Color.DarkGray
+                        )
+                    }
+                }
             }
 
             Spacer(Modifier.height(24.dp))

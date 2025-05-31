@@ -11,6 +11,8 @@ import com.example.attendify.data.model.Teacher
 import com.example.attendify.data.repository.FirestoreRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +31,7 @@ class VerificationViewModel @Inject constructor(
 ) : ViewModel() {
     private var currentBranch: String = ""
     private var currentSemester: String = ""
+
 
     private val _userData = MutableStateFlow<UserData?>(null)
     val userData: StateFlow<UserData?> = _userData.asStateFlow()
@@ -60,6 +63,38 @@ class VerificationViewModel @Inject constructor(
     private val _unverifiedTeachers = MutableStateFlow<List<Teacher>>(emptyList())
     val unverifiedTeachers: StateFlow<List<Teacher>> = _unverifiedTeachers.asStateFlow()
 
+
+    private var emailVerificationJob: Job? = null
+
+    fun startEmailVerificationPolling() {
+        if (emailVerificationJob?.isActive == true) return  // Prevent duplicates
+
+        emailVerificationJob = viewModelScope.launch {
+            while (true) {
+                try {
+                    val firebaseUser = auth.currentUser ?: break
+                    firebaseUser.reload()  // Refresh user info
+
+                    if (firebaseUser.isEmailVerified) {
+                        _showEmailNotVerifiedBox.value = false
+                        refreshData()  // Will navigate to dashboard if verified
+                        break  // Exit the loop
+                    } else {
+                        _showEmailNotVerifiedBox.value = true
+                    }
+                } catch (e: Exception) {
+                    _errorMessage.value = "Error checking email: ${e.localizedMessage}"
+                    break
+                }
+
+                delay(1000L)  // Wait for 1 second
+            }
+        }
+    }
+
+    fun stopEmailVerificationPolling() {
+        emailVerificationJob?.cancel()
+    }
 
     fun showSnackbar(message: String) {
         _snackbarMessage.value = message
