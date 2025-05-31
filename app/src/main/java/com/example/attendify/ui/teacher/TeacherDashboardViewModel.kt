@@ -14,6 +14,7 @@ import com.example.attendify.data.model.Teacher
 import com.example.attendify.data.repository.AuthRepository
 import com.example.attendify.data.repository.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import generateExcelReport
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -47,6 +48,47 @@ class TeacherDashboardViewModel @Inject constructor(
         Log.e("LogTeacher", "init")
         fetchTeacherData()
     }
+
+    fun deleteSubject(subject: Subject, context: Context) {
+        viewModelScope.launch {
+            try {
+//                firestoreRepo.deleteSubject(subject.subjectCode
+//                    onSuccess = {
+//                        Toast.makeText(context, "Subject deleted", Toast.LENGTH_SHORT).show()
+//                        loadSubjects(authRepo.getCurrentUser()?.email ?: "")
+//                    },
+//                    onFailure = {
+//                        Toast.makeText(context, "Failed to delete subject", Toast.LENGTH_SHORT).show()
+//                    }
+//                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Failed to delete subject", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun downloadAttendanceReport(subject: Subject, context: Context) {
+        viewModelScope.launch {
+            try {
+                // Fetch attendance data from Firestore
+                val reportData = firestoreRepo.generateAttendanceReport(subject.branch, subject.semester, subject.subjectName)
+
+                // Generate Excel file and get saved file path
+                val filePath = generateExcelReport(context, reportData, subject.subjectName)
+
+                if (filePath != null) {
+                    Toast.makeText(context, "Report saved to: $filePath", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(context, "Failed to save report", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(context, "Error generating report", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     fun loadAttendancePercentages(subjectName: String, branch: String, semester: String) {
         viewModelScope.launch {

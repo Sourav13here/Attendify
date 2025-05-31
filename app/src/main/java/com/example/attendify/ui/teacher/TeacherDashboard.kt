@@ -245,32 +245,6 @@ fun SubjectCard(
                 Text(text = "$subjectCode - $subjectBranch ($subjectSem)", fontWeight = FontWeight.Bold)
                 Text(text = subjectName)
             }
-
-            Box(modifier = Modifier.wrapContentSize()) {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "More Options")
-                }
-
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    DropdownMenuItem(
-                        text = { Text("Delete Subject", style = MaterialTheme.typography.bodyMedium) },
-                        onClick = {
-                            expanded = false
-//                            viewModel.deleteSubject(subject, context) {}
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Download Report", style = MaterialTheme.typography.bodyMedium) },
-                        onClick = {
-                            expanded = false
-//                            viewModel.downloadAttendanceReport(subject, context)
-                        }
-                    )
-                }
-            }
         }
     }
 }

@@ -1,4 +1,3 @@
-// AttendanceSheet.kt
 package com.example.attendify.ui.teacher
 
 import android.app.DatePickerDialog
@@ -11,11 +10,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
+import com.example.attendify.data.model.Subject
 import com.example.attendify.ui.teacher.components.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -23,6 +25,7 @@ import java.util.*
 @Composable
 fun AttendanceSheet(
     navController: NavController,
+    subjectCode: String,
     subjectName: String,
     branch: String,
     semester: String,
@@ -50,13 +53,21 @@ fun AttendanceSheet(
         }
     }
 
-    // Scroll to selected date whenever it or month changes
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+
     LaunchedEffect(currentMonth, selectedDate) {
-        // Assuming getDaysInMonth(currentMonth) returns List<Int> of all days in the month
         val daysInMonth = getDaysInMonth(currentMonth)
         val dayInt = selectedDate.toIntOrNull() ?: 1
         val index = daysInMonth.indexOf(dayInt).takeIf { it >= 0 } ?: 0
-        listState.animateScrollToItem(index)
+
+        // Convert screen width dp to pixels
+        val screenWidthDp = configuration.screenWidthDp
+        val screenWidthPx = with(density) { screenWidthDp.dp.toPx() }
+        val itemWidthPx = screenWidthPx / 3 // same as ScrollableDateSelectionRow
+        val centerOffset = (screenWidthPx / 2) - (itemWidthPx / 2)
+
+        listState.animateScrollToItem(index, scrollOffset = -centerOffset.toInt())
     }
 
     AppScaffold(
@@ -76,10 +87,19 @@ fun AttendanceSheet(
                     onDismissRequest = { expanded = false }
                 ) {
                     DropdownMenuItem(
+                        text = { Text("Delete Subject", style = MaterialTheme.typography.bodyMedium) },
+                        onClick = {
+                            expanded = false
+                            val subject = Subject(subjectCode = subjectCode, subjectName = subjectName, branch = branch, semester = semester)
+                            viewModel.deleteSubject(subject, context)
+                        }
+                    )
+                    DropdownMenuItem(
                         text = { Text("Download Report", style = MaterialTheme.typography.bodyMedium) },
                         onClick = {
                             expanded = false
-                            // TODO: Add download report functionality
+                            val subject = Subject(subjectName = subjectName, branch = branch, semester = semester)
+                            viewModel.downloadAttendanceReport(subject, context)
                         }
                     )
                 }
@@ -158,3 +178,8 @@ fun AttendanceSheet(
     }
 }
 
+// Helper functions you need to implement or already have:
+// getCurrentDate() -> String (e.g. "01")
+// getCurrentMonthYear() -> String (e.g. "May 2025")
+// getFormattedFullDate(day: String, monthYear: String) -> String? (e.g. "2025-05-01")
+// getDaysInMonth(monthYear: String) -> List<Int> (days in the current month)

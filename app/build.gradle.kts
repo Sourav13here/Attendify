@@ -72,7 +72,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
 
-    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     //hilt
     implementation(libs.hilt.android)
@@ -84,6 +84,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-base:18.2.0")
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
+//excel
+    implementation ("org.apache.poi:poi:5.2.3")
+    implementation ("org.apache.poi:poi-ooxml:5.2.3")
 
 
 }
