@@ -1,5 +1,8 @@
 package com.example.attendify.ui.student.components
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,11 +12,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Support
@@ -31,6 +36,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.clickable
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.google.androidgamesdk.gametextinput.Settings
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,374 +59,228 @@ fun AttendanceDetailsDialog(
     val dateFormatterInput = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val dateFormatterOutput = DateTimeFormatter.ofPattern("MMM dd, yyyy")
 
-    // Calculate attendance statistics
+
     val totalDays = combinedMap.size
     val presentDays = combinedMap.values.count { it == 1 }
     val attendancePercentage = if (totalDays > 0) (presentDays * 100) / totalDays else 0
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            FilledTonalButton(
-                onClick = onDismiss,
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = Color(0xFFEDE7F6),
-                    contentColor = Color(0xFF5E35B1)
-                )
-            ) {
-                Text("Close", fontWeight = FontWeight.Medium)
-            }
-        },
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = null,
-                    tint = Color(0xFF5E35B1)
-                )
-                Text(
-                    "Attendance Details",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4A148C)
-                )
-            }
-        },
-        text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 250.dp, max = 450.dp)
-            ) {
-                // Statistics Card
-                Card(
+
+
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFEDE7F6)
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "Attendance Summary",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFF4A148C)
+                    FilledTonalButton(
+                        onClick = onDismiss,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.filledTonalButtonColors(
+                            containerColor = Color(0xFFEDE7F6),
+                            contentColor = Color(0xFF5E35B1)
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = "$presentDays",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF2E7D32)
-                                )
-                                Text(
-                                    text = "Present",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF388E3C)
-                                )
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = "${totalDays - presentDays}",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFFD32F2F)
-                                )
-                                Text(
-                                    text = "Absent",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFFF44336)
-                                )
-                            }
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(
-                                    text = "$attendancePercentage%",
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF5E35B1)
-                                )
-                                Text(
-                                    text = "Rate",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color(0xFF7B1FA2)
-                                )
-                            }
-                        }
+                    ) {
+                        Text("Close", fontWeight = FontWeight.Medium)
                     }
-                }
 
-                // Header Row with better styling
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFF3E5F5)
-                    ),
-                    shape = RoundedCornerShape(8.dp)
+
+                }
+            },
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Date",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color(0xFF4A148C)
-                        )
-                        Text(
-                            text = "Status",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleSmall,
-                            color = Color(0xFF4A148C)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = Color(0xFF5E35B1)
+                    )
+                    Text(
+                        "Attendance Details",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4A148C)
+                    )
                 }
-
-                // Scrollable attendance list
+            },
+            text = {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
-                        .verticalScroll(rememberScrollState())
+                        .heightIn(min = 250.dp, max = 450.dp)
                 ) {
-                    combinedMap.toSortedMap(compareByDescending { it }).forEach { (dateStr, status) ->
-                        val formattedDate = try {
-                            val parsedDate = LocalDate.parse(dateStr, dateFormatterInput)
-                            parsedDate.format(dateFormatterOutput)
-                        } catch (e: Exception) {
-                            dateStr
-                        }
-
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 2.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = if (status == 1) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
-                            ),
-                            shape = RoundedCornerShape(8.dp)
+                    // Statistics Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFEDE7F6)
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            Text(
+                                text = "Attendance Summary",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF4A148C)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
                             Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
                             ) {
-                                Text(
-                                    text = formattedDate,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = Color(0xFF1B5E20)
-                                )
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = if (status == 1) Icons.Default.CheckCircle else Icons.Default.Cancel,
-                                        contentDescription = null,
-                                        tint = if (status == 1) Color(0xFF2E7D32) else Color(0xFFD32F2F),
-                                        modifier = Modifier.size(16.dp)
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = "$presentDays",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF2E7D32)
                                     )
                                     Text(
-                                        text = if (status == 1) "Present" else "Absent",
-                                        color = if (status == 1) Color(0xFF2E7D32) else Color(0xFFD32F2F),
-                                        fontWeight = FontWeight.Medium,
-                                        style = MaterialTheme.typography.bodyMedium
+                                        text = "Present",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF388E3C)
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = "   ${totalDays - presentDays}",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFFD32F2F)
+                                    )
+                                    Text(
+                                        text = "      Absent",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFFF44336)
+                                    )
+                                }
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = "    $attendancePercentage%",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF5E35B1)
+                                    )
+                                    Text(
+                                        text = " Rate",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color(0xFF7B1FA2)
                                     )
                                 }
                             }
                         }
                     }
-                }
-            }
-        },
-        modifier = Modifier
-            .widthIn(min = 350.dp, max = 450.dp)
-            .clip(RoundedCornerShape(16.dp)),
-        shape = RoundedCornerShape(16.dp),
-        containerColor = Color(0xFFFAF8FF),
-        titleContentColor = Color(0xFF4A148C),
-        textContentColor = Color(0xFF1B5E20)
-    )
-}
 
-
-
-
-@Composable
-fun InstructionsDialog(onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "Instructions",
-                    tint = Color(0xFF42917C),
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    "How to Use:",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF42917C)
-                )
-            }
-        },
-        text = {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = 300.dp)
-            ) {
-                item {
-                    InstructionItem(
-                        icon = Icons.Default.Description,
-                        iconColor = Color(0xFFFF9800),
-                        title = "Attendance Report",
-                        description = "Click on the 'Attendance Report' card to view detailed attendance records and analytics."
-                    )
-                }
-                item {
-                    InstructionItem(
-                        icon = Icons.Default.TouchApp,
-                        iconColor = Color(0xFF2196F3),
-                        title = "Predict Attendance",
-                        description = "Click on future dates in the calendar to predict attendance:\n• 1st click: Mark as Present (Green)\n• 2nd click: Mark as Absent (Red)\n• 3rd click: Remove prediction"
-                    )
-                }
-
-                item {
-                    InstructionItem(
-                        icon = Icons.Default.Support,
-                        iconColor = Color(0xFFE91E63),
-                        title = "Need Help?",
-                        description = "Contact Technical support if you notice any discrepancies in your attendance records."
-                    )
-                }
-            }
-        },
-        confirmButton = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Support,
-                    contentDescription = "Support",
-                    tint = Color(0xFFE91E63),
-                    modifier = Modifier.size(24.dp)
-                )
-                Button(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF42917C),
-                        contentColor = Color.White
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    // Header Row
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFF3E5F5)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Text("Got it!", fontWeight = FontWeight.Medium)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Date",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = Color(0xFF4A148C)
+                            )
+                            Text(
+                                text = "Status",
+                                fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = Color(0xFF4A148C)
+                            )
+                        }
+                    }
+
+                    // Scrollable attendance list
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        combinedMap.toSortedMap(compareByDescending { it }).forEach { (dateStr, status) ->
+                            val formattedDate = try {
+                                val parsedDate = LocalDate.parse(dateStr, dateFormatterInput)
+                                parsedDate.format(dateFormatterOutput)
+                            } catch (e: Exception) {
+                                dateStr
+                            }
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 2.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = if (status == 1) Color(0xFFE8F5E9) else Color(0xFFFFEBEE)
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = formattedDate,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Black
+                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = if (status == 1) Icons.Default.CheckCircle else Icons.Default.Cancel,
+                                            contentDescription = null,
+                                            tint = if (status == 1) Color(0xFF2E7D32) else Color(0xFFD32F2F),
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = if (status == 1) "Present" else "Absent",
+                                            color = if (status == 1) Color(0xFF2E7D32) else Color(0xFFD32F2F),
+                                            fontWeight = FontWeight.Medium,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        },
-        shape = RoundedCornerShape(20.dp),
-        containerColor = Color(0xFFFAFAFA),
-        modifier = Modifier
-            .padding(16.dp)
-            .widthIn(max = 600.dp)
-    )
-}
-
-@Composable
-fun InstructionItem(
-    icon: ImageVector,
-    iconColor: Color,
-    title: String,
-    description: String
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
+            },
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(
-                        iconColor.copy(alpha = 0.1f),
-                        RoundedCornerShape(10.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconColor,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+                .widthIn(min = 350.dp, max = 450.dp)
+                .clip(RoundedCornerShape(16.dp)),
+            shape = RoundedCornerShape(16.dp),
+            containerColor = Color(0xFFFAF8FF),
+            titleContentColor = Color(0xFF4A148C),
+            textContentColor = Color(0xFF1B5E20)
+        )
 
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF212121)
-                )
-                Text(
-                    text = description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFF666666),
-                    lineHeight = 18.sp
-                )
-            }
-        }
-    }
 }
+
+
