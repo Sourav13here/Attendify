@@ -1,22 +1,23 @@
 package com.example.attendify.ui.verification
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Teacher
+import com.example.attendify.data.model.UnverifiedCount
 import com.example.attendify.data.repository.FirestoreRepository
+import com.example.attendify.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 
 sealed class UserData {
@@ -24,6 +25,7 @@ sealed class UserData {
     data class TeacherData(val teacher: Teacher) : UserData()
 }
 
+@ExperimentalCoroutinesApi
 @HiltViewModel
 class VerificationViewModel @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
@@ -62,6 +64,9 @@ class VerificationViewModel @Inject constructor(
 
     private val _unverifiedTeachers = MutableStateFlow<List<Teacher>>(emptyList())
     val unverifiedTeachers: StateFlow<List<Teacher>> = _unverifiedTeachers.asStateFlow()
+
+    private val _unverifiedCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
+    val unverifiedCounts: StateFlow<List<UnverifiedCount>> = _unverifiedCounts
 
 
     private var emailVerificationJob: Job? = null
@@ -271,6 +276,34 @@ class VerificationViewModel @Inject constructor(
         }
     }
 
+    fun computeUnverifiedCounts() {
+        val branches = Constants.BRANCHES
+        val semesters = Constants.SEMESTERS.map { it.dropLast(2) } // Convert "1st" -> "1"
+
+        viewModelScope.launch {
+            val counts = mutableListOf<UnverifiedCount>()
+
+            for (branch in branches) {
+                for (semester in semesters) {
+                    val students = suspendCancellableCoroutine<List<Student>> { cont ->
+                        firestoreRepository.getUnverifiedStudents(branch, semester) {
+                            cont.resume(it, onCancellation = null)
+                        }
+                    }
+
+                    counts.add(
+                        UnverifiedCount(
+                            branch = branch,
+                            semester = semester,
+                            count = students.size
+                        )
+                    )
+                }
+            }
+
+            _unverifiedCounts.value = counts
+        }
+    }
 
     fun signOut() {
         viewModelScope.launch {

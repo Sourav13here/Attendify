@@ -34,7 +34,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,10 +65,11 @@ import com.example.attendify.data.model.Teacher
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.GrayLight
 import com.example.attendify.ui.theme.PrimaryVariant
-import com.example.attendify.ui.theme.SecondaryColor
 import com.example.attendify.ui.theme.SurfaceColor
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun Verification_Page(navController: NavController, viewModel: VerificationViewModel) {
     val students by viewModel.unverifiedStudents.collectAsState()
@@ -113,9 +113,11 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 
     // Animate the sliding box offset but account for drag offset separately
     val animatedOffsetPx by animateFloatAsState(
-        targetValue = if(selectedTab ==0 ) 0f else tabWidthPx,
-        animationSpec = tween(durationMillis = 300,
-            easing = FastOutSlowInEasing)
+        targetValue = if (selectedTab == 0) 0f else tabWidthPx,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = FastOutSlowInEasing
+        )
     )
 
     fun onTabSelected(index: Int) {
@@ -135,12 +137,12 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
         Column(
             modifier = Modifier
                 .padding(padding)
-                .background(Color.White)
                 .fillMaxSize()
                 .padding(top = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
 //            verticalArrangement = Arrangement.Center
         ) {
+//            SWITCH
             Box(
                 modifier = Modifier
                     .width(120.dp * 2)
@@ -151,7 +153,8 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                         detectDragGestures(
                             onDragStart = { dragOffsetPx = 0f },
                             onDrag = { change, dragAmount ->
-                                dragOffsetPx = (dragOffsetPx + dragAmount.x).coerceIn(-tabWidthPx,tabWidthPx)
+                                dragOffsetPx =
+                                    (dragOffsetPx + dragAmount.x).coerceIn(-tabWidthPx, tabWidthPx)
                                 change.consume()
                             },
                             onDragEnd = {
@@ -170,17 +173,20 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 // Sliding white background that moves (animated + dragged)
                 Box(
                     modifier = Modifier
-                        .offset { IntOffset((animatedOffsetPx +dragOffsetPx).roundToInt(),0) }
+                        .offset { IntOffset((animatedOffsetPx + dragOffsetPx).roundToInt(), 0) }
                         .width(120.dp)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(20.dp))
                         .background(Color.White)
-                ){}
+                )
 
                 Row(
-                    modifier = Modifier.fillMaxSize().border(2.dp,Color.Black,
-                        RoundedCornerShape(20.dp)
-                    ),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .border(
+                            2.dp, Color.Black,
+                            RoundedCornerShape(20.dp)
+                        ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     listOf("Students", "Teachers").forEachIndexed { index, label ->
@@ -209,9 +215,9 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 //            UNVERFIED DATA UPDATION BOX
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth()
-                    .border(1.dp, PrimaryVariant, RoundedCornerShape(12.dp))
+
+                    .fillMaxWidth().padding(horizontal = 20.dp)
+                    .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
                     .padding(12.dp)
                     .weight(0.3f)
             ) {
@@ -225,7 +231,11 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                             .padding(horizontal = 24.dp, vertical = 6.dp)
 
                     ) {
-                        Text("Unverified", color = Color.Black, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text(
+                            "Unverified",
+                            color = Color.Black,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                        )
                     }
                     Spacer(modifier = Modifier.height(20.dp))
 
