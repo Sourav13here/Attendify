@@ -1,5 +1,7 @@
 package com.example.attendify.ui.verification
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,10 +10,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,6 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -54,6 +59,7 @@ import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Teacher
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.theme.CharcoalBlue
 
 @Composable
 fun Verification_Page(navController: NavController, viewModel: VerificationViewModel) {
@@ -66,6 +72,12 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 
     val branches = listOf("CSE", "ETE", "ME", "CE")
     val semesters = listOf("1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th")
+
+    val tabWidth = 120.dp
+    val indicatorOffset by animateDpAsState(
+        targetValue = if (selectedTab == 0) 0.dp else tabWidth,
+        animationSpec = tween(durationMillis = 300)
+    )
 
     LaunchedEffect(selectedTab, selectedBranch, selectedSemester) {
         if (selectedBranch != "Select Branch" && (selectedTab == 1 || selectedSemester != "Select Semester")) {
@@ -96,46 +108,62 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
             modifier = Modifier
                 .padding(padding)
                 .background(Color.White)
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 32.dp, vertical = 12.dp)
-                    .width(250.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .width(tabWidth * 2)
+                    .padding(top= 8.dp)
+                    .height(40.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Color(0xFFEC8484))
+                    .border(2.dp,Color.Black, RoundedCornerShape(24.dp))
             ) {
-//                Selection Tab of Teacher and Student where 0 --> Student & 1 --> Teacher
-                Row(
+                // Upper Slider Layer
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFFEC8484)),
+                        .offset { IntOffset(indicatorOffset.roundToPx(), 0) }
+                        .width(tabWidth)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(Color.White)
+                )
+
+                // Options row
+                Row(
+                    modifier = Modifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     listOf("Students", "Teachers").forEachIndexed { index, label ->
                         Box(
                             modifier = Modifier
                                 .weight(1f)
+                                .fillMaxHeight()
                                 .clickable { selectedTab = index },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                label,
-                                color = if (selectedTab == index) Color.White else Color.Black,
+                                text = label,
+                                color = if (selectedTab == index) Color.Black else Color.Transparent,
                                 fontWeight = FontWeight.SemiBold,
-                                fontSize = 14.sp
+                                style = MaterialTheme.typography.bodyMedium
                             )
                         }
+
+                        // Divider between tabs, except after last tab
                         if (index == 0) Box(
                             modifier = Modifier
                                 .width(1.dp)
                                 .height(24.dp)
-                                .background(Color.Black)
+                                .background(Color.Black.copy(alpha = 0.3f))
                         )
                     }
                 }
             }
+            Spacer(Modifier.weight(0.06f))
+
 //            UNVERFIED DATA UPDATION BOX
             Box(
                 modifier = Modifier
