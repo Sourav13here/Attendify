@@ -21,5 +21,5 @@ val CorrectColor = Color(0xD24CAF50)
 
 
 val CardColour = Color(0xFFDFF9FA)
-val CharcoalBlue = Color(0xFF293241)
+val CharcoalBlue = Color(0xFF415764)
 val BorderColor = Color(0xFF3D5A80)

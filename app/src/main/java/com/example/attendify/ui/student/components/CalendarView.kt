@@ -1,6 +1,5 @@
 package com.example.attendify.ui.student.components
 
-import android.text.format.DateUtils.isToday
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,23 +21,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.attendify.ui.theme.AttendifyTheme
-import java.time.LocalDate
-import com.example.attendify.R
 import com.example.attendify.ui.student.StudentDashboardViewModel
+import com.example.attendify.ui.theme.PrimaryVariant
+import java.time.LocalDate
 
 @Composable
 fun CalendarView(
@@ -55,7 +51,10 @@ fun CalendarView(
     Column(
         modifier = Modifier
             .fillMaxWidth(0.9f)
-            .background(Color(0xFFE8F5E9))
+
+            .clip(RoundedCornerShape(16.dp))
+            .background(PrimaryVariant.copy(0.2f))
+
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -152,8 +151,10 @@ fun CalendarView(
                                     0 -> localAttendanceMap.remove(fullDate)  // Absent → Remove entry
                                     else -> localAttendanceMap[fullDate] = 1
                                 }
-                                Log.d("CalendarClick", "Clicked $fullDate, Now = ${localAttendanceMap[fullDate]}")
-
+                                Log.d(
+                                    "CalendarClick",
+                                    "Clicked $fullDate, Now = ${localAttendanceMap[fullDate]}"
+                                )
 
 
                             },

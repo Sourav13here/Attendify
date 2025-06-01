@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.DateRange
 
 import androidx.compose.ui.unit.dp
+import com.example.attendify.ui.theme.CardColour
+import com.example.attendify.ui.theme.SecondaryColor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -44,13 +46,13 @@ fun AttendanceReportCard(
             .clickable { onClick() }, // Make clickable
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFEDE7F6))
+        colors = CardDefaults.cardColors(containerColor = CardColour)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Default.Assessment, contentDescription = "Attendance Report", tint = Color(0xFF673AB7))
+                Icon(Icons.Default.Assessment, contentDescription = "Attendance Report", tint = SecondaryColor)
                 Spacer(modifier = Modifier.width(12.dp))
                 Text("Attendance Report", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
