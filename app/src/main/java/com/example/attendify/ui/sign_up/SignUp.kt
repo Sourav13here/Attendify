@@ -1,21 +1,49 @@
 package com.example.attendify.ui.sign_up
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Numbers
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material.icons.outlined.Person2
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -23,10 +51,8 @@ import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.common.composable.CustomExposedDropdown
 import com.example.attendify.common.composable.CustomOutlinedTextField
-import com.example.attendify.common.ext.customOutlinedTextField
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.BackgroundColor
-import com.example.attendify.ui.theme.SecondaryColor
 import com.example.attendify.utils.Constants
 
 @Composable
@@ -39,6 +65,13 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
     var semester by remember { mutableStateOf("") }
     var rollno by remember { mutableStateOf("") }
     val context = LocalContext.current
+    var selectedTab by remember { mutableStateOf(0) }
+
+    val tabWidth = 120.dp
+    val indicatorOffset by animateDpAsState(
+        targetValue = if (selectedTab == 0) 0.dp else tabWidth,
+        animationSpec = tween(durationMillis = 300)
+    )
 
     val navigateToVerification by viewModel.navigateToVerification.collectAsState()
 
@@ -129,23 +162,51 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
 
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color.White, RoundedCornerShape(6.dp))
-                                .padding(10.dp)
+                                .width(tabWidth * 2)
+                                .padding(top= 8.dp)
+                                .height(40.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(Color(0xFFEC8484))
+                                .border(2.dp,Color.Black, RoundedCornerShape(24.dp))
                         ) {
+                            // Upper Slider Layer
+                            Box(
+                                modifier = Modifier
+                                    .offset { IntOffset(indicatorOffset.roundToPx(), 0) }
+                                    .width(tabWidth)
+                                    .fillMaxHeight()
+                                    .clip(RoundedCornerShape(24.dp))
+                                    .background(Color.White)
+                            )
+
+                            // Options row
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
+                                modifier = Modifier.fillMaxSize(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                listOf("Student", "Teacher").forEach { type ->
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        RadioButton(
-                                            selected = accountType == type.lowercase(),
-                                            onClick = { accountType = type.lowercase() }
+                                listOf("Students", "Teachers").forEachIndexed { index, label ->
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .fillMaxHeight()
+                                            .clickable { selectedTab = index },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = label,
+                                            color = if (selectedTab == index) Color.Black else Color.Transparent,
+                                            fontWeight = FontWeight.SemiBold,
+                                            style = MaterialTheme.typography.bodyMedium
                                         )
-                                        Text(type, style = MaterialTheme.typography.bodySmall)
                                     }
+
+                                    // Divider between tabs, except after last tab
+                                    if (index == 0) Box(
+                                        modifier = Modifier
+                                            .width(1.dp)
+                                            .height(24.dp)
+                                            .background(Color.Black.copy(alpha = 0.3f))
+                                    )
                                 }
                             }
                         }
