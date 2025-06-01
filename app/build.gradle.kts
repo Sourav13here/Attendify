@@ -93,6 +93,8 @@ dependencies {
     implementation (libs.google.accompanist.swiperefresh)
 
     implementation (libs.accompanist.swiperefresh.v0280) // or latest
+//    implementation("com.google.accompanist:accompanist-systemuicontroller:0.37.3")  // check for latest version
+
 
 
 
