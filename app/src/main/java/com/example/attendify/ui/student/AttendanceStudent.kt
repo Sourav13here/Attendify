@@ -1,5 +1,6 @@
 package com.example.attendify.ui.student
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -26,6 +27,13 @@ import com.example.attendify.ui.student.components.InstructionsDialog
 import com.example.attendify.ui.student.components.SubjectInfoCard
 import com.example.attendify.ui.theme.AttendifyTheme
 import java.time.LocalDate
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 @Composable
 fun AttendanceStudent(
@@ -49,9 +57,20 @@ fun AttendanceStudent(
     var showDetailsDialog by remember { mutableStateOf(false) }
     var showInstructionsDialog by remember { mutableStateOf(false) }
 
+    val instructionsKey = "instructions_shown_${subjectCode}_${studentEmail}"
+    val context = LocalContext.current
+
     LaunchedEffect(subjectName, student) {
         if (student != null) {
             viewModel.fetchAttendanceForSubject(subjectName, branch, semester)
+        }
+
+        val prefs = context.getSharedPreferences("attendify_prefs", Context.MODE_PRIVATE)
+        val hasShown = prefs.getBoolean(instructionsKey, false)
+        if (!hasShown) {
+            showInstructionsDialog = true
+            // Set flag to true so it won't show next time
+            prefs.edit().putBoolean(instructionsKey, true).apply()
         }
     }
 
@@ -66,7 +85,7 @@ fun AttendanceStudent(
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Instructions",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         }

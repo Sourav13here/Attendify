@@ -1,7 +1,9 @@
 package com.example.attendify.ui.student.components
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,14 +56,14 @@ fun InstructionsDialog(onDismiss: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Instructions",
-                    tint = Color(0xFF42917C),
+                    tint =  MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
-                    "How to Use:",
+                    "Instructions:",
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF42917C)
+                    color =  MaterialTheme.colorScheme.secondary
                 )
             }
         },
@@ -110,12 +113,23 @@ fun InstructionsDialog(onDismiss: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.clickable {
-                        val intent = Intent(Intent.ACTION_SENDTO).apply {
-                            data = Uri.parse("mailto:attendify@gmail.com") // Replace with your support email
-                            putExtra(Intent.EXTRA_SUBJECT, "Attendance App Support Request")
-                            putExtra(Intent.EXTRA_TEXT, "Describe your issue here...")
+                        val supportEmail = "attendify@gmail.com"
+                        val customSubject = "Attendify Support Request"
+
+
+                        val uriText = "mailto:$supportEmail" +
+                                "?subject=" + Uri.encode(customSubject)
+
+                        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                            data = Uri.parse(uriText)
                         }
-                        context.startActivity(intent)
+
+                        try {
+                            context.startActivity(emailIntent)
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "No email app found!", Toast.LENGTH_SHORT).show()
+                        }
+
                     }
                 ) {
                     Icon(
@@ -135,7 +149,7 @@ fun InstructionsDialog(onDismiss: () -> Unit) {
                 Button(
                     onClick = onDismiss,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF42917C),
+                        containerColor =   MaterialTheme.colorScheme.secondary,
                         contentColor = Color.White
                     ),
                     shape = RoundedCornerShape(12.dp)
