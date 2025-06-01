@@ -23,6 +23,8 @@ import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
 import com.example.attendify.data.model.Subject
 import com.example.attendify.ui.teacher.components.*
+import com.example.attendify.ui.theme.PrimaryColor
+import com.example.attendify.ui.theme.SecondaryColor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -164,7 +166,8 @@ fun AttendanceSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Default.CalendarMonth,
-                        contentDescription = "Open Calendar"
+                        contentDescription = "Open Calendar",
+                        tint = SecondaryColor
                     )
                 }
             }

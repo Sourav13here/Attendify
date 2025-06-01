@@ -211,7 +211,7 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
-                    .border(1.dp, Color.Red, RoundedCornerShape(12.dp))
+                    .border(1.dp, PrimaryVariant, RoundedCornerShape(12.dp))
                     .padding(12.dp)
                     .weight(0.3f)
             ) {
