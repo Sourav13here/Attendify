@@ -69,10 +69,14 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
     val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(0) }
 
+    val tabLabels = listOf("Students", "Teachers")
+    val tabCount = tabLabels.size
     val tabWidth = 148.dp
+
     val indicatorOffset by animateDpAsState(
-        targetValue = if (selectedTab == 0) 0.dp else tabWidth,
-        animationSpec = tween(durationMillis = 300)
+        targetValue = tabWidth * selectedTab,
+        animationSpec = tween(durationMillis = 300),
+        label = "Indicator Offset"
     )
 
     val navigateToVerification by viewModel.navigateToVerification.collectAsState()
@@ -164,7 +168,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
 
                         Box(
                             modifier = Modifier
-                                .width(tabWidth * 2)
+                                .width(tabWidth * tabCount)
                                 .padding(top= 8.dp,bottom = 16.dp)
                                 .height(40.dp)
                                 .clip(RoundedCornerShape(20.dp))
@@ -187,12 +191,19 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                 modifier = Modifier.fillMaxSize(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                listOf("Students", "Teachers").forEachIndexed { index, label ->
+                                tabLabels.forEachIndexed { index, label ->
                                     Box(
                                         modifier = Modifier
                                             .weight(1f)
                                             .fillMaxHeight()
-                                            .clickable { selectedTab = index },
+                                            .clickable {
+                                                selectedTab = index
+                                                accountType = if (index == 0) "student" else "teacher"
+                                                // Reset form when account type changes
+                                                branch = ""
+                                                semester = ""
+                                                rollno = ""
+                                                       },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         Text(
@@ -204,7 +215,8 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                     }
 
                                     // Divider between tabs, except after last tab
-                                    if (index == 0) Box(
+                                    if (index != tabLabels.lastIndex)
+                                        Box(
                                         modifier = Modifier
                                             .width(1.dp)
                                             .height(24.dp)
