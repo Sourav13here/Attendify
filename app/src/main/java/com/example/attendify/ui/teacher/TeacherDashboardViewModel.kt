@@ -3,8 +3,6 @@ package com.example.attendify.ui.teacher
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendify.data.model.Attendance
@@ -18,7 +16,6 @@ import generateExcelReport
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,26 +65,33 @@ class TeacherDashboardViewModel @Inject constructor(
         }
     }
 
-    fun downloadAttendanceReport(subject: Subject, context: Context) {
+    fun downloadAttendanceReport(
+        subject: Subject,
+        students: List<Student>,
+        context: Context
+    ) {
         viewModelScope.launch {
             try {
-                // Fetch attendance data from Firestore
-                val reportData = firestoreRepo.generateAttendanceReport(subject.branch, subject.semester, subject.subjectName)
-
-                // Generate Excel file and get saved file path
-                val filePath = generateExcelReport(context, reportData, subject.subjectName)
-
-                if (filePath != null) {
-                    Toast.makeText(context, "Report saved to: $filePath", Toast.LENGTH_LONG).show()
+                val attendanceList = firestoreRepo.getAttendanceWithStudentInfo(subject, students)
+                Log.e("excel", "$attendanceList")
+                val file = generateExcelReport(
+                    context,
+                    attendanceList,
+                    subject
+                )
+                if (file != null) {
+                    Toast.makeText(context, "Report saved: ${file.absolutePath}", Toast.LENGTH_LONG).show()
                 } else {
-                    Toast.makeText(context, "Failed to save report", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Failed to generate report", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(context, "Error generating report", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error downloading report", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+
 
 
     fun loadAttendancePercentages(subjectName: String, branch: String, semester: String) {
@@ -147,6 +151,25 @@ class TeacherDashboardViewModel @Inject constructor(
         }
     }
 
+    fun removeAttendance(
+        studentEmail: String,
+        branch: String,
+        semester: String,
+        subjectName: String,
+        date: String
+    ) {
+        viewModelScope.launch {
+            try {
+                _attendanceStatusByEmail.value = _attendanceStatusByEmail.value.toMutableMap().apply {
+                    remove(studentEmail)
+                }
+                firestoreRepo.removeAttendance(studentEmail, branch, semester, subjectName, date)
+                loadAttendancePercentages(subjectName, branch, semester)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun fetchTeacherData() {
         val userId = authRepo.getCurrentUser()?.uid ?: return

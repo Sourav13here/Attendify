@@ -2,6 +2,7 @@ package com.example.attendify.data.repository
 
 import android.util.Log
 import com.example.attendify.data.model.Attendance
+import com.example.attendify.data.model.AttendanceWithStudentInfo
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Subject
 import com.example.attendify.data.model.Teacher
@@ -16,6 +17,42 @@ class FirestoreRepository @Inject constructor(
     suspend fun deleteSubject(subjectId: String) {
         db.collection("Subjects").document(subjectId).delete().await()
     }
+
+    suspend fun getAttendanceWithStudentInfo(
+        subject: Subject,
+        students: List<Student>
+    ): List<AttendanceWithStudentInfo> {
+        val resultList = mutableListOf<AttendanceWithStudentInfo>()
+        try {
+            // Map passed students by email for quick lookup
+            val emailToStudent = students.associateBy({ it.email }, { Pair(it.rollNumber, it.name) })
+
+            // Fetch attendance records for the subject
+            val attendanceSnapshot = db.collection("Attendance")
+                .document(subject.branch)
+                .collection(subject.semester)
+                .document(subject.subjectName)
+                .collection("students")
+                .get()
+                .await()
+
+            for (doc in attendanceSnapshot.documents) {
+                val attendance = doc.toObject(Attendance::class.java) ?: continue
+                val studentInfo = emailToStudent[attendance.studentEmail] ?: Pair("N/A", "N/A")
+                resultList.add(
+                    AttendanceWithStudentInfo(
+                        rollNumber = studentInfo.first,
+                        name = studentInfo.second,
+                        attendanceMap = attendance.date
+                    )
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return resultList
+    }
+
 
     suspend fun generateAttendanceReport(
         branch: String,
@@ -230,6 +267,56 @@ class FirestoreRepository @Inject constructor(
             }
     }
 
+    fun removeAttendance(
+        studentEmail: String,
+        branch: String,
+        semester: String,
+        subjectName: String,
+        date: String
+    ) {
+        val attendanceRef = db.collection("Attendance")
+            .document(branch)
+            .collection(semester)
+            .document(subjectName)
+            .collection("students")
+            .document(studentEmail)
+
+        attendanceRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                if (documentSnapshot.exists()) {
+                    val attendance = documentSnapshot.toObject(Attendance::class.java)
+                    val dateMap = attendance?.date?.toMutableMap() ?: mutableMapOf()
+                    dateMap.remove(date)
+
+                    if (dateMap.isEmpty()) {
+                        // Delete entire document if no dates remain
+                        attendanceRef.delete()
+                            .addOnSuccessListener {
+                                Log.d("Firestore", "Attendance document deleted as no dates left.")
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e("Firestore", "Error deleting attendance document: ", e)
+                            }
+                    } else {
+                        // Update the document with the remaining dates
+                        attendance?.let {
+                            val updatedAttendance = it.copy(date = dateMap)
+                            attendanceRef.set(updatedAttendance)
+                                .addOnSuccessListener {
+                                    Log.d("Firestore", "Attendance date removed successfully.")
+                                }
+                                .addOnFailureListener { e ->
+                                    Log.e("Firestore", "Error updating attendance: ", e)
+                                }
+                        }
+
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("Firestore", "Error reading attendance document: ", e)
+            }
+    }
 
     suspend fun getAttendanceForDate(
         date: String,

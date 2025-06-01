@@ -10,3 +10,10 @@ data class StudentAttendanceInfo(
     val studentEmail: String,
     val percentage: Int
 )
+
+
+data class AttendanceWithStudentInfo(
+    val rollNumber: String,
+    val name: String,
+    val attendanceMap: Map<String, Int>
+)

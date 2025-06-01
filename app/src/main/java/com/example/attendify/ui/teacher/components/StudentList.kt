@@ -114,7 +114,15 @@ fun StudentList(
                             index = index,
                             student = student,
                             onAttendanceMarked = { status ->
-                                if (status != -1) {
+                                if (status == -1) {
+                                    viewModel.removeAttendance(
+                                        studentEmail = student.email,
+                                        branch = student.branch,
+                                        semester = student.semester,
+                                        subjectName = subjectName,
+                                        date = date
+                                    )
+                                } else {
                                     viewModel.markAttendance(
                                         studentEmail = student.email,
                                         branch = student.branch,
