@@ -1,6 +1,7 @@
 package com.example.attendify.ui.teacher
 
 import android.app.DatePickerDialog
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -41,6 +42,7 @@ fun AttendanceSheet(
     val isLoadingStudentsList by viewModel.isLoadingStudentsList.collectAsState()
     val fullDate = getFormattedFullDate(selectedDate, currentMonth) ?: ""
     val listState = rememberLazyListState()
+    Log.e("dateSelected", "$fullDate attendancesheet")
 
     val context = LocalContext.current
     val calendar = remember { Calendar.getInstance() }
@@ -185,9 +187,3 @@ fun AttendanceSheet(
         }
     }
 }
-
-// Helper functions you need to implement or already have:
-// getCurrentDate() -> String (e.g. "01")
-// getCurrentMonthYear() -> String (e.g. "May 2025")
-// getFormattedFullDate(day: String, monthYear: String) -> String? (e.g. "2025-05-01")
-// getDaysInMonth(monthYear: String) -> List<Int> (days in the current month)
