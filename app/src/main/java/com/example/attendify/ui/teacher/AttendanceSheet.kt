@@ -1,19 +1,23 @@
 package com.example.attendify.ui.teacher
 
 import android.app.DatePickerDialog
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.attendify.common.composable.AppScaffold
@@ -38,6 +42,7 @@ fun AttendanceSheet(
     val isLoadingStudentsList by viewModel.isLoadingStudentsList.collectAsState()
     val fullDate = getFormattedFullDate(selectedDate, currentMonth) ?: ""
     val listState = rememberLazyListState()
+    Log.e("dateSelected", "$fullDate attendancesheet")
 
     val context = LocalContext.current
     val calendar = remember { Calendar.getInstance() }
@@ -84,24 +89,29 @@ fun AttendanceSheet(
 
                 DropdownMenu(
                     expanded = expanded,
-                    onDismissRequest = { expanded = false }
+                    onDismissRequest = { expanded = false },
+                    offset = DpOffset(x=(-10).dp, y = 0.dp)
                 ) {
                     DropdownMenuItem(
-                        text = { Text("Delete Subject", style = MaterialTheme.typography.bodyMedium) },
-                        onClick = {
-                            expanded = false
-                            val subject = Subject(subjectCode = subjectCode, subjectName = subjectName, branch = branch, semester = semester)
-                            viewModel.deleteSubject(subject, context)
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = { Text("Download Report", style = MaterialTheme.typography.bodyMedium) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Download,
+                                contentDescription = "Generate Report"
+                            )
+                        },
+                        text = {
+                            Text(
+                                "Generate Report",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        },
                         onClick = {
                             expanded = false
                             val subject = Subject(subjectName = subjectName, branch = branch, semester = semester)
-                            viewModel.downloadAttendanceReport(subject, context)
+                            viewModel.downloadAttendanceReport(subject, students, context)
                         }
                     )
+
                 }
             }
         }
@@ -177,9 +187,3 @@ fun AttendanceSheet(
         }
     }
 }
-
-// Helper functions you need to implement or already have:
-// getCurrentDate() -> String (e.g. "01")
-// getCurrentMonthYear() -> String (e.g. "May 2025")
-// getFormattedFullDate(day: String, monthYear: String) -> String? (e.g. "2025-05-01")
-// getDaysInMonth(monthYear: String) -> List<Int> (days in the current month)

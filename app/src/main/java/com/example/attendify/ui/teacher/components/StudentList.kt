@@ -1,5 +1,6 @@
 package com.example.attendify.ui.teacher.components
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,8 +33,9 @@ fun StudentList(
     markedBy: String,
     loading: Boolean,
     date: String,
-    viewModel: TeacherDashboardViewModel
+    viewModel: TeacherDashboardViewModel,
 ) {
+    Log.e("dateSelected", "$date studentlist")
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -114,7 +116,15 @@ fun StudentList(
                             index = index,
                             student = student,
                             onAttendanceMarked = { status ->
-                                if (status != -1) {
+                                if (status == -1) {
+                                    viewModel.removeAttendance(
+                                        studentEmail = student.email,
+                                        branch = student.branch,
+                                        semester = student.semester,
+                                        subjectName = subjectName,
+                                        date = date
+                                    )
+                                } else {
                                     viewModel.markAttendance(
                                         studentEmail = student.email,
                                         branch = student.branch,
@@ -127,7 +137,8 @@ fun StudentList(
                                 }
                             },
                             subjectName = subjectName,
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            selectedDate = date
                         )
                     }
                 }

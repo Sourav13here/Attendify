@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.Color
 val GrayLight = Color(0xFFD9D9D9)
 val DarkGreen = Color(0xFF2E7D32)
 val DarkRed = Color(0xFFC62828)
+val DarkYellow = Color(0xFFFF6F00)
+
 
 val PrimaryColor = Color(0xFFEE6C4D)     // Coral
 val PrimaryVariant = Color(0xFFF88B76)   // Slight variation

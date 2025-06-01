@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,6 +43,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.attendify.ui.theme.DarkRed
+import com.example.attendify.ui.theme.DarkYellow
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -172,8 +175,8 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
     val color = when {
         percentage >= 75 -> Color(0xFF4CAF50) // Material Green
-        percentage in 40..74 -> Color(0xFFFFC107) // Material Amber
-        percentage in 0..39 -> Color(0xFFF44336) // Material Red
+        percentage in 40..74 -> DarkYellow // Material Amber
+        percentage in 0..39 -> DarkRed // Material Red
         else -> Color.Gray
 
     }
@@ -183,46 +186,29 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
             .fillMaxWidth()
             .padding(8.dp)
             .border(1.dp, Color.Black, RoundedCornerShape(16.dp))
-            .background(color = Color.White, RoundedCornerShape(16.dp))
+            .background(color = Color.White, shape = RoundedCornerShape(16.dp))
             .clickable { onClick() }
             .padding(12.dp),
-
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(subject, fontWeight = FontWeight.Bold)
-            Text(title, fontSize = 14.sp)
+            Text(text = subject, fontWeight = FontWeight.Bold)
+            Text(text = title, fontSize = 14.sp)
         }
+
         Box(
             modifier = Modifier
-                .size(30.dp)
-                .background(color, shape = CircleShape),
-
+                .size(40.dp)
+                .background(color, shape = RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
-
             Text(
-                text = "$percentage",
-                color = Color.Black,
+                text = "$percentage%",
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp
             )
-            Text(text = "$percentage", color = Color.White, fontSize = 12.sp,fontWeight = FontWeight.Bold)
-
         }
     }
+
 }
-
-
-//@Preview(showSystemUi = true, showBackground = true)
-//@Composable
-//fun PreviewStudentDashboard() {
-//    val mockViewModel = object : StudentDashboardViewModel() {
-//        // You can override signOut or other functions here if needed
-//    }
-//
-//    StudentDashboard(
-//        navController = rememberNavController(),
-//        viewmodel = mockViewModel
-//    )
-//}

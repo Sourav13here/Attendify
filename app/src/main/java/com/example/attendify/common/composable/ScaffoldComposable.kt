@@ -3,10 +3,12 @@ package com.example.attendify.common.composable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -16,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.attendify.common.ext.customIconButton
 import com.example.attendify.R
+import com.example.attendify.ui.theme.BackgroundColor
+//import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,10 +37,25 @@ fun AppScaffold(
     titleTextStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     content: @Composable (PaddingValues) -> Unit
 ) {
+
+//    val systemUiController = rememberSystemUiController()
+//    val useDarkIcons = true  // dark icons for light background
+//
+//    LaunchedEffect(systemUiController, useDarkIcons) {
+//        systemUiController.setStatusBarColor(
+//            color = BackgroundColor,
+//            darkIcons = useDarkIcons
+//        )
+//        // Optional: Also set navigation bar color to match
+//        systemUiController.setNavigationBarColor(
+//            color = BackgroundColor,
+//            darkIcons = useDarkIcons
+//        )
+//    }
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-
+                modifier = Modifier.statusBarsPadding(),
                 title = { Text(title, style = titleTextStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
                     when {
@@ -61,7 +80,7 @@ fun AppScaffold(
                 },
                 actions = actions,
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White, // 👈 background behind the title
+                    containerColor = BackgroundColor, // 👈 background behind the title
                     titleContentColor = Color.Black // optional: title text color
                 )
             )
