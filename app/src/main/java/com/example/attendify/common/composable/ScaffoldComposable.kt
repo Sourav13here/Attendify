@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,7 +56,7 @@ fun AppScaffold(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier.statusBarsPadding(),
+                modifier = Modifier.statusBarsPadding().background(Color.White),
                 title = { Text(title, style = titleTextStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
                     when {
@@ -80,7 +81,7 @@ fun AppScaffold(
                 },
                 actions = actions,
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = BackgroundColor, // 👈 background behind the title
+                    containerColor = Color.White, // 👈 background behind the title
                     titleContentColor = Color.Black // optional: title text color
                 )
             )

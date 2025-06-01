@@ -1,5 +1,6 @@
 package com.example.attendify.ui.student.components
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.BorderStroke
@@ -47,9 +48,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.attendify.ui.theme.BorderColor
+import com.example.attendify.ui.theme.CardColour
+import com.example.attendify.ui.theme.CharcoalBlue
+import com.example.attendify.ui.theme.PrimaryColor
+import com.example.attendify.ui.theme.PrimaryVariant
+import com.example.attendify.ui.theme.SecondaryColor
+import com.example.attendify.ui.theme.SurfaceColor
+import com.example.attendify.ui.theme.TextOnPrimary
 import com.google.androidgamesdk.gametextinput.Settings
 
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AttendanceDetailsDialog(
@@ -80,11 +90,11 @@ fun AttendanceDetailsDialog(
                         onClick = onDismiss,
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.filledTonalButtonColors(
-                            containerColor = Color(0xFFEDE7F6),
-                            contentColor = Color(0xFF5E35B1)
+                            containerColor = PrimaryVariant,
+                            contentColor = TextOnPrimary
                         )
                     ) {
-                        Text("Close", fontWeight = FontWeight.Medium)
+                        Text("Close", fontWeight = FontWeight.SemiBold)
                     }
 
 
@@ -98,13 +108,13 @@ fun AttendanceDetailsDialog(
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = null,
-                        tint = Color(0xFF5E35B1)
+                        tint = PrimaryColor
                     )
                     Text(
                         "Attendance Details",
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4A148C)
+                        color = PrimaryColor
                     )
                 }
             },
@@ -120,7 +130,7 @@ fun AttendanceDetailsDialog(
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFEDE7F6)
+                            containerColor = SurfaceColor.copy(0.7f)
                         ),
                         shape = RoundedCornerShape(12.dp)
                     ) {
@@ -132,9 +142,9 @@ fun AttendanceDetailsDialog(
                                 text = "Attendance Summary",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF4A148C)
+                                color = CharcoalBlue
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -170,25 +180,25 @@ fun AttendanceDetailsDialog(
                                         text = "    $attendancePercentage%",
                                         style = MaterialTheme.typography.headlineMedium,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF5E35B1)
+                                        color = CharcoalBlue
                                     )
                                     Text(
                                         text = " Rate",
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = Color(0xFF7B1FA2)
+                                        color = CharcoalBlue, textAlign = TextAlign.Center
                                     )
                                 }
                             }
                         }
                     }
-
+                    Spacer(Modifier.fillMaxHeight(0.06f))
                     // Header Row
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFF3E5F5)
+                            containerColor = CardColour
                         ),
                         shape = RoundedCornerShape(8.dp)
                     ) {
@@ -202,13 +212,13 @@ fun AttendanceDetailsDialog(
                                 text = "Date",
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.titleSmall,
-                                color = Color(0xFF4A148C)
+                                color = BorderColor
                             )
                             Text(
                                 text = "Status",
                                 fontWeight = FontWeight.Bold,
                                 style = MaterialTheme.typography.titleSmall,
-                                color = Color(0xFF4A148C)
+                                color = BorderColor
                             )
                         }
                     }

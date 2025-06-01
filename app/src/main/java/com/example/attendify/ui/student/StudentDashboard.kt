@@ -43,8 +43,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.withStyle
+import com.example.attendify.ui.theme.CardColour
+import com.example.attendify.ui.theme.CharcoalBlue
+import com.example.attendify.ui.theme.CorrectColor
 import com.example.attendify.ui.theme.DarkRed
 import com.example.attendify.ui.theme.DarkYellow
+import com.example.attendify.ui.theme.ErrorColor
+import com.example.attendify.ui.theme.SecondaryColor
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -116,8 +126,19 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
             val subjectsWithAttendance = viewModel.subjectAttendancePairs.value
 
             if (student != null) {
-                Text(student.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Text("${student.branch} - ${student.semester} sem", fontSize = 16.sp)
+                Text(
+                    text = buildAnnotatedString {
+                        append("Welcome, ")
+                        withStyle(style = SpanStyle(fontStyle = FontStyle.Italic)) {
+                            append(student.name)
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .border(2.dp, CharcoalBlue, RectangleShape)
+                        .padding(12.dp),
+                )
             } else {
                 CircularProgressIndicator()
             }
@@ -136,10 +157,11 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 
                 LazyColumn(
                     modifier = Modifier
-                        .background(Color(0xFFD1C4E9), RoundedCornerShape(16.dp))
                         .fillMaxWidth()
                         .fillMaxHeight(0.9f)
-                        .padding(16.dp),
+                        .border(1.dp, SecondaryColor, RoundedCornerShape(16.dp)) // Border first
+                        .background(CardColour, RoundedCornerShape(16.dp))    // Then background
+                        .padding(top =20.dp,bottom = 20.dp,start = 5.dp,end = 5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     if (subjectsWithAttendance.isEmpty()) {
@@ -174,9 +196,9 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
 @Composable
 fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () -> Unit) {
     val color = when {
-        percentage >= 75 -> Color(0xFF4CAF50) // Material Green
-        percentage in 40..74 -> DarkYellow // Material Amber
-        percentage in 0..39 -> DarkRed // Material Red
+        percentage >= 75 -> CorrectColor.copy(0.8f) // Material Green
+        percentage in 40..74 -> DarkYellow.copy(0.8f)// Material Amber
+        percentage in 0..39 -> ErrorColor.copy(0.8f) // Material Red
         else -> Color.Gray
 
     }
@@ -199,14 +221,15 @@ fun AttendanceCard(subject: String, title: String, percentage: Int, onClick: () 
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(color, shape = RoundedCornerShape(8.dp)),
+                .background(color, shape = RoundedCornerShape(20.dp)),
+
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "$percentage%",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
-                fontSize = 12.sp
+                style = MaterialTheme.typography.bodySmall
             )
         }
     }
