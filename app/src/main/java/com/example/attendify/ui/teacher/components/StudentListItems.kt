@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.attendify.data.model.Student
 import com.example.attendify.ui.teacher.TeacherDashboardViewModel
 import com.example.attendify.ui.theme.DarkGreen
@@ -69,16 +70,22 @@ fun StudentListItems(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            val maxVisibleChars = 12
+            val rollNoDisplay = if (student.rollNumber.length > maxVisibleChars) {
+                "…${student.rollNumber.takeLast(maxVisibleChars)}"
+            } else {
+                student.rollNumber
+            }
+
             Text(
-                text = student.rollNumber,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier
-                    .weight(0.35f)
-                    .clickable { showFullRollDialog = true }
+                text = rollNoDisplay,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                modifier = Modifier.width(120.dp),
+                overflow = TextOverflow.Clip,
+                softWrap = false
             )
+
 
             Text(
                 text = student.name.uppercase(),
