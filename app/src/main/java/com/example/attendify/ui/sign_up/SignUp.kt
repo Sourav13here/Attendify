@@ -53,6 +53,8 @@ import com.example.attendify.common.composable.CustomExposedDropdown
 import com.example.attendify.common.composable.CustomOutlinedTextField
 import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.theme.BackgroundColor
+import com.example.attendify.ui.theme.GrayLight
+import com.example.attendify.ui.theme.PrimaryVariant
 import com.example.attendify.utils.Constants
 
 @Composable
@@ -67,7 +69,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
     val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(0) }
 
-    val tabWidth = 120.dp
+    val tabWidth = 148.dp
     val indicatorOffset by animateDpAsState(
         targetValue = if (selectedTab == 0) 0.dp else tabWidth,
         animationSpec = tween(durationMillis = 300)
@@ -158,16 +160,17 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                             leadingIcon = Icons.Outlined.Password
                         )
 
-                        Spacer(Modifier.heightIn(min = 50.dp, max = 160.dp))
+                        Spacer(Modifier.heightIn(min = 46.dp, max = 160.dp))
 
                         Box(
                             modifier = Modifier
                                 .width(tabWidth * 2)
-                                .padding(top= 8.dp)
+                                .padding(top= 8.dp,bottom = 16.dp)
                                 .height(40.dp)
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(Color(0xFFEC8484))
+                                .background(PrimaryVariant)
                                 .border(2.dp,Color.Black, RoundedCornerShape(24.dp))
+                                .align(Alignment.CenterHorizontally)
                         ) {
                             // Upper Slider Layer
                             Box(
@@ -194,7 +197,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                     ) {
                                         Text(
                                             text = label,
-                                            color = if (selectedTab == index) Color.Black else Color.Transparent,
+                                            color = if (selectedTab == index) Color.Black else Color.White.copy(0.5f),
                                             fontWeight = FontWeight.SemiBold,
                                             style = MaterialTheme.typography.bodyMedium
                                         )
