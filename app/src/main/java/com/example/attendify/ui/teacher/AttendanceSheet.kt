@@ -8,19 +8,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,6 +62,8 @@ fun AttendanceSheet(
     teacherEmail: String,
     viewModel: TeacherDashboardViewModel
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+
     var selectedDate by remember { mutableStateOf(getCurrentDate()) }
     var currentMonth by remember { mutableStateOf(getCurrentMonthYear()) }
     val students by viewModel.students.collectAsState()
@@ -107,41 +111,51 @@ fun AttendanceSheet(
         showBackButton = true,
         actions = {
             Box(modifier = Modifier.wrapContentSize()) {
-                IconButton(onClick = { expanded = true }) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "More Options")
+                IconButton(onClick = {
+                    showDialog = true // Show the dialog on click
+                }) {
+                    Icon(Icons.Filled.Download, contentDescription = "Download report")
                 }
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    offset = DpOffset(x = (-10).dp, y = 0.dp)
-                ) {
-                    DropdownMenuItem(
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Download,
-                                contentDescription = "Generate Report"
-                            )
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            showDialog = false
+                        },
+                        title = {
+                            Text(text = "Download Report",style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold))
                         },
                         text = {
-                            Text(
-                                "Generate Report",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                            Text("Do you want to download the attendance report in .xlsx format?")
                         },
-                        onClick = {
-                            expanded = false
-                            val subject = Subject(
-                                subjectName = subjectName,
-                                branch = branch,
-                                semester = semester
-                            )
-                            viewModel.downloadAttendanceReport(subject, students, context)
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDialog = false
+                                    val subject = Subject(
+                                        subjectName = subjectName,
+                                        branch = branch,
+                                        semester = semester
+                                    )
+                                    viewModel.downloadAttendanceReport(subject, students, context)
+                                }
+                            ) {
+                                Text("Yes",style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    showDialog = false
+                                }
+                            ) {
+                                Text("Cancel", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                            }
                         }
                     )
-
                 }
             }
+
         }
     ) { padding ->
         Column(
@@ -152,7 +166,7 @@ fun AttendanceSheet(
         ) {
             // Month Navigation Row
             Row(
-                modifier = Modifier
+                modifier = Modifier.offset(x =(10).dp)
                     .fillMaxWidth()
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.Center,

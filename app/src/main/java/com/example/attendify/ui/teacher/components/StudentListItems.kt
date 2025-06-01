@@ -16,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -24,8 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.attendify.data.model.Student
 import com.example.attendify.ui.teacher.TeacherDashboardViewModel
+import com.example.attendify.ui.theme.CardColour
+import com.example.attendify.ui.theme.CharcoalBlue
 import com.example.attendify.ui.theme.DarkGreen
 import com.example.attendify.ui.theme.DarkRed
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -114,7 +118,7 @@ fun StudentListItems(
             // Present Button
             Box(
                 modifier = Modifier
-                    .size(boxSize)
+                    .size(boxSize).clip(RoundedCornerShape(16.dp))
                     .background(if (isPresent == 1) DarkGreen else Color(0xFFC8E6C9))
                     .clickable {
                         val newStatus = if (isPresent == 1) -1 else 1
@@ -138,7 +142,7 @@ fun StudentListItems(
             // Absent Button
             Box(
                 modifier = Modifier
-                    .size(boxSize)
+                    .size(boxSize).clip(RoundedCornerShape(16.dp))
                     .background(if (isPresent == 0) DarkRed else Color(0xFFFFCDD2))
                     .clickable {
                         val newStatus = if (isPresent == 0) -1 else 0
@@ -152,7 +156,8 @@ fun StudentListItems(
                             Log.e("selectedDate", "false items")
 
                         }
-                    },
+                    }
+                    ,
                 contentAlignment = Alignment.Center
             ) {
                 if (isPresent == 0) {
@@ -199,10 +204,10 @@ fun StudentListItems(
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = CharcoalBlue,
                         modifier = Modifier
-                            .size(28.dp)
-                            .padding(end = 12.dp)
+                            .size(32.dp)
+                            .padding(end = 8.dp)
                     )
                     Text(
                         text = "Student Details",
@@ -218,7 +223,7 @@ fun StudentListItems(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
@@ -236,8 +241,8 @@ fun StudentListItems(
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
-                                    .size(20.dp)
-                                    .padding(end = 12.dp)
+                                    .size(12.dp).padding(end =2.dp)
+                                    .offset(y =(-12).dp)
                             )
                             Column {
                                 Text(
@@ -270,8 +275,8 @@ fun StudentListItems(
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
-                                    .size(20.dp)
-                                    .padding(end = 12.dp)
+                                    .size(14.dp)
+                                    .offset(y =(-12).dp)
                             )
                             Column {
                                 Text(
@@ -311,21 +316,20 @@ fun StudentListItems(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Check,
+                            imageVector = Icons.Filled.Check,
                             contentDescription = null,
                             modifier = Modifier
-                                .size(18.dp)
+                                .size(32.dp)
                                 .padding(end = 8.dp)
                         )
                         Text(
                             text = "Got it!",
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = FontWeight.Medium
+                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
                         )
                     }
                 }
             },
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = CardColour,
             shape = RoundedCornerShape(20.dp),
             modifier = Modifier.padding(16.dp)
         )
