@@ -1,7 +1,9 @@
 package com.example.attendify.common.composable
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -56,7 +58,7 @@ fun CustomOutlinedTextField(
 
     OutlinedTextField(
         value = value,
-        modifier = modifier,
+        modifier = modifier.horizontalScroll(rememberScrollState()),
         onValueChange = onValueChange,
         label = {
             Text(
