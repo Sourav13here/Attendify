@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.attendify.data.model.Student
 import com.example.attendify.ui.teacher.TeacherDashboardViewModel
+import com.example.attendify.ui.theme.PrimaryColor
+import com.example.attendify.ui.theme.PrimaryVariant
 
 @Composable
 fun StudentList(
@@ -46,7 +48,7 @@ fun StudentList(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFFF9999))
+                .background(PrimaryColor.copy(0.6f))
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween

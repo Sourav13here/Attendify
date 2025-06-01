@@ -1,17 +1,23 @@
 package com.example.attendify.ui.verification
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -28,6 +34,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,12 +47,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -54,6 +64,11 @@ import com.example.attendify.common.composable.CustomButton
 import com.example.attendify.data.model.Student
 import com.example.attendify.data.model.Teacher
 import com.example.attendify.navigation.NavRoutes
+import com.example.attendify.ui.theme.GrayLight
+import com.example.attendify.ui.theme.PrimaryVariant
+import com.example.attendify.ui.theme.SecondaryColor
+import com.example.attendify.ui.theme.SurfaceColor
+import kotlin.math.roundToInt
 
 @Composable
 fun Verification_Page(navController: NavController, viewModel: VerificationViewModel) {
@@ -66,6 +81,12 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 
     val branches = listOf("CSE", "ETE", "ME", "CE")
     val semesters = listOf("1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th")
+
+//    val tabWidth = 120.dp
+//    val indicatorOffset by animateDpAsState(
+//        targetValue = if (selectedTab == 0) 0.dp else tabWidth,
+//        animationSpec = tween(durationMillis = 300)
+//    )
 
     LaunchedEffect(selectedTab, selectedBranch, selectedSemester) {
         if (selectedBranch != "Select Branch" && (selectedTab == 1 || selectedSemester != "Select Semester")) {
@@ -82,6 +103,25 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
         println("Students: ${students.size} Teachers: ${teachers.size}")
     }
 
+    val tabWidthPx = with(LocalDensity.current) { 120.dp.toPx() }
+    val maxOffsetPx = tabWidthPx
+    var dragOffsetPx by remember { mutableStateOf(0f) }
+
+    // Calculate the target offset based on selectedTab and dragOffset
+    val targetOffsetPx = if (selectedTab == 0) 0f else maxOffsetPx
+    val offsetPx = targetOffsetPx + dragOffsetPx
+
+    // Animate the sliding box offset but account for drag offset separately
+    val animatedOffsetPx by animateFloatAsState(
+        targetValue = if(selectedTab ==0 ) 0f else tabWidthPx,
+        animationSpec = tween(durationMillis = 300,
+            easing = FastOutSlowInEasing)
+    )
+
+    fun onTabSelected(index: Int) {
+        selectedTab = index
+
+    }
 
     AppScaffold(
         title = "Verification List",
@@ -97,70 +137,103 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 .padding(padding)
                 .background(Color.White)
                 .fillMaxSize()
+                .padding(top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 32.dp, vertical = 12.dp)
-                    .width(250.dp)
-                    .align(Alignment.CenterHorizontally)
+                    .width(120.dp * 2)
+                    .height(40.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(PrimaryVariant)
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { dragOffsetPx = 0f },
+                            onDrag = { change, dragAmount ->
+                                dragOffsetPx = (dragOffsetPx + dragAmount.x).coerceIn(-tabWidthPx,tabWidthPx)
+                                change.consume()
+                            },
+                            onDragEnd = {
+                                // Snap to closest tab based on final dragOffsetPx
+                                val finalOffset = animatedOffsetPx + dragOffsetPx
+                                val newSelectedTab = if (finalOffset < tabWidthPx / 2f) 0 else 1
+                                onTabSelected(newSelectedTab)
+                                dragOffsetPx = 0f
+                            },
+                            onDragCancel = {
+                                dragOffsetPx = 0f
+                            }
+                        )
+                    }
             ) {
-//                Selection Tab of Teacher and Student where 0 --> Student & 1 --> Teacher
-                Row(
+                // Sliding white background that moves (animated + dragged)
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
+                        .offset { IntOffset((animatedOffsetPx +dragOffsetPx).roundToInt(),0) }
+                        .width(120.dp)
+                        .fillMaxHeight()
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFFEC8484)),
+                        .background(Color.White)
+                ){}
+
+                Row(
+                    modifier = Modifier.fillMaxSize().border(2.dp,Color.Black,
+                        RoundedCornerShape(20.dp)
+                    ),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     listOf("Students", "Teachers").forEachIndexed { index, label ->
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clickable { selectedTab = index },
+                                .fillMaxHeight()
+                                .clickable { onTabSelected(index) },
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                label,
-                                color = if (selectedTab == index) Color.White else Color.Black,
+                                text = label,
+                                color = if (selectedTab == index) Color.Black else GrayLight.copy(
+                                    0.3f
+                                ),
                                 fontWeight = FontWeight.SemiBold,
-                                fontSize = 14.sp
+                                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                             )
                         }
-                        if (index == 0) Box(
-                            modifier = Modifier
-                                .width(1.dp)
-                                .height(24.dp)
-                                .background(Color.Black)
-                        )
                     }
                 }
             }
+
+            Spacer(Modifier.height(16.dp))
+
 //            UNVERFIED DATA UPDATION BOX
-            Box(
+            Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
-                    .weight(1f)
-                    .border(1.dp, Color.Black, RoundedCornerShape(12.dp))
+                    .border(1.dp, PrimaryVariant, RoundedCornerShape(12.dp))
                     .padding(12.dp)
+                    .weight(0.3f)
             ) {
-                Column {
+                Column(modifier = Modifier.weight(0.3f)) {
                     Box(
                         modifier = Modifier
                             .padding(top = 4.dp, bottom = 12.dp)
                             .align(Alignment.CenterHorizontally)
                             .clip(RoundedCornerShape(16.dp))
-                            .background(Color.LightGray)
+                            .background(SurfaceColor.copy(0.6f))
                             .padding(horizontal = 24.dp, vertical = 6.dp)
+
                     ) {
-                        Text("Unverified", color = Color.Black, fontWeight = FontWeight.Medium)
+                        Text("Unverified", color = Color.Black, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
                     }
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    DropdownSelector(label = selectedBranch,
+                    DropdownSelector(
+                        label = selectedBranch,
                         items = branches,
-                        onItemSelected = { selectedBranch = it })
+                        onItemSelected = { selectedBranch = it }
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -237,11 +310,10 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                                 }
                             }
                         }
-
                     }
+
                 }
             }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -253,6 +325,8 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                     action = { navController.navigate(NavRoutes.TeacherDashboard.route) })
             }
         }
+
+
     }
 }
 
@@ -284,7 +358,9 @@ fun DropdownSelector(
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth(0.8f).heightIn(max = 168.dp)
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .heightIn(max = 168.dp)
         ) {
             items.forEach { item ->
                 DropdownMenuItem(text = { Text(item) }, onClick = {
