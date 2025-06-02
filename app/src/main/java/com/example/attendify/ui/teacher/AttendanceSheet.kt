@@ -112,13 +112,14 @@ fun AttendanceSheet(
         showLogo = false,
         showBackButton = true,
         actions = {
+            // Download report button
             Box(modifier = Modifier.wrapContentSize()) {
                 IconButton(onClick = {
                     showDialog = true // Show the dialog on click
                 }) {
                     Icon(Icons.Filled.Download, contentDescription = "Download report",tint = PrimaryColor)
                 }
-
+                // Download report alert dialog
                 if (showDialog) {
                     AlertDialog(
                         onDismissRequest = {
@@ -174,13 +175,13 @@ fun AttendanceSheet(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
+                // Date Selected by the user is shown here
                 Text(
                     text = "$selectedDate $currentMonth",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyLarge
                 )
-
+                // calendar view for date selection
                 IconButton(
                     onClick = {
                         val initialYear = calendar.get(Calendar.YEAR)
@@ -210,6 +211,7 @@ fun AttendanceSheet(
                         ).show()
                     }
                 ) {
+                    // Open Calendar dialog
                     Icon(
                         imageVector = Icons.Default.CalendarMonth,
                         contentDescription = "Open Calendar",
@@ -217,14 +219,14 @@ fun AttendanceSheet(
                     )
                 }
             }
-
+            // Scrollable list for date selection
             ScrollableDateSelectionRow(
                 selectedDate = selectedDate,
                 currentMonth = currentMonth,
                 onDateSelected = { newDate -> selectedDate = newDate },
                 listState = listState
             )
-
+            // Attendance list of students 
             StudentList(
                 students = students,
                 subjectName = subjectName,
