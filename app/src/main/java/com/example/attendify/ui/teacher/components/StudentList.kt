@@ -27,6 +27,7 @@ import com.example.attendify.data.model.Student
 import com.example.attendify.ui.teacher.TeacherDashboardViewModel
 import com.example.attendify.ui.theme.PrimaryColor
 import com.example.attendify.ui.theme.PrimaryVariant
+import com.example.attendify.ui.theme.TextOnPrimary
 
 @Composable
 fun StudentList(
@@ -48,7 +49,7 @@ fun StudentList(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(PrimaryColor.copy(0.6f))
+                .background(PrimaryColor)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -57,7 +58,7 @@ fun StudentList(
                 text = "Roll No",
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                modifier = Modifier.width(120.dp)
+                modifier = Modifier.width(120.dp), color = TextOnPrimary
             )
 
             Text(
@@ -65,7 +66,7 @@ fun StudentList(
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 modifier = Modifier
-                    .width(160.dp)
+                    .width(160.dp), color = TextOnPrimary
             )
 
             Text(
@@ -74,7 +75,7 @@ fun StudentList(
                 fontSize = 14.sp,
                 modifier = Modifier
                     .width(30.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center, color = TextOnPrimary
             )
 
             Text(
@@ -82,7 +83,7 @@ fun StudentList(
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 modifier = Modifier.width(30.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center, color = TextOnPrimary
             )
         }
 
