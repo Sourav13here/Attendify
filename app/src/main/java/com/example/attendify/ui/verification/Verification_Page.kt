@@ -220,28 +220,14 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 //            UNVERFIED DATA UPDATION BOX
             Column(
                 modifier = Modifier
-
+                    .background(Color.White)
                     .fillMaxWidth().padding(horizontal = 20.dp)
                     .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
                     .padding(12.dp)
                     .weight(0.3f)
             ) {
                 Column(modifier = Modifier.weight(0.3f)) {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 4.dp, bottom = 12.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(SurfaceColor.copy(0.6f))
-                            .padding(horizontal = 24.dp, vertical = 6.dp)
 
-                    ) {
-                        Text(
-                            "Unverified",
-                            color = Color.Black,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                    }
                     Spacer(modifier = Modifier.height(20.dp))
 
                     DropdownSelector(

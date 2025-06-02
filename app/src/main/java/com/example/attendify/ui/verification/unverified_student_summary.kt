@@ -1,8 +1,10 @@
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -60,7 +62,7 @@ fun CombinedUnverifiedStudentSummary(
 @Composable
 private fun CombinedHeader(totalUnverified: Int) {
     Row(
-        modifier = Modifier.fillMaxWidth(0.95f),
+        modifier = Modifier.fillMaxWidth(0.95f).padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -99,15 +101,12 @@ private fun CombinedBranchTile(
 
     Card(
         modifier = Modifier
-            .padding(4.dp)
             .fillMaxWidth()
-            .heightIn(min = 120.dp)
-                ,
+            .heightIn(min = 120.dp).padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = SurfaceColor.copy(0.6f)
         ),
-        border = BorderStroke(0.7.dp, Color.Gray.copy(alpha = 0.2f)),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
@@ -132,7 +131,7 @@ private fun CombinedBranchTile(
                 )
 
                 Text(
-                    text = if (hasUnverified) "To verify" else "All verified",
+                    text = if (hasUnverified) "to verify" else "All verified",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.padding(top = 4.dp)
@@ -148,19 +147,30 @@ private fun CombinedBranchTile(
                     .height(60.dp)
             ) {
                 if (hasUnverified) {
-                    Text(
-                        text = totalCount.toString(),
-                        style = MaterialTheme.typography.displayMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.error
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                                shape = CircleShape
+                            )
+                            .fillMaxSize()
+                    ) {
+                        Text(
+                            text = totalCount.toString(),
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.error
+                            )
                         )
-                    )
+                    }
                 } else {
                     Icon(
                         imageVector = Icons.Default.CheckCircle,
                         contentDescription = "Verified",
                         tint = Color(0xFF4CAF50),
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(48.dp)
                     )
                 }
             }

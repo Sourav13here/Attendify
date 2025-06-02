@@ -35,7 +35,7 @@ fun Login(navController: NavController, viewModel: LoginViewModel) {
     AppScaffold(
         title = "Login",
         navController = navController,
-        titleTextStyle = MaterialTheme.typography.headlineLarge.copy(
+        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
             fontWeight = FontWeight.Bold,
             color = Color.Black
         ),

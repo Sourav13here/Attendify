@@ -44,11 +44,13 @@ val Poppins = FontFamily(
 val Roboto = FontFamily(
     Font(R.font.roboto_regular),
     Font(R.font.roboto_medium),
-    Font(R.font.roboto_bold)
+    Font(R.font.roboto_bold),
+    Font(R.font.roboto_boldcondensed)
 )
 
 // Typography
 val AppTypography = Typography(
+
     displayLarge = TextStyle(
         fontFamily = Poppins,
         fontSize = 32.sp,

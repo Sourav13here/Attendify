@@ -57,7 +57,7 @@ fun AppScaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 modifier = Modifier.statusBarsPadding().background(Color.White),
-                title = { Text(title, style = titleTextStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { Text(title, style = MaterialTheme.typography.headlineMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = {
                     when {
                         showBackButton -> {
