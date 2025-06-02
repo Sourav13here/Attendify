@@ -12,6 +12,9 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -66,7 +69,10 @@ class VerificationViewModel @Inject constructor(
     val unverifiedTeachers: StateFlow<List<Teacher>> = _unverifiedTeachers.asStateFlow()
 
     private val _unverifiedCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
-    val unverifiedCounts: StateFlow<List<UnverifiedCount>> = _unverifiedCounts
+    val unverifiedCounts = _unverifiedCounts.asStateFlow()
+    private val _unverifiedTeacherCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
+    val unverifiedTeacherCounts = _unverifiedTeacherCounts.asStateFlow()
+
 
 
     private var emailVerificationJob: Job? = null
@@ -276,34 +282,67 @@ class VerificationViewModel @Inject constructor(
         }
     }
 
+
+
     fun computeUnverifiedCounts() {
         val branches = Constants.BRANCHES
-        val semesters = Constants.SEMESTERS.map { it.dropLast(2) } // Convert "1st" -> "1"
+        val semesters = Constants.SEMESTERS
 
         viewModelScope.launch {
-            val counts = mutableListOf<UnverifiedCount>()
+            // Compute student counts (by branch and semester)
+            val studentCounts = coroutineScope {
+                branches.flatMap { branch ->
+                    semesters.map { semester ->
+                        async {
+                            val students = suspendCancellableCoroutine<List<Student>> { cont ->
+                                firestoreRepository.getUnverifiedStudents(branch, semester) {
+                                    cont.resume(it, onCancellation = null)
+                                }
+                            }
 
-            for (branch in branches) {
-                for (semester in semesters) {
-                    val students = suspendCancellableCoroutine<List<Student>> { cont ->
-                        firestoreRepository.getUnverifiedStudents(branch, semester) {
-                            cont.resume(it, onCancellation = null)
+                            UnverifiedCount(
+                                branch = branch,
+                                semester = semester,
+                                count = students.size
+                            )
                         }
                     }
-
-                    counts.add(
-                        UnverifiedCount(
-                            branch = branch,
-                            semester = semester,
-                            count = students.size
-                        )
-                    )
-                }
+                }.awaitAll()
             }
 
-            _unverifiedCounts.value = counts
+            // Compute teacher counts (by branch only)
+            val teacherCounts = coroutineScope {
+                branches.map { branch ->
+                    async {
+                        val teachers = suspendCancellableCoroutine<List<Teacher>> { cont ->
+                            firestoreRepository.getUnverifiedTeachers(branch) {
+                                cont.resume(it, onCancellation = null)
+                            }
+                        }
+
+                        UnverifiedCount(
+                            branch = branch,
+                            semester = "",  // no semester for teachers
+                            count = teachers.size
+                        )
+                    }
+                }.awaitAll()
+            }
+            // Combine both lists
+            val combinedCounts = (studentCounts + teacherCounts)
+                .groupBy { Pair(it.branch, it.semester) }
+                .map { (key, group) ->
+                    UnverifiedCount(
+                        branch = key.first,
+                        semester = key.second,
+                        count = group.sumOf { it.count }
+                    )
+                }
+
+            _unverifiedCounts.value = combinedCounts
         }
     }
+
 
     fun signOut() {
         viewModelScope.launch {

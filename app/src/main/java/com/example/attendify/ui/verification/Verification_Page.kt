@@ -1,5 +1,6 @@
 package com.example.attendify.ui.verification
 
+import CombinedUnverifiedStudentSummary
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -97,6 +98,10 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 viewModel.fetchUnverifiedUsers("teacher", selectedBranch)
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.computeUnverifiedCounts()
     }
 
     LaunchedEffect(students, teachers) {
@@ -215,28 +220,14 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 //            UNVERFIED DATA UPDATION BOX
             Column(
                 modifier = Modifier
-
+                    .background(Color.White)
                     .fillMaxWidth().padding(horizontal = 20.dp)
                     .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
                     .padding(12.dp)
                     .weight(0.3f)
             ) {
                 Column(modifier = Modifier.weight(0.3f)) {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 4.dp, bottom = 12.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(SurfaceColor.copy(0.6f))
-                            .padding(horizontal = 24.dp, vertical = 6.dp)
 
-                    ) {
-                        Text(
-                            "Unverified",
-                            color = Color.Black,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                    }
                     Spacer(modifier = Modifier.height(20.dp))
 
                     DropdownSelector(
@@ -260,17 +251,19 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                "Please select a branch${if (selectedTab == 0) " and semester" else ""} to view users.",
-                                textAlign = TextAlign.Center,
-                                color = Color.Gray
+                            CombinedUnverifiedStudentSummary(
+                                viewModel = viewModel,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
                             )
+
                         }
                     } else if ((selectedTab == 0 && students.isEmpty()) || (selectedTab == 1 && teachers.isEmpty())) {
                         Box(
                             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
-                            Text("No unverified users found.")
+                            Text("No unverified users found here.")
                         }
                     } else if (isLoading) {
                         Box(
