@@ -1,3 +1,4 @@
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -100,11 +101,13 @@ private fun CombinedBranchTile(
         modifier = Modifier
             .padding(4.dp)
             .fillMaxWidth()
-            .heightIn(min = 120.dp),
+            .heightIn(min = 120.dp)
+                ,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = SurfaceColor.copy(0.6f)
         ),
+        border = BorderStroke(0.7.dp, Color.Gray.copy(alpha = 0.2f)),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
@@ -128,14 +131,12 @@ private fun CombinedBranchTile(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                if (!hasUnverified) {
-                    Text(
-                        text = "All verified",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
+                Text(
+                    text = if (hasUnverified) "To verify" else "All verified",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    modifier = Modifier.padding(top = 4.dp)
+                )
             }
 
             // Status indicator section - fixed size container
@@ -147,38 +148,20 @@ private fun CombinedBranchTile(
                     .height(60.dp)
             ) {
                 if (hasUnverified) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = totalCount.toString(),
-                            style = MaterialTheme.typography.displayMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.error
-                            )
+                    Text(
+                        text = totalCount.toString(),
+                        style = MaterialTheme.typography.displayMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.error
                         )
-                        Text(
-                            text = "to verify",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+                    )
                 } else {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.CheckCircle,
-                            contentDescription = "Verified",
-                            tint = Color(0xFF4CAF50),
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Text(
-                            text = "verified",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Verified",
+                        tint = Color(0xFF4CAF50),
+                        modifier = Modifier.size(32.dp)
+                    )
                 }
             }
         }
