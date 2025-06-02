@@ -66,7 +66,8 @@ class VerificationViewModel @Inject constructor(
     val unverifiedTeachers: StateFlow<List<Teacher>> = _unverifiedTeachers.asStateFlow()
 
     private val _unverifiedCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
-    val unverifiedCounts: StateFlow<List<UnverifiedCount>> = _unverifiedCounts
+    val unverifiedCounts = _unverifiedCounts.asStateFlow()
+
 
 
     private var emailVerificationJob: Job? = null
@@ -278,7 +279,7 @@ class VerificationViewModel @Inject constructor(
 
     fun computeUnverifiedCounts() {
         val branches = Constants.BRANCHES
-        val semesters = Constants.SEMESTERS.map { it.dropLast(2) } // Convert "1st" -> "1"
+        val semesters = Constants.SEMESTERS  // Convert "1st" -> "1"
 
         viewModelScope.launch {
             val counts = mutableListOf<UnverifiedCount>()

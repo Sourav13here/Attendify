@@ -91,6 +91,8 @@ dependencies {
 
     //Refresh
     implementation (libs.google.accompanist.swiperefresh)
+    implementation ("com.google.accompanist:accompanist-flowlayout:0.34.0")
+
 
     implementation (libs.accompanist.swiperefresh.v0280) // or latest
 //    implementation("com.google.accompanist:accompanist-systemuicontroller:0.37.3")  // check for latest version

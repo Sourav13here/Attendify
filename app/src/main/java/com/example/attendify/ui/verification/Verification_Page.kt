@@ -1,5 +1,6 @@
 package com.example.attendify.ui.verification
 
+import CombinedUnverifiedStudentSummary
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -97,6 +98,10 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 viewModel.fetchUnverifiedUsers("teacher", selectedBranch)
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.computeUnverifiedCounts()
     }
 
     LaunchedEffect(students, teachers) {
@@ -260,11 +265,13 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                "Please select a branch${if (selectedTab == 0) " and semester" else ""} to view users.",
-                                textAlign = TextAlign.Center,
-                                color = Color.Gray
+                            CombinedUnverifiedStudentSummary(
+                                viewModel = viewModel,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
                             )
+
                         }
                     } else if ((selectedTab == 0 && students.isEmpty()) || (selectedTab == 1 && teachers.isEmpty())) {
                         Box(
