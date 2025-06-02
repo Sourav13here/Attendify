@@ -339,7 +339,7 @@ class VerificationViewModel @Inject constructor(
                     )
                 }
 
-            _unverifiedCounts.value = combinedCount
+            _unverifiedCounts.value = combinedCounts
         }
     }
 
