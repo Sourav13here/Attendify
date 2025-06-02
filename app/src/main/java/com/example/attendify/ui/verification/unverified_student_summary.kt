@@ -13,11 +13,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.attendify.ui.verification.VerificationViewModel
@@ -62,7 +66,7 @@ fun CombinedUnverifiedStudentSummary(
 @Composable
 private fun CombinedHeader(totalUnverified: Int) {
     Row(
-        modifier = Modifier.fillMaxWidth(0.95f).padding(horizontal = 4.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -75,7 +79,12 @@ private fun CombinedHeader(totalUnverified: Int) {
 
         if (totalUnverified > 0) {
             Text(
-                text = "Total: $totalUnverified",
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append("Total: ")
+                    }
+                    append(totalUnverified.toString())
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.error
@@ -131,7 +140,7 @@ private fun CombinedBranchTile(
                 )
 
                 Text(
-                    text = if (hasUnverified) "to verify" else "All verified",
+                    text = if (hasUnverified) "To verify" else "All verified",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier.padding(top = 4.dp)
