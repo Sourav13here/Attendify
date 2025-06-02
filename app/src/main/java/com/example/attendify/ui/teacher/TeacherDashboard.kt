@@ -135,6 +135,7 @@ fun TeacherDashboard(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Greeting box
                 if (teacher != null) {
                     Text(
                         text = buildAnnotatedString {
@@ -152,7 +153,8 @@ fun TeacherDashboard(
                 } else {
                     CircularProgressIndicator()
                 }
-
+                
+                //Add Subject Dialog box 
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.CenterEnd
@@ -175,7 +177,7 @@ fun TeacherDashboard(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState()), // Only this part scrolls
+                            .verticalScroll(rememberScrollState()), 
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         if (subjects.isEmpty()) {
@@ -184,6 +186,7 @@ fun TeacherDashboard(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         } else {
+                            // Subject List
                             subjects.forEach { subject ->
                                 if (teacher != null) {
                                     SubjectCard(
@@ -205,7 +208,7 @@ fun TeacherDashboard(
                 }
             }
         }
-
+        // Floating Action BUtton 
         VerifyFloatingButton(navController)
     }
 }

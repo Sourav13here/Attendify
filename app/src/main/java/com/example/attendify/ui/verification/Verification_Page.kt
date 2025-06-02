@@ -203,7 +203,7 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                         ) {
                             Text(
                                 text = label,
-                                color = if (selectedTab == index) Color.Black else Color.DarkGray.copy(0.8f),
+                                color = if (selectedTab == index) Color.Black else Color.DarkGray.copy(0.6f),
                                 fontWeight = FontWeight.SemiBold,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                             )
