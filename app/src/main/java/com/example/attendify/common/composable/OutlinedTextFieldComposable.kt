@@ -122,7 +122,7 @@ fun CustomOutlinedTextField(
         isError = error != null,  // <-- Shows error state if error is present
 
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = if (error != null) ErrorColor else SecondaryColor,
+            focusedBorderColor = if (error != null) ErrorColor else PrimaryColor,
             unfocusedBorderColor = if (error != null) ErrorColor else BorderColor,
             cursorColor = Color.Black,
             focusedContainerColor = Color(0xFFFFFFFF),

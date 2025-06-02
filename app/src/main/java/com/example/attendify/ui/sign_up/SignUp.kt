@@ -99,11 +99,11 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
     }
 
     AppScaffold(
-        title = "SIGN UP",
+        title = "Sign-Up",
         navController = navController,
         showBackButton = true,
         contentDescriptionBackButton = "Back",
-        titleTextStyle = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
+        titleTextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
     ) { padding ->
         BoxWithConstraints(
             modifier = Modifier
@@ -208,7 +208,7 @@ fun SignUp(navController: NavController, viewModel: SignUpViewModel) {
                                     ) {
                                         Text(
                                             text = label,
-                                            color = if (selectedTab == index) Color.Black else Color.White.copy(0.5f),
+                                            color = if (selectedTab == index) Color.Black else Color.DarkGray.copy(0.8f),
                                             fontWeight = FontWeight.SemiBold,
                                             style = MaterialTheme.typography.bodyMedium
                                         )

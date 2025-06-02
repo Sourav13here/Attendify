@@ -11,6 +11,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,12 +25,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.School
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -54,6 +62,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -83,15 +92,8 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
     val branches = listOf("CSE", "ETE", "ME", "CE")
     val semesters = listOf("1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th")
 
-//    val tabWidth = 120.dp
-//    val indicatorOffset by animateDpAsState(
-//        targetValue = if (selectedTab == 0) 0.dp else tabWidth,
-//        animationSpec = tween(durationMillis = 300)
-//    )
-
     LaunchedEffect(selectedTab, selectedBranch, selectedSemester) {
         if (selectedBranch != "Select Branch" && (selectedTab == 1 || selectedSemester != "Select Semester")) {
-
             if (selectedTab == 0) {
                 viewModel.fetchUnverifiedUsers("student", selectedBranch, selectedSemester)
             } else {
@@ -127,7 +129,6 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 
     fun onTabSelected(index: Int) {
         selectedTab = index
-
     }
 
     AppScaffold(
@@ -145,9 +146,8 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                 .fillMaxSize()
                 .padding(top = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.Center
         ) {
-//            SWITCH
+            // SWITCH
             Box(
                 modifier = Modifier
                     .width(120.dp * 2)
@@ -163,7 +163,6 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                                 change.consume()
                             },
                             onDragEnd = {
-                                // Snap to closest tab based on final dragOffsetPx
                                 val finalOffset = animatedOffsetPx + dragOffsetPx
                                 val newSelectedTab = if (finalOffset < tabWidthPx / 2f) 0 else 1
                                 onTabSelected(newSelectedTab)
@@ -204,9 +203,7 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                         ) {
                             Text(
                                 text = label,
-                                color = if (selectedTab == index) Color.Black else GrayLight.copy(
-                                    0.3f
-                                ),
+                                color = if (selectedTab == index) Color.Black else Color.DarkGray.copy(0.8f),
                                 fontWeight = FontWeight.SemiBold,
                                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                             )
@@ -217,121 +214,119 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
 
             Spacer(Modifier.height(16.dp))
 
-//            UNVERFIED DATA UPDATION BOX
+            // UNVERIFIED DATA SECTION
             Column(
                 modifier = Modifier
                     .background(Color.White)
-                    .fillMaxWidth().padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
                     .border(2.dp, Color.Black, RoundedCornerShape(12.dp))
                     .padding(12.dp)
-                    .weight(0.3f)
+                    .weight(1f)
             ) {
-                Column(modifier = Modifier.weight(0.3f)) {
+                Spacer(modifier = Modifier.height(20.dp))
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                DropdownSelector(
+                    label = selectedBranch,
+                    items = branches,
+                    onItemSelected = { selectedBranch = it }
+                )
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (selectedTab == 0) {
                     DropdownSelector(
-                        label = selectedBranch,
-                        items = branches,
-                        onItemSelected = { selectedBranch = it }
+                        label = selectedSemester,
+                        items = semesters,
+                        onItemSelected = { selectedSemester = it }
                     )
+                }else{
+                    Spacer(modifier = Modifier.height(44.dp))
+                }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.fillMaxHeight(0.3f))
 
-                    if (selectedTab == 0) {
-                        DropdownSelector(label = selectedSemester,
-                            items = semesters,
-                            onItemSelected = { selectedSemester = it })
+                // Main content of the verification page
+                when {
+                    selectedBranch == "Select Branch" || (selectedTab == 0 && selectedSemester == "Select Semester") -> {
+                        // Show unverified counts grid for both tabs
+                        CombinedUnverifiedStudentSummary(
+                            viewModel = viewModel,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
-
-
-                    //----------------------------Main content of the verification page-----------------------------------------------
-                    if (selectedBranch == "Select Branch" || (selectedTab == 0 && selectedSemester == "Select Semester")) {
+                    (selectedTab == 0 && students.isEmpty()) || (selectedTab == 1 && teachers.isEmpty()) -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CombinedUnverifiedStudentSummary(
-                                viewModel = viewModel,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
-                            )
-
-                        }
-                    } else if ((selectedTab == 0 && students.isEmpty()) || (selectedTab == 1 && teachers.isEmpty())) {
-                        Box(
-                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center
                         ) {
                             Text("No unverified users found here.")
                         }
-                    } else if (isLoading) {
+                    }
+                    isLoading -> {
                         Box(
-                            modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(color = Color.Black, strokeWidth = 2.dp)
                         }
-                    } else {
+                    }
+                    else -> {
                         LazyColumn(modifier = Modifier.padding(vertical = 6.dp)) {
                             val list = if (selectedTab == 0) students else teachers
 
                             items(list) { user ->
                                 when (user) {
                                     is Student -> {
-                                        UserVerificationItem(name = user.name,
+                                        UserVerificationItem(
+                                            name = user.name,
                                             email = user.email,
                                             rollNumber = user.rollNumber,
                                             onApprove = {
-                                                viewModel.approveUser(
-                                                    user.uid, "student"
-                                                )
+                                                viewModel.approveUser(user.uid, "student")
                                             },
                                             onReject = {
-                                                viewModel.rejectUser(
-                                                    user.uid,
-                                                    "student"
-                                                )
-                                            })
+                                                viewModel.rejectUser(user.uid, "student")
+                                            }
+                                        )
                                     }
-
                                     is Teacher -> {
-                                        UserVerificationItem(name = user.name,
+                                        UserVerificationItem(
+                                            name = user.name,
                                             email = user.email,
                                             rollNumber = null,
                                             onApprove = {
-                                                viewModel.approveUser(
-                                                    user.uid, "teacher"
-                                                )
+                                                viewModel.approveUser(user.uid, "teacher")
                                             },
                                             onReject = {
-                                                viewModel.rejectUser(
-                                                    user.uid,
-                                                    "teacher"
-                                                )
-                                            })
+                                                viewModel.rejectUser(user.uid, "teacher")
+                                            }
+                                        )
                                     }
                                 }
                             }
                         }
                     }
-
                 }
             }
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
-                CustomButton(text = "DONE",
+                CustomButton(
+                    text = "DONE",
                     modifier = Modifier.fillMaxWidth(0.5f),
-                    action = { navController.navigate(NavRoutes.TeacherDashboard.route) })
+                    action = { navController.navigate(NavRoutes.TeacherDashboard.route) }
+                )
             }
         }
-
-
     }
 }
+
+
 
 @Composable
 fun DropdownSelector(
@@ -414,7 +409,6 @@ fun UserVerificationItem(
                         }
                     }, fontSize = 14.sp, color = Color.DarkGray
                 )
-
             }
 
             // Approve/Reject buttons
@@ -435,11 +429,9 @@ fun UserVerificationItem(
 private fun ApprovalButton(text: String, color: Color, onClick: () -> Unit) {
     var isClicked by remember { mutableStateOf(false) }
 
-
-
     LaunchedEffect(isClicked) {
         if (isClicked) {
-            kotlinx.coroutines.delay(300) // Wait for 500ms
+            kotlinx.coroutines.delay(300) // Wait for 300ms
             isClicked = false // Reset the state after the delay
         }
     }
@@ -459,7 +451,7 @@ private fun ApprovalButton(text: String, color: Color, onClick: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.Center)
                         .fillMaxSize(0.6f)
-                        .background(color, CircleShape) // Solid black circle inside
+                        .background(color, CircleShape) // Solid circle inside
                 )
             }
         }

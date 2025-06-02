@@ -31,7 +31,6 @@ fun ForgetPasswordDialog(
 ) {
     var email by remember { mutableStateOf("") }
     val resetMessage by viewModel.passwordResetMessage.collectAsState()
-    val resetMessage2 by viewModel.passwordResetMessage2.collectAsState()
 
     val context = LocalContext.current
 
@@ -60,7 +59,7 @@ fun ForgetPasswordDialog(
             ) {
                 Text("Reset password", style = MaterialTheme.typography.headlineSmall)
                 Spacer(Modifier.height(8.dp))
-                Text("Password reset link to ")
+                Text("Resend password reset link to ")
                 Spacer(Modifier.height(8.dp))
                 CustomOutlinedTextField(
                     value = email,
@@ -73,8 +72,8 @@ fun ForgetPasswordDialog(
                     leadingIcon = Icons.Outlined.Email
                 )
                 Spacer(Modifier.height(12.dp))
-                if (resetMessage2 != null) {
-                    Text(resetMessage2!!, color = Color.Red, fontSize = 14.sp)
+                if (resetMessage != null) {
+                    Text(resetMessage!!, color = Color.Red, fontSize = 14.sp)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 

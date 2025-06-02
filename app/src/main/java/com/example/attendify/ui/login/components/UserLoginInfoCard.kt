@@ -32,6 +32,7 @@ import com.example.attendify.navigation.NavRoutes
 import com.example.attendify.ui.login.LoginViewModel
 import com.example.attendify.ui.theme.CardColour
 import com.example.attendify.ui.theme.SecondaryColor
+import com.example.attendify.ui.theme.TextOnPrimary
 
 @Composable
 fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
@@ -121,7 +122,7 @@ fun UserLoginInfoCard(viewModel: LoginViewModel, navController: NavController) {
             ) {
                 CustomTextButton(
                     text = "Forgot Password?",
-                    action = { showForgotPasswordDialog = true }
+                    action = { showForgotPasswordDialog = true },
                 )
             }
 

@@ -47,7 +47,6 @@ fun Login(navController: NavController, viewModel: LoginViewModel) {
         navController = navController,
         titleTextStyle = MaterialTheme.typography.headlineMedium.copy(
             fontWeight = FontWeight.Bold,
-            color = Color.Black
         ),
     ) { padding ->
         Box(

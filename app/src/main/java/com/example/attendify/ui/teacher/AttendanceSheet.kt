@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -47,6 +48,7 @@ import com.example.attendify.ui.teacher.components.getCurrentDate
 import com.example.attendify.ui.teacher.components.getCurrentMonthYear
 import com.example.attendify.ui.teacher.components.getDaysInMonth
 import com.example.attendify.ui.teacher.components.getFormattedFullDate
+import com.example.attendify.ui.theme.PrimaryColor
 import com.example.attendify.ui.theme.SecondaryColor
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -114,7 +116,7 @@ fun AttendanceSheet(
                 IconButton(onClick = {
                     showDialog = true // Show the dialog on click
                 }) {
-                    Icon(Icons.Filled.Download, contentDescription = "Download report")
+                    Icon(Icons.Filled.Download, contentDescription = "Download report",tint = PrimaryColor)
                 }
 
                 if (showDialog) {
@@ -140,7 +142,7 @@ fun AttendanceSheet(
                                     viewModel.downloadAttendanceReport(subject, students, context)
                                 }
                             ) {
-                                Text("Yes",style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                                Text("Download",style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
                             }
                         },
                         dismissButton = {
@@ -211,7 +213,7 @@ fun AttendanceSheet(
                     Icon(
                         imageVector = Icons.Default.CalendarMonth,
                         contentDescription = "Open Calendar",
-                        tint = SecondaryColor
+                        tint = Color(0xFF018476)
                     )
                 }
             }
