@@ -263,7 +263,7 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                         Box(
                             modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                         ) {
-                            Text("No unverified users found.")
+                            Text("No unverified users found here.")
                         }
                     } else if (isLoading) {
                         Box(

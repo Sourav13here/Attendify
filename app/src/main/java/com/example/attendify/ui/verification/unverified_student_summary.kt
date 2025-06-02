@@ -30,6 +30,7 @@ import com.example.attendify.ui.theme.SurfaceColor
 import com.example.attendify.utils.Constants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+/*TODO : Change counter for teacher screen and student screen */
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun CombinedUnverifiedStudentSummary(
@@ -37,6 +38,7 @@ fun CombinedUnverifiedStudentSummary(
     modifier: Modifier = Modifier
 ) {
     val counts by viewModel.unverifiedCounts.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Column(
         modifier = modifier
@@ -56,7 +58,8 @@ fun CombinedUnverifiedStudentSummary(
                 val branchCounts = counts.filter { it.branch == branch }
                 CombinedBranchTile(
                     branch = branch,
-                    counts = branchCounts
+                    counts = branchCounts,
+                    isLoading = isLoading
                 )
             }
         }
@@ -71,7 +74,7 @@ private fun CombinedHeader(totalUnverified: Int) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Unverified Students",
+            text = "UNVERIFIED",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -103,7 +106,8 @@ private fun CombinedHeader(totalUnverified: Int) {
 @Composable
 private fun CombinedBranchTile(
     branch: String,
-    counts: List<UnverifiedCount>
+    counts: List<UnverifiedCount>,
+    isLoading: Boolean = false
 ) {
     val totalCount = counts.sumOf { it.count }
     val hasUnverified = totalCount > 0
@@ -139,12 +143,14 @@ private fun CombinedBranchTile(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Text(
-                    text = if (hasUnverified) "To verify" else "All verified",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier.padding(top = 4.dp)
-                )
+                if (!isLoading) {
+                    Text(
+                        text = if (hasUnverified) "To verify" else "All verified",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
 
             // Status indicator section - fixed size container
@@ -155,7 +161,12 @@ private fun CombinedBranchTile(
                     .weight(0.4f)
                     .height(60.dp)
             ) {
-                if (hasUnverified) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else if (hasUnverified) {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
@@ -164,7 +175,6 @@ private fun CombinedBranchTile(
                                 color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
                                 shape = CircleShape
                             )
-                            .fillMaxSize()
                     ) {
                         Text(
                             text = totalCount.toString(),
@@ -186,4 +196,3 @@ private fun CombinedBranchTile(
         }
     }
 }
-
