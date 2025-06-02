@@ -160,7 +160,7 @@ fun StudentDashboard(navController: NavController, viewModel: StudentDashboardVi
                         .fillMaxWidth()
                         .fillMaxHeight(0.9f)
                         .border(1.dp, SecondaryColor, RoundedCornerShape(16.dp)) // Border first
-                        .background(CardColour, RoundedCornerShape(16.dp))    // Then background
+                        .background(SecondaryColor.copy(0.6f), RoundedCornerShape(16.dp))    // Then background
                         .padding(top =20.dp,bottom = 20.dp,start = 5.dp,end = 5.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
