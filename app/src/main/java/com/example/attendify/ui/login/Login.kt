@@ -70,7 +70,7 @@ fun Login(navController: NavController, viewModel: LoginViewModel) {
                     contentAlignment = Alignment.TopCenter
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.app_logo),
+                        painter = painterResource(id = R.drawable.ic_launcher),
                         contentDescription = "App Logo",
                         modifier = Modifier
                             .padding(top = 30.dp)

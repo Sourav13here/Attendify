@@ -74,7 +74,7 @@ fun AppScaffold(
                         showLogo -> {
                             CustomIconButton(
                                 modifier = Modifier.customIconButton(),
-                                painter = painterResource(R.drawable.app_logo),
+                                painter = painterResource(R.drawable.ic_launcher),
                                 contentDescription = contentDescriptionLogo.toString(),
                                 onClick = {},
                                 size = 36.dp
