@@ -236,14 +236,16 @@ copies or substantial portions of the Software.
 
 ---
 
-## 👨‍💻 Developer Information
+## 👨‍💻 Developers Information
 
-**Developer:** Your Name  
-**GitHub:** [@yourusername](https://github.com/yourusername)  
-**Email:** your.email@example.com  
-**LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/yourprofile)
+**Developer:** Mridul Roy
+**GitHub:** [@Mridul60](https://github.com/Mridul60)  
+**Email:** mridulroy543@gmail.com  
+**LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/mridul-roy-39b297263)
 
-### 🔗 Connect with Me
+
+
+### 🔗 Connect with Us
 - 💼 **Portfolio:** [yourportfolio.com](https://yourportfolio.com)
 - 🐦 **Twitter:** [@yourusername](https://twitter.com/yourusername)
 - 📧 **Contact:** your.email@example.com
