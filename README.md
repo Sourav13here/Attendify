@@ -50,12 +50,13 @@
 
 | Feature | Screenshot |
 |---------|------------|
-| **Login Screen** | ![Login](screenshots/login.png) |
-| **Student Dashboard** | ![Student Dashboard](screenshots/student_dashboard.png) |
-| **Teacher Dashboard** | ![Teacher Dashboard](screenshots/teacher_dashboard.png) |
-| **Attendance Marking** | ![Attendance](screenshots/attendance_marking.png) |
-| **Reports & Analytics** | ![Reports](screenshots/reports.png) |
-| **Class Management** | ![Class Management](screenshots/class_management.png) |
+| **Login Screen** | ![Login]((https://github.com/user-attachments/assets/ea7f3c8a-d4de-4a5d-b005-8818c2d2da22)) |
+| **Student Dashboard** | ![Student Dashboard](![8](https://github.com/user-attachments/assets/3e8d557b-b983-4668-9313-fd39a656a749)) |
+| **Teacher Dashboard** | ![Teacher Dashboard](![5](https://github.com/user-attachments/assets/a0ce3caf-e04d-4a8c-8152-45cdceb2167e)) |
+| **Attendance Marking** | ![Attendance Tracking](![13](https://github.com/user-attachments/assets/83a60bda-98d5-4f28-916a-9aaf8dacfad9))) |
+| **Attendance Tracking** | ![Attendance](![9](https://github.com/user-attachments/assets/3f7252f4-6009-4e8b-a15b-e4f7de6d190a)) |
+| **Reports & Analytics** | ![Reports](![12](https://github.com/user-attachments/assets/d3d6da16-f213-4792-b161-607dd21c09fb)) |
+| **Class Management** | ![Class Management](![7](https://github.com/user-attachments/assets/61eb6619-3009-4353-954f-d023cfa819d4)) |
 
 ---
 
