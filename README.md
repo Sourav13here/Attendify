@@ -240,11 +240,22 @@ copies or substantial portions of the Software.
 
 ## 👨‍💻 Developers Information
 
-**Developer:** Faruk Kahn,Mridul Roy,Sourav Sharma
-**GitHub:** [@FarukKhan](http://github.com/iamfaruk01),[@MridulRoy](https://github.com/Mridul60),[@SouravSharma]()
-**Email:**  faruk.khan.cse@gmail.com, roy.mridul.cse@gmail.com , souravsharma13here@gmail.com 
-**LinkedIn:** [Faruk](https://www.linkedin.com/in/iamfarukkhan),[Mridul](https://linkedin.com/in/mridul-roy-39b297263),[Sourav](https://www.linkedin.com/in/sourav13sharma/)
+## 👨‍💻 Developers
 
+### 🚀 Faruk Khan  
+- **GitHub:** [@FarukKhan](https://github.com/iamfaruk01)  
+- **Email:** faruk.khan.cse@gmail.com  
+- **LinkedIn:** [Faruk](https://www.linkedin.com/in/iamfarukkhan)
+
+### 🚀 Mridul Roy  
+- **GitHub:** [@MridulRoy](https://github.com/Mridul60)  
+- **Email:** roy.mridul.cse@gmail.com  
+- **LinkedIn:** [Mridul](https://linkedin.com/in/mridul-roy-39b297263)
+
+### 🚀 Sourav Sharma  
+- **GitHub:** [@SouravSharma](https://github.com/SouravSharma)  
+- **Email:** souravsharma13here@gmail.com  
+- **LinkedIn:** [Sourav](https://www.linkedin.com/in/sourav13sharma/)
 
 
 ### 🔗 Connect with Us
