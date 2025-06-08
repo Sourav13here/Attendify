@@ -12,21 +12,17 @@
 ## 🚀 Features
 
 ### 👨‍🎓 For Students
-- ✅ **Quick Check-In** - Mark attendance with a single tap
-- 📊 **Attendance History** - View personal attendance records and statistics
-- 📱 **Real-time Updates** - Get instant notifications about class schedules
-- 🔐 **Secure Authentication** - Firebase-powered login system
-- 📈 **Progress Tracking** - Monitor attendance percentage and trends
-- 🎯 **Class Schedule View** - See upcoming classes and deadlines
+- 📊 **Detailed Attendance Records** – View comprehensive logs of your attendance across subjects and dates
+- 🔔 **Live Attendance Updates** – Instantly see attendance as marked by the teacher
+- 📈 **Attendance Prediction** – Get smart insights into future attendance trends and required presence to meet goals
+- 🔐 **Secure Authentication** – Firebase-powered login system
+
 
 ### 👨‍🏫 For Teachers
-- 📝 **Class Management** - Create and manage multiple classes efficiently
-- 👥 **Student Roster** - Add, remove, and organize student information
-- 📊 **Attendance Reports** - Generate detailed attendance analytics
-- 📅 **Schedule Management** - Set up class timings and recurring sessions
-- 🔍 **Quick Search** - Find students and attendance records instantly
-- 📤 **Export Data** - Download attendance reports in various formats
-- 🚨 **Absence Alerts** - Get notified about frequently absent students
+- 📝 **Class Management** – Create and manage multiple classes efficiently
+- ✅ **Mark Attendance** – Easily mark attendance for students in each session
+- 📤 **Export Reports (.xlsx)** – Download Excel reports containing student names and their attendance percentages
+- 🔍 **Verification System** – Verify student accounts and manage unverified teacher profiles
 
 ---
 
@@ -65,31 +61,36 @@
 ```
 Attendify/
 ├── 📁 app/
+    ├── 📁 release/                  # Release artifacts or configurations
 │   ├── 📁 src/main/java/com/yourname/attendify/
-│   │   ├── 📁 data/
-│   │   │   ├── 📁 local/           # Room database entities
-│   │   │   ├── 📁 remote/          # Firebase repositories
-│   │   │   └── 📁 repository/      # Data layer implementation
-│   │   ├── 📁 di/                  # Hilt dependency injection modules
-│   │   ├── 📁 domain/
-│   │   │   ├── 📁 model/           # Data models
-│   │   │   ├── 📁 repository/      # Repository interfaces
-│   │   │   └── 📁 usecase/         # Business logic use cases
-│   │   ├── 📁 presentation/
-│   │   │   ├── 📁 ui/
-│   │   │   │   ├── 📁 auth/        # Authentication screens
-│   │   │   │   ├── 📁 student/     # Student-specific UI
-│   │   │   │   ├── 📁 teacher/     # Teacher-specific UI
-│   │   │   │   ├── 📁 common/      # Shared UI components
-│   │   │   │   └── 📁 theme/       # App theming
-│   │   │   └── 📁 viewmodel/       # ViewModels for MVVM
-│   │   ├── 📁 utils/               # Utility classes and extensions
-│   │   └── 📄 MainActivity.kt      # Main entry point
-│   ├── 📁 src/main/res/            # Android resources
-│   └── 📄 build.gradle.kts         # App-level build configuration
-├── 📄 build.gradle.kts             # Project-level build configuration
-├── 📄 google-services.json         # Firebase configuration (add this)
-└── 📄 README.md                    # This file
+│   │   ├── 📁 common/               # Shared components, extensions, and viewmodels
+│   │   │   ├── 📁 composable/       # Reusable Composables
+│   │   │   ├── 📁 ext/              # Extension functions
+│   │   │   └── 📁 viewmodel/        # Common/shared ViewModels
+│   │   ├── 📁 data/                 # Data layer
+│   │   │   ├── 📁 model/            # Data models
+│   │   │   ├── 📁 module/           # Dependency injection modules
+│   │   │   └── 📁 repository/       # Data repositories (Firebase/local)
+│   │   ├── 📁 navigation/           # Navigation graph and routes
+│   │   ├── 📁 ui/                   # UI screens
+│   │   │   ├── 📁 login/            # Login screen
+│   │   │   ├── 📁 sign_up/          # Sign-up screen
+│   │   │   ├── 📁 splashscreen/     # Splash screen
+│   │   │   ├── 📁 student/          # Student-specific UI
+│   │   │   ├── 📁 teacher/          # Teacher-specific UI
+│   │   │   ├── 📁 verification/     # Verification screens
+│   │   │   └── 📁 theme/            # App theming (Material 3, typography, colors)
+│   │   ├── 📁 utils/                # Utility classes and helpers
+│   │   ├── 📄 AttendifyAppHilt.kt   # Hilt application class
+│   │   ├── 📄 AttendifyAppUi.kt     # Root UI composable or navigation host
+│   │   └── 📄 MainActivity.kt       # App entry point
+│   ├── 📄 .gitignore                # Git ignore rules specific to the module
+│   ├── 📄 build.gradle.kts          # App-level Gradle configuration
+│   ├── 📄 google-services.json      # Firebase config file
+│   └── 📄 proguard-rules.pro        # Proguard rules for code obfuscation
+├── 📄 build.gradle.kts              # Project-level Gradle configuration
+└── 📄 README.md                     # Project documentation
+
 ```
 
 ---
@@ -222,7 +223,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ```
 MIT License
 
-Copyright (c) 2024 Your Name
+Copyright (c) 2024 Attendify
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
