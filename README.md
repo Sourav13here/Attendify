@@ -47,12 +47,18 @@
 | Feature | Screenshot |
 |---------|------------|
 | **Login Screen** | <img src="https://github.com/Sourav13here/Attendify/blob/master/assests/1.jpg?raw=true" alt="Login" width="300"/> |
-| **Student Dashboard** | ![Student Dashboard](![8](https://github.com/user-attachments/assets/3e8d557b-b983-4668-9313-fd39a656a749)) |
-| **Teacher Dashboard** | ![Teacher Dashboard](![5](https://github.com/user-attachments/assets/a0ce3caf-e04d-4a8c-8152-45cdceb2167e)) |
-| **Attendance Marking** | ![Attendance Tracking](![13](https://github.com/user-attachments/assets/83a60bda-98d5-4f28-916a-9aaf8dacfad9))) |
-| **Attendance Tracking** | ![Attendance](![9](https://github.com/user-attachments/assets/3f7252f4-6009-4e8b-a15b-e4f7de6d190a)) |
-| **Reports & Analytics** | ![Reports](![12](https://github.com/user-attachments/assets/d3d6da16-f213-4792-b161-607dd21c09fb)) |
-| **Class Management** | ![Class Management](![7](https://github.com/user-attachments/assets/61eb6619-3009-4353-954f-d023cfa819d4)) |
+| **Signup Screen** | <img src="https://github.com/Sourav13here/Attendify/blob/master/assests/3.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Verification Status** | <img src="https://github.com/Sourav13here/Attendify/blob/master/assests/4.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Student Dashboard** |  <img src="https://github.com/Sourav13here/Attendify/blob/master/assests/8.jpg?raw=true" alt="Screenshot" width="300"/>  |
+| **Instructions** |<img src="https://github.com/Sourav13here/Attendify/blob/master/assests/15.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Attendance Tracking** |<img src="https://github.com/Sourav13here/Attendify/blob/master/assests/14.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Attendance Details** |<img src="https://github.com/Sourav13here/Attendify/blob/master/assests/13.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Teacher Dashboard** |<img src="https://github.com/Sourav13here/Attendify/blob/master/assests/5.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Add Subject** |<img src="https://github.com/Sourav13here/Attendify/blob/master/assests/6.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Attendance Marking** | <img src="https://github.com/Sourav13here/Attendify/blob/master/assests/9.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Verification List** |<img src="https://github.com/Sourav13here/Attendify/blob/master/assests/7.jpg?raw=true" alt="Screenshot" width="300"/> |
+| **Reports & Analytics** |<img src="https://github.com/Sourav13here/Attendify/blob/master/assests/12.jpg?raw=true" alt="Screenshot" width="300"/>|
+
 
 ---
 
