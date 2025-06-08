@@ -102,18 +102,8 @@ Attendify/
 
 ```
 
-### Release Build
-```bash
-# Generate signed APK
-./gradlew assembleRelease
-
-# Generate App Bundle for Play Store
-./gradlew bundleRelease
-```
-
----
-
-
+### Want to try? Install the app - https://drive.google.com/file/d/1r6rM8jhHD9P1hTAH4FC3BbxKuRMbPNxJ/view?usp=drivesdk
+
 ---
 
 ## 👨‍💻 Developers Information
