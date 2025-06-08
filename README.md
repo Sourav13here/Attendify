@@ -39,9 +39,7 @@
 | **Hilt**              | Dependency Injection             | 2.47+       |
 | **MVVM**              | Architecture Pattern             | ✅ Used      |
 | **Navigation Compose**| Navigation between screens       | 2.7.0+      |
-| **Kotlin Coroutines** | Asynchronous Programming         | 1.7.0+      |
 | **Material 3**        | UI Components & Theming          | Latest      |
-| **Room (optional)**   | Local Offline Storage (optional) | If used     |
 | **Excel Export**      | Report Generation in `.xlsx`     | Apache POI / Other |
 
 
