@@ -101,14 +101,12 @@ Attendify/
 └── 📄 README.md                     # Project documentation
 
 ```
-
+---
 ### Want to try? Install the app - https://drive.google.com/file/d/1r6rM8jhHD9P1hTAH4FC3BbxKuRMbPNxJ/view?usp=drivesdk
 
 ---
 
-## 👨‍💻 Developers Information
-
-## 👨‍💻 Developers
+## 👨‍💻 Developers Information
 
 ### 🚀 Faruk Khan  
 - **GitHub:** [@FarukKhan](https://github.com/iamfaruk01)  
@@ -123,10 +121,6 @@ Attendify/
 ### 🚀 Sourav Sharma  
 - **GitHub:** [@SouravSharma](https://github.com/SouravSharma)  
 - **Email:** souravsharma13here@gmail.com  
-- **LinkedIn:** [Sourav](https://www.linkedin.com/in/sourav13sharma/)
-
-
-### 🔗 Connect with Us
-- 📧 **Contact:** attendacemanagmentapp@gmail.com
+- **LinkedIn:** [Sourav](https://www.linkedin.com/in/sourav13sharma/)
 
 ---
