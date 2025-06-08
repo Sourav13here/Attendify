@@ -28,17 +28,22 @@
 
 ## 🛠️ Tech Stack
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **Kotlin** | Primary Language | 1.9.0+ |
-| **Jetpack Compose** | Modern UI Toolkit | 1.5.0+ |
-| **Firebase Auth** | User Authentication | Latest |
-| **Firestore** | NoSQL Database | Latest |
-| **Hilt** | Dependency Injection | 2.47+ |
-| **MVVM** | Architecture Pattern | - |
-| **Navigation Component** | App Navigation | 2.7.0+ |
-| **Kotlin Coroutines** | Asynchronous Programming | 1.7.0+ |
-| **Material Design 3** | UI Components | Latest |
+## 🛠️ Tech Stack
+
+| Technology            | Purpose                          | Version     |
+|-----------------------|----------------------------------|-------------|
+| **Kotlin**            | Primary Language                 | 1.9.0+      |
+| **Jetpack Compose**   | Modern UI Toolkit                | 1.5.0+      |
+| **Firebase Auth**     | User Authentication              | Latest      |
+| **Firestore**         | NoSQL Database                   | Latest      |
+| **Hilt**              | Dependency Injection             | 2.47+       |
+| **MVVM**              | Architecture Pattern             | ✅ Used      |
+| **Navigation Compose**| Navigation between screens       | 2.7.0+      |
+| **Kotlin Coroutines** | Asynchronous Programming         | 1.7.0+      |
+| **Material 3**        | UI Components & Theming          | Latest      |
+| **Room (optional)**   | Local Offline Storage (optional) | If used     |
+| **Excel Export**      | Report Generation in `.xlsx`     | Apache POI / Other |
+
 
 ---
 
