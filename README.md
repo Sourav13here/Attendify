@@ -46,7 +46,7 @@
 
 | Feature | Screenshot |
 |---------|------------|
-| **Login Screen** | ![Login]((https://github.com/Sourav13here/Attendify/blob/master/assests/1.jpg?raw=true)) |
+| **Login Screen** | ![Login](https://github.com/Sourav13here/Attendify/blob/master/assests/1.jpg?raw=true) |
 | **Student Dashboard** | ![Student Dashboard](![8](https://github.com/user-attachments/assets/3e8d557b-b983-4668-9313-fd39a656a749)) |
 | **Teacher Dashboard** | ![Teacher Dashboard](![5](https://github.com/user-attachments/assets/a0ce3caf-e04d-4a8c-8152-45cdceb2167e)) |
 | **Attendance Marking** | ![Attendance Tracking](![13](https://github.com/user-attachments/assets/83a60bda-98d5-4f28-916a-9aaf8dacfad9))) |
