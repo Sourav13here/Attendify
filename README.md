@@ -71,7 +71,7 @@
 Attendify/
 ├── 📁 app/
     ├── 📁 release/                  # Release artifacts or configurations
-│   ├── 📁 src/main/java/com/yourname/attendify/
+│   ├── 📁 src/main/java/com/attendify/
 │   │   ├── 📁 common/               # Shared components, extensions, and viewmodels
 │   │   │   ├── 📁 composable/       # Reusable Composables
 │   │   │   ├── 📁 ext/              # Extension functions
@@ -100,65 +100,7 @@ Attendify/
 ├── 📄 build.gradle.kts              # Project-level Gradle configuration
 └── 📄 README.md                     # Project documentation
 
-```
-
----
-
-## ⚙️ Setup Instructions
-
-### Prerequisites
-- **Android Studio** Flamingo or newer
-- **JDK** 17 or higher
-- **Minimum SDK** 24 (Android 7.0)
-- **Target SDK** 34
-
-### 🔧 Installation Steps
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/yourusername/attendify.git
-   cd attendify
-   ```
-
-2. **Firebase Configuration**
-   - Go to [Firebase Console](https://console.firebase.google.com/)
-   - Create a new project or use existing one
-   - Add Android app with package name `com.yourname.attendify`
-   - Download `google-services.json`
-   - Place it in `app/` directory
-
-3. **Firebase Services Setup**
-   ```bash
-   # Enable the following in Firebase Console:
-   # ✅ Authentication (Email/Password)
-   # ✅ Firestore Database
-   # ✅ Firebase Storage (optional)
-   ```
-
-4. **Build and Run**
-   ```bash
-   # Open in Android Studio and sync project
-   # Or use command line:
-   ./gradlew assembleDebug
-   ./gradlew installDebug
-   ```
-
-5. **Environment Variables** (Optional)
-   ```kotlin
-   // Create local.properties file in root directory
-   API_KEY="your_api_key_here"
-   BASE_URL="your_backend_url_here"
-   ```
-
----
-
-## 🌐 Deployment Options
-
-### Backend Extensions
-- **Firebase Hosting** - Host web dashboard for teachers
-- **Vercel** - Deploy additional web components
-- **Firebase Functions** - Serverless backend logic
-- **Firebase App Distribution** - Beta testing distribution
+```
 
 ### Release Build
 ```bash
@@ -171,79 +113,6 @@ Attendify/
 
 ---
 
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-### 📋 Contributing Steps
-
-1. **Fork the Repository**
-   ```bash
-   # Click 'Fork' on GitHub or use GitHub CLI
-   gh repo fork yourusername/attendify
-   ```
-
-2. **Create Feature Branch**
-   ```bash
-   git checkout -b feature/your-feature-name
-   # Example: git checkout -b feature/student-profile-update
-   ```
-
-3. **Make Your Changes**
-   ```bash
-   # Follow the existing code style
-   # Add tests for new features
-   # Update documentation if needed
-   ```
-
-4. **Commit Your Changes**
-   ```bash
-   git add .
-   git commit -m "feat: add student profile update functionality"
-   
-   # Follow conventional commit format:
-   # feat: new feature
-   # fix: bug fix
-   # docs: documentation changes
-   # style: formatting changes
-   # refactor: code refactoring
-   # test: adding tests
-   ```
-
-5. **Push and Create PR**
-   ```bash
-   git push origin feature/your-feature-name
-   # Then create Pull Request on GitHub
-   ```
-
-### 🎯 Contribution Guidelines
-- Follow **MVVM architecture** patterns
-- Write **unit tests** for new features
-- Use **conventional commit** messages
-- Ensure **code formatting** with ktlint
-- Update **documentation** for API changes
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2024 Attendify
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
 
 ---
 
