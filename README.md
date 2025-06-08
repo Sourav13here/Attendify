@@ -240,16 +240,14 @@ copies or substantial portions of the Software.
 
 ## 👨‍💻 Developers Information
 
-**Developer:** Mridul Roy
-**GitHub:** [@Mridul60](https://github.com/Mridul60)  
-**Email:** mridulroy543@gmail.com  
-**LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/mridul-roy-39b297263)
+**Developer:** Faruk Kahn,Mridul Roy,Sourav Sharma
+**GitHub:** [@FarukKhan](http://github.com/iamfaruk01),[@MridulRoy](https://github.com/Mridul60),[@SouravSharma]()
+**Email:**  faruk.khan.cse@gmail.com, roy.mridul.cse@gmail.com , souravsharma13here@gmail.com 
+**LinkedIn:** [Faruk](https://www.linkedin.com/in/iamfarukkhan),[Mridul](https://linkedin.com/in/mridul-roy-39b297263),[Sourav](https://www.linkedin.com/in/sourav13sharma/)
 
 
 
 ### 🔗 Connect with Us
-- 💼 **Portfolio:** [yourportfolio.com](https://yourportfolio.com)
-- 🐦 **Twitter:** [@yourusername](https://twitter.com/yourusername)
-- 📧 **Contact:** your.email@example.com
+- 📧 **Contact:** attendacemanagmentapp@gmail.com
 
 ---
