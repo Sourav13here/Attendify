@@ -5,7 +5,6 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-purple.svg)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-1.5.0-green.svg)](https://developer.android.com/jetpack/compose)
 [![Firebase](https://img.shields.io/badge/Firebase-Latest-orange.svg)](https://firebase.google.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
@@ -37,10 +36,10 @@
 | **Firebase Auth**     | User Authentication              | Latest      |
 | **Firestore**         | NoSQL Database                   | Latest      |
 | **Hilt**              | Dependency Injection             | 2.47+       |
-| **MVVM**              | Architecture Pattern             | ✅ Used      |
+| **MVVM**              | Architecture Pattern             | --      |
 | **Navigation Compose**| Navigation between screens       | 2.7.0+      |
 | **Material 3**        | UI Components & Theming          | Latest      |
-| **Excel Export**      | Report Generation in `.xlsx`     | Apache POI / Other |
+| **Excel Export**      | Report Generation in `.xlsx`     | Apache POI |
 
 
 ---
@@ -100,13 +99,16 @@ Attendify/
 ├── 📄 build.gradle.kts              # Project-level Gradle configuration
 └── 📄 README.md                     # Project documentation
 
-```
+```
+
 ---
 ### Want to try? Install the app - https://drive.google.com/file/d/1r6rM8jhHD9P1hTAH4FC3BbxKuRMbPNxJ/view?usp=drivesdk
-
+
+
 ---
 
-## 👨‍💻 Developers Information
+## 👨‍💻 Developers Information
+
 
 ### 🚀 Faruk Khan  
 - **GitHub:** [@FarukKhan](https://github.com/iamfaruk01)  
@@ -121,6 +123,7 @@ Attendify/
 ### 🚀 Sourav Sharma  
 - **GitHub:** [@SouravSharma](https://github.com/SouravSharma)  
 - **Email:** souravsharma13here@gmail.com  
-- **LinkedIn:** [Sourav](https://www.linkedin.com/in/sourav13sharma/)
+- **LinkedIn:** [Sourav](https://www.linkedin.com/in/sourav13sharma/)
+
 
 ---
