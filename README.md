@@ -27,8 +27,6 @@
 
 ## 🛠️ Tech Stack
 
-## 🛠️ Tech Stack
-
 | Technology            | Purpose                          | Version     |
 |-----------------------|----------------------------------|-------------|
 | **Kotlin**            | Primary Language                 | 1.9.0+      |
