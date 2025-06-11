@@ -100,7 +100,7 @@ Attendify/
 ```
 
 ---
-### Want to try? Install the app - https://drive.google.com/file/d/1r6rM8jhHD9P1hTAH4FC3BbxKuRMbPNxJ/view?usp=drivesdk
+### Want to try? Install the app - https://drive.google.com/file/d/1NRqwYiMDKfFw3bzFpn17RJYkKUE9fjm7/view?usp=sharing
 
 
 ---
