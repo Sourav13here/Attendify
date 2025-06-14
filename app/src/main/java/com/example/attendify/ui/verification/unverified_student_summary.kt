@@ -42,22 +42,35 @@ import com.example.attendify.utils.Constants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /*TODO : Change counter for teacher screen and student screen */
+enum class VerificationType {
+    STUDENT, TEACHER
+}
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
-fun CombinedUnverifiedStudentSummary(
+fun UnverifiedSummary(
     viewModel: VerificationViewModel,
+    type: VerificationType,
     modifier: Modifier = Modifier
 ) {
-    val counts by viewModel.unverifiedCounts.collectAsState()
+    val studentCounts by viewModel.studentUnverifiedCounts.collectAsState()
+    val teacherCounts by viewModel.teacherUnverifiedCounts.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
+    val counts = when (type) {
+        VerificationType.STUDENT -> studentCounts
+        VerificationType.TEACHER -> teacherCounts
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        CombinedHeader(totalUnverified = counts.sumOf { it.count })
+        VerificationHeader(
+            totalUnverified = counts.sumOf { it.count },
+            type = type
+        )
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -66,26 +79,47 @@ fun CombinedUnverifiedStudentSummary(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(Constants.BRANCHES) { branch ->
-                val branchCounts = counts.filter { it.branch == branch }
-                CombinedBranchTile(
-                    branch = branch,
-                    counts = branchCounts,
-                    isLoading = isLoading
-                )
+                when (type) {
+                    VerificationType.STUDENT -> {
+                        val branchCounts = counts.filter { it.branch == branch }
+                        StudentBranchTile(
+                            branch = branch,
+                            counts = branchCounts,
+                            isLoading = isLoading
+                        )
+                    }
+                    VerificationType.TEACHER -> {
+                        val branchCount = counts.find { it.branch == branch }?.count ?: 0
+                        TeacherBranchTile(
+                            branch = branch,
+                            count = branchCount,
+                            isLoading = isLoading
+                        )
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun CombinedHeader(totalUnverified: Int) {
+fun VerificationHeader(
+    totalUnverified: Int,
+    type: VerificationType, // STUDENT or TEACHER
+    modifier: Modifier = Modifier
+) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "UNVERIFIED",
+            text = when (type) {
+                VerificationType.STUDENT -> "UNVERIFIED STUDENTS"
+                VerificationType.TEACHER -> "UNVERIFIED TEACHERS"
+            },
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -105,7 +139,16 @@ private fun CombinedHeader(totalUnverified: Int) {
             )
         } else {
             Text(
-                text = "All Verified ✓",
+                text = buildAnnotatedString {
+                    append("All ")
+                    append(
+                        when (type) {
+                            VerificationType.STUDENT -> "Students"
+                            VerificationType.TEACHER -> "Teachers"
+                        }
+                    )
+                    append(" Verified ✓")
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF4CAF50)
@@ -113,9 +156,9 @@ private fun CombinedHeader(totalUnverified: Int) {
         }
     }
 }
-
+// For Students (shows semester breakdown)
 @Composable
-private fun CombinedBranchTile(
+fun StudentBranchTile(
     branch: String,
     counts: List<UnverifiedCount>,
     isLoading: Boolean = false
@@ -126,7 +169,8 @@ private fun CombinedBranchTile(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 120.dp).padding(4.dp),
+            .heightIn(min = 120.dp)
+            .padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = SurfaceColor.copy(0.6f)
@@ -140,7 +184,7 @@ private fun CombinedBranchTile(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Branch name section
+            // Left side - Branch name and semester breakdown
             Column(
                 modifier = Modifier.weight(0.6f),
                 verticalArrangement = Arrangement.Center
@@ -155,16 +199,26 @@ private fun CombinedBranchTile(
                 )
 
                 if (!isLoading) {
-                    Text(
-                        text = if (hasUnverified) "To verify" else "All verified",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
+                    Column(modifier = Modifier.padding(top = 4.dp)) {
+                        counts.forEach { count ->
+                            if (count.count > 0) {
+                                Text(
+                                    text = "Sem ${count.semester}: ${count.count}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                )
+                            }
+                        }
+                        Text(
+                            text = if (hasUnverified) "To verify" else "All verified",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                        )
+                    }
                 }
             }
 
-            // Status indicator section - fixed size container
+            // Right side - Status indicator
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -189,6 +243,101 @@ private fun CombinedBranchTile(
                     ) {
                         Text(
                             text = totalCount.toString(),
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Verified",
+                        tint = Color(0xFF4CAF50),
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+// For Teachers (simpler count display)
+@Composable
+fun TeacherBranchTile(
+    branch: String,
+    count: Int,
+    isLoading: Boolean = false
+) {
+    val hasUnverified = count > 0
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 120.dp)
+            .padding(4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = SurfaceColor.copy(0.6f)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Left side - Branch name only
+            Column(
+                modifier = Modifier.weight(0.6f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = branch,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                if (!isLoading) {
+                    Text(
+                        text = if (hasUnverified) "Teachers to verify" else "All teachers verified",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+
+            // Right side - Status indicator
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .weight(0.4f)
+                    .height(60.dp)
+            ) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else if (hasUnverified) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .background(
+                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.1f),
+                                shape = CircleShape
+                            )
+                    ) {
+                        Text(
+                            text = count.toString(),
                             style = MaterialTheme.typography.headlineLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.error
