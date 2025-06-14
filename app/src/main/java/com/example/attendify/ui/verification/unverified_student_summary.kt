@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -42,13 +44,16 @@ import com.example.attendify.utils.Constants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 /*TODO : Change counter for teacher screen and student screen */
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
-fun CombinedUnverifiedStudentSummary(
+internal fun UnverifiedSummary(
     viewModel: VerificationViewModel,
+    selectedTab: Int,
     modifier: Modifier = Modifier
 ) {
-    val counts by viewModel.unverifiedCounts.collectAsState()
+    val studentCounts by viewModel.studentUnverifiedCounts.collectAsState()
+    val teacherCounts by viewModel.teacherUnverifiedCounts.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
     Column(
@@ -57,8 +62,48 @@ fun CombinedUnverifiedStudentSummary(
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        CombinedHeader(totalUnverified = counts.sumOf { it.count })
+        // Header with total counts
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = if (selectedTab == 0) "UNVERIFIED STUDENTS" else "UNVERIFIED TEACHERS",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
+            val totalCount = if (selectedTab == 0) {
+                studentCounts.sumOf { it.count }
+            } else {
+                teacherCounts.sumOf { it.count }
+            }
+
+            if (totalCount > 0) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                            append("Total: ")
+                        }
+                        append(totalCount.toString())
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            } else {
+                Text(
+                    text = if (selectedTab == 0) "All Students Verified ✓" else "All Teachers Verified ✓",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = Color(0xFF4CAF50)
+                )
+            }
+        }
+
+        // Grid of branch tiles
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -66,11 +111,16 @@ fun CombinedUnverifiedStudentSummary(
             modifier = Modifier.fillMaxWidth()
         ) {
             items(Constants.BRANCHES) { branch ->
-                val branchCounts = counts.filter { it.branch == branch }
-                CombinedBranchTile(
+                val branchCount = when (selectedTab) {
+                    0 -> studentCounts.filter { it.branch == branch }.sumOf { it.count }
+                    else -> teacherCounts.find { it.branch == branch }?.count ?: 0
+                }
+
+                BranchTile(
                     branch = branch,
-                    counts = branchCounts,
-                    isLoading = isLoading
+                    count = branchCount,
+                    isLoading = isLoading,
+                    isStudent = selectedTab == 0
                 )
             }
         }
@@ -78,55 +128,19 @@ fun CombinedUnverifiedStudentSummary(
 }
 
 @Composable
-private fun CombinedHeader(totalUnverified: Int) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "UNVERIFIED",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        if (totalUnverified > 0) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
-                        append("Total: ")
-                    }
-                    append(totalUnverified.toString())
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.error
-            )
-        } else {
-            Text(
-                text = "All Verified ✓",
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF4CAF50)
-            )
-        }
-    }
-}
-
-@Composable
-private fun CombinedBranchTile(
+private fun BranchTile(
     branch: String,
-    counts: List<UnverifiedCount>,
-    isLoading: Boolean = false
+    count: Int,
+    isLoading: Boolean = false,
+    isStudent: Boolean
 ) {
-    val totalCount = counts.sumOf { it.count }
-    val hasUnverified = totalCount > 0
+    val hasUnverified = count > 0
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = 120.dp).padding(4.dp),
+            .heightIn(min = 110.dp)
+            .padding(4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(
             containerColor = SurfaceColor.copy(0.6f)
@@ -140,7 +154,6 @@ private fun CombinedBranchTile(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Branch name section
             Column(
                 modifier = Modifier.weight(0.6f),
                 verticalArrangement = Arrangement.Center
@@ -156,7 +169,11 @@ private fun CombinedBranchTile(
 
                 if (!isLoading) {
                     Text(
-                        text = if (hasUnverified) "To verify" else "All verified",
+                        text = if (hasUnverified) {
+                            if (isStudent) "To verify" else "To verify"
+                        } else {
+                            if (isStudent) "All students verified" else "All teachers verified"
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                         modifier = Modifier.padding(top = 4.dp)
@@ -164,13 +181,12 @@ private fun CombinedBranchTile(
                 }
             }
 
-            // Status indicator section - fixed size container
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .padding(start = 16.dp)
                     .weight(0.4f)
-                    .height(60.dp)
+                    .height(40.dp)
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
@@ -188,11 +204,13 @@ private fun CombinedBranchTile(
                             )
                     ) {
                         Text(
-                            text = totalCount.toString(),
-                            style = MaterialTheme.typography.headlineLarge.copy(
+                            text = count.toString(),
+                            style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.error
-                            )
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Visible
                         )
                     }
                 } else {
