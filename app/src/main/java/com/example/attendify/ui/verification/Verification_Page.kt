@@ -1,6 +1,6 @@
 package com.example.attendify.ui.verification
 
-import CombinedUnverifiedStudentSummary
+import UnverifiedSummary
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -244,14 +244,15 @@ fun Verification_Page(navController: NavController, viewModel: VerificationViewM
                     Spacer(modifier = Modifier.height(44.dp))
                 }
 
-                Spacer(modifier = Modifier.fillMaxHeight(0.3f))
+                Spacer(modifier = Modifier.fillMaxHeight(0.2f))
 
                 // Main content of the verification page
                 when {
                     selectedBranch == "Select Branch" || (selectedTab == 0 && selectedSemester == "Select Semester") -> {
                         // Show unverified counts grid for both tabs
-                        CombinedUnverifiedStudentSummary(
+                        UnverifiedSummary(
                             viewModel = viewModel,
+                            selectedTab = selectedTab,
                             modifier = Modifier.fillMaxSize()
                         )
                     }

@@ -70,9 +70,12 @@ class VerificationViewModel @Inject constructor(
 
     private val _unverifiedCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
     val unverifiedCounts = _unverifiedCounts.asStateFlow()
-    private val _unverifiedTeacherCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
-    val unverifiedTeacherCounts = _unverifiedTeacherCounts.asStateFlow()
 
+    private val _studentUnverifiedCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
+    private val _teacherUnverifiedCounts = MutableStateFlow<List<UnverifiedCount>>(emptyList())
+
+    val studentUnverifiedCounts: StateFlow<List<UnverifiedCount>> = _studentUnverifiedCounts
+    val teacherUnverifiedCounts: StateFlow<List<UnverifiedCount>> = _teacherUnverifiedCounts
 
 
     private var emailVerificationJob: Job? = null
@@ -303,7 +306,8 @@ class VerificationViewModel @Inject constructor(
                             UnverifiedCount(
                                 branch = branch,
                                 semester = semester,
-                                count = students.size
+                                count = students.size,
+                                type = "student"
                             )
                         }
                     }
@@ -323,23 +327,16 @@ class VerificationViewModel @Inject constructor(
                         UnverifiedCount(
                             branch = branch,
                             semester = "",  // no semester for teachers
-                            count = teachers.size
+                            count = teachers.size,
+                            type = "teacher"
                         )
                     }
                 }.awaitAll()
             }
-            // Combine both lists
-            val combinedCounts = (studentCounts + teacherCounts)
-                .groupBy { Pair(it.branch, it.semester) }
-                .map { (key, group) ->
-                    UnverifiedCount(
-                        branch = key.first,
-                        semester = key.second,
-                        count = group.sumOf { it.count }
-                    )
-                }
+            _studentUnverifiedCounts.value = studentCounts
+            _teacherUnverifiedCounts.value = teacherCounts
 
-            _unverifiedCounts.value = combinedCounts
+
         }
     }
 
